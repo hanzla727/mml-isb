@@ -74,7 +74,19 @@
                             <a href="{{ route('admin.meetings.show', $meeting) }}" class="btn btn-sm btn-outline-primary">View</a>
                             @can('manage-meetings')
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
-                                    onclick='openEditMeetingModal(@json($meeting->only(["id", "title", "type", "location", "description", "agenda", "organizer_id", "project_id", "form_template_id"])), "{{ $meeting->meeting_date->toDateString() }}", "{{ substr($meeting->start_time, 0, 5) }}", "{{ substr($meeting->end_time, 0, 5) }}")'>
+                                    data-id="{{ $meeting->id }}"
+                                    data-title="{{ $meeting->title }}"
+                                    data-type="{{ $meeting->type }}"
+                                    data-location="{{ $meeting->location }}"
+                                    data-description="{{ $meeting->description }}"
+                                    data-agenda="{{ $meeting->agenda }}"
+                                    data-organizer-id="{{ $meeting->organizer_id }}"
+                                    data-project-id="{{ $meeting->project_id }}"
+                                    data-form-template-id="{{ $meeting->form_template_id }}"
+                                    data-meeting-date="{{ $meeting->meeting_date->toDateString() }}"
+                                    data-start-time="{{ substr($meeting->start_time, 0, 5) }}"
+                                    data-end-time="{{ substr($meeting->end_time, 0, 5) }}"
+                                    onclick="openEditMeetingModal(this.dataset)">
                                     Edit
                                 </button>
                             @endcan
@@ -304,22 +316,22 @@
         <script>
             const meetingUpdateUrlTemplate = @json(route('admin.meetings.update', ['scheduledMeeting' => '__ID__']));
 
-            function openEditMeetingModal(meeting, meetingDate, startTime, endTime) {
+            function openEditMeetingModal(data) {
                 const form = document.getElementById('editMeetingForm');
                 form.reset();
-                form.action = meetingUpdateUrlTemplate.replace('__ID__', meeting.id);
+                form.action = meetingUpdateUrlTemplate.replace('__ID__', data.id);
 
-                document.getElementById('editMeetingTitle').value = meeting.title ?? '';
-                document.getElementById('editMeetingType').value = meeting.type ?? '';
-                document.getElementById('editMeetingProject').value = meeting.project_id ?? '';
-                document.getElementById('editMeetingFormTemplate').value = meeting.form_template_id ?? '';
-                document.getElementById('editMeetingDate').value = meetingDate ?? '';
-                document.getElementById('editMeetingStart').value = startTime ?? '';
-                document.getElementById('editMeetingEnd').value = endTime ?? '';
-                document.getElementById('editMeetingLocation').value = meeting.location ?? '';
-                document.getElementById('editMeetingDescription').value = meeting.description ?? '';
-                document.getElementById('editMeetingAgenda').value = meeting.agenda ?? '';
-                document.getElementById('editMeetingOrganizer').value = meeting.organizer_id ?? '';
+                document.getElementById('editMeetingTitle').value = data.title ?? '';
+                document.getElementById('editMeetingType').value = data.type ?? '';
+                document.getElementById('editMeetingProject').value = data.projectId ?? '';
+                document.getElementById('editMeetingFormTemplate').value = data.formTemplateId ?? '';
+                document.getElementById('editMeetingDate').value = data.meetingDate ?? '';
+                document.getElementById('editMeetingStart').value = data.startTime ?? '';
+                document.getElementById('editMeetingEnd').value = data.endTime ?? '';
+                document.getElementById('editMeetingLocation').value = data.location ?? '';
+                document.getElementById('editMeetingDescription').value = data.description ?? '';
+                document.getElementById('editMeetingAgenda').value = data.agenda ?? '';
+                document.getElementById('editMeetingOrganizer').value = data.organizerId ?? '';
 
                 const scopeSelect = form.querySelector('.audience-scope-select');
                 scopeSelect.value = 'individual';

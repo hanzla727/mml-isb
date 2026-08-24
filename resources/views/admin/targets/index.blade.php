@@ -28,7 +28,18 @@
                         @can('manage-targets')
                             <td class="d-flex gap-2">
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
-                                    onclick='openEditTargetModal(@json($target->only(["id", "title", "description", "type", "metric", "target_value", "scope", "scope_id", "start_date", "end_date", "is_active"])))'>
+                                    data-id="{{ $target->id }}"
+                                    data-title="{{ $target->title }}"
+                                    data-description="{{ $target->description }}"
+                                    data-type="{{ $target->type }}"
+                                    data-metric="{{ $target->metric }}"
+                                    data-target-value="{{ $target->target_value }}"
+                                    data-scope="{{ $target->scope }}"
+                                    data-scope-id="{{ $target->scope_id }}"
+                                    data-start-date="{{ $target->start_date?->toDateString() }}"
+                                    data-end-date="{{ $target->end_date?->toDateString() }}"
+                                    data-is-active="{{ $target->is_active ? '1' : '0' }}"
+                                    onclick="openEditTargetModal(this.dataset)">
                                     Edit
                                 </button>
                                 <form method="POST" action="{{ route('admin.targets.destroy', $target) }}" onsubmit="return confirm('Delete this target?')">
@@ -253,28 +264,28 @@
                 });
             }
 
-            function openEditTargetModal(target) {
+            function openEditTargetModal(data) {
                 const form = document.getElementById('editTargetForm');
-                form.action = targetUpdateUrlTemplate.replace('__ID__', target.id);
+                form.action = targetUpdateUrlTemplate.replace('__ID__', data.id);
 
-                document.getElementById('editTargetTitle').value = target.title ?? '';
-                document.getElementById('editTargetDescription').value = target.description ?? '';
-                document.getElementById('editTargetType').value = target.type ?? 'daily';
-                document.getElementById('editTargetMetric').value = target.metric ?? 'hours';
-                document.getElementById('editTargetValue').value = target.target_value ?? '';
-                document.getElementById('editTargetStartDate').value = target.start_date ? target.start_date.substring(0, 10) : '';
-                document.getElementById('editTargetEndDate').value = target.end_date ? target.end_date.substring(0, 10) : '';
-                document.getElementById('editTargetIsActive').checked = !!target.is_active;
+                document.getElementById('editTargetTitle').value = data.title ?? '';
+                document.getElementById('editTargetDescription').value = data.description ?? '';
+                document.getElementById('editTargetType').value = data.type ?? 'daily';
+                document.getElementById('editTargetMetric').value = data.metric ?? 'hours';
+                document.getElementById('editTargetValue').value = data.targetValue ?? '';
+                document.getElementById('editTargetStartDate').value = data.startDate ?? '';
+                document.getElementById('editTargetEndDate').value = data.endDate ?? '';
+                document.getElementById('editTargetIsActive').checked = data.isActive === '1';
 
-                document.getElementById('editTargetScope').value = target.scope ?? 'all';
-                toggleEditScopeTarget(target.scope ?? 'all');
+                document.getElementById('editTargetScope').value = data.scope ?? 'all';
+                toggleEditScopeTarget(data.scope ?? 'all');
 
-                if (target.scope === 'department') {
-                    document.getElementById('editTargetDepartment').value = target.scope_id ?? '';
-                } else if (target.scope === 'team') {
-                    document.getElementById('editTargetTeam').value = target.scope_id ?? '';
-                } else if (target.scope === 'user') {
-                    document.getElementById('editTargetUser').value = target.scope_id ?? '';
+                if (data.scope === 'department') {
+                    document.getElementById('editTargetDepartment').value = data.scopeId ?? '';
+                } else if (data.scope === 'team') {
+                    document.getElementById('editTargetTeam').value = data.scopeId ?? '';
+                } else if (data.scope === 'user') {
+                    document.getElementById('editTargetUser').value = data.scopeId ?? '';
                 }
 
                 new bootstrap.Modal(document.getElementById('editModal')).show();

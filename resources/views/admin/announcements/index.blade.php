@@ -24,7 +24,13 @@
                     @can('manage-announcements')
                         <div class="d-flex gap-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary"
-                                onclick='openEditAnnouncementModal(@json($announcement->only(["id", "title", "body", "category", "audience_scope", "audience_id"])))'>
+                                data-id="{{ $announcement->id }}"
+                                data-title="{{ $announcement->title }}"
+                                data-body="{{ $announcement->body }}"
+                                data-category="{{ $announcement->category }}"
+                                data-audience-scope="{{ $announcement->audience_scope }}"
+                                data-audience-id="{{ $announcement->audience_id }}"
+                                onclick="openEditAnnouncementModal(this.dataset)">
                                 Edit
                             </button>
                             <form method="POST" action="{{ route('admin.announcements.destroy', $announcement) }}" onsubmit="return confirm('Delete this announcement?')">
@@ -196,22 +202,22 @@
                 });
             }
 
-            function openEditAnnouncementModal(announcement) {
+            function openEditAnnouncementModal(data) {
                 const form = document.getElementById('editAnnouncementForm');
-                form.action = announcementUpdateUrlTemplate.replace('__ID__', announcement.id);
+                form.action = announcementUpdateUrlTemplate.replace('__ID__', data.id);
 
-                document.getElementById('editAnnouncementTitle').value = announcement.title ?? '';
-                document.getElementById('editAnnouncementBody').value = announcement.body ?? '';
-                document.getElementById('editAnnouncementCategory').value = announcement.category ?? 'general';
-                document.getElementById('editAnnouncementScope').value = announcement.audience_scope ?? 'all';
-                toggleEditAudienceTarget(announcement.audience_scope ?? 'all');
+                document.getElementById('editAnnouncementTitle').value = data.title ?? '';
+                document.getElementById('editAnnouncementBody').value = data.body ?? '';
+                document.getElementById('editAnnouncementCategory').value = data.category ?? 'general';
+                document.getElementById('editAnnouncementScope').value = data.audienceScope ?? 'all';
+                toggleEditAudienceTarget(data.audienceScope ?? 'all');
 
-                if (announcement.audience_scope === 'department') {
-                    document.getElementById('editAnnouncementDepartment').value = announcement.audience_id ?? '';
-                } else if (announcement.audience_scope === 'team') {
-                    document.getElementById('editAnnouncementTeam').value = announcement.audience_id ?? '';
-                } else if (announcement.audience_scope === 'user') {
-                    document.getElementById('editAnnouncementUser').value = announcement.audience_id ?? '';
+                if (data.audienceScope === 'department') {
+                    document.getElementById('editAnnouncementDepartment').value = data.audienceId ?? '';
+                } else if (data.audienceScope === 'team') {
+                    document.getElementById('editAnnouncementTeam').value = data.audienceId ?? '';
+                } else if (data.audienceScope === 'user') {
+                    document.getElementById('editAnnouncementUser').value = data.audienceId ?? '';
                 }
 
                 new bootstrap.Modal(document.getElementById('editModal')).show();
