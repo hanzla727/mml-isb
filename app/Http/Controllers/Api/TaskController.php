@@ -28,7 +28,9 @@ class TaskController extends Controller
                 ->when($request->filled('priority'), fn ($q) => $q->where('priority', $request->string('priority')))
                 ->when($request->filled('meeting_id'), fn ($q) => $q->where('scheduled_meeting_id', $request->integer('meeting_id')));
         } else {
-            $query->whereHas('assignees', fn ($q) => $q->where('users.id', $user->id));
+            $query->whereHas('assignees', fn ($q) => $q->where('users.id', $user->id))
+                ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+                ->when($request->filled('priority'), fn ($q) => $q->where('priority', $request->string('priority')));
         }
 
         $tasks = $query->orderByDesc('created_at')->paginate($request->integer('per_page', 20));

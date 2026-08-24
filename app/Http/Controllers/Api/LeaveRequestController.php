@@ -17,6 +17,7 @@ class LeaveRequestController extends Controller
     {
         $leaveRequests = $request->user()->leaveRequests()
             ->with('reviewer')
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->orderByDesc('created_at')
             ->get();
 

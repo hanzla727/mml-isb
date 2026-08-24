@@ -23,7 +23,8 @@ class DailyReportController extends Controller
 
         if ($user->can('view-reports') || $user->can('review-reports')) {
             HierarchyScope::restrictByOwner($query, $user);
-            $query->when($request->filled('user_id'), fn ($q) => $q->where('user_id', $request->integer('user_id')));
+            $query->when($request->filled('user_id'), fn ($q) => $q->where('user_id', $request->integer('user_id')))
+                ->when($request->filled('review_status'), fn ($q) => $q->where('review_status', $request->string('review_status')));
         } else {
             $query->where('user_id', $user->id);
         }

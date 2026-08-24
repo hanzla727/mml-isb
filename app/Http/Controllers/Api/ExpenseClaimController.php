@@ -18,6 +18,7 @@ class ExpenseClaimController extends Controller
     {
         $expenseClaims = $request->user()->expenseClaims()
             ->with(['reviewer', 'receipt'])
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->orderByDesc('created_at')
             ->get();
 
