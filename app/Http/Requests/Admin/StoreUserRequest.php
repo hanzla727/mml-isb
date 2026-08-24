@@ -19,8 +19,10 @@ class StoreUserRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($userId)],
+            'username' => ['nullable', 'string', 'max:255', 'alpha_dash', Rule::unique('users', 'username')->ignore($userId)],
             'phone' => ['nullable', 'string', 'max:50'],
             'password' => [$userId ? 'nullable' : 'required', 'string', 'min:8'],
+            'pin' => ['nullable', 'digits_between:4,6'],
             'role' => ['required', Rule::in(['super_admin', 'admin', 'na_head', 'team_leader', 'user'])],
             'na_id' => ['nullable', 'exists:nas,id'],
             'na_ids' => ['nullable', 'array'],

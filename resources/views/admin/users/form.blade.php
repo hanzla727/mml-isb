@@ -19,6 +19,14 @@
                 @error('email') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
             <div class="mb-3">
+                <label class="form-label">Username <span class="text-muted small">(optional — used for app login)</span></label>
+                <div class="input-group">
+                    <input type="text" name="username" id="usernameInput" value="{{ old('username', $user->username) }}" class="form-control">
+                    <button type="button" class="btn btn-outline-secondary" onclick="generateUsername()">Generate</button>
+                </div>
+                @error('username') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Phone</label>
                 <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" class="form-control">
             </div>
@@ -26,6 +34,11 @@
                 <label class="form-label">Password {{ $user->exists ? '(leave blank to keep current)' : '' }}</label>
                 <input type="password" name="password" class="form-control" {{ $user->exists ? '' : 'required' }}>
                 @error('password') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+            <div class="mb-3">
+                <label class="form-label">PIN <span class="text-muted small">(optional — 4 to 6 digits, used for app login)</span></label>
+                <input type="text" name="pin" inputmode="numeric" pattern="[0-9]{4,6}" maxlength="6" class="form-control" value="{{ old('pin', $user->pin) }}">
+                @error('pin') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
             <div class="mb-3">
                 <label class="form-label">Role</label>
@@ -114,5 +127,12 @@
             document.getElementById('ucIdField').style.display = select.value === 'na_head' ? 'none' : '';
         }
         toggleRoleFields(document.getElementById('roleSelect'));
+
+        function generateUsername() {
+            const name = document.querySelector('input[name="name"]').value.trim().toLowerCase();
+            const base = name.replace(/[^a-z0-9\s]/g, '').trim().replace(/\s+/g, '.') || 'user';
+            const suffix = Math.floor(100 + Math.random() * 900);
+            document.getElementById('usernameInput').value = `${base}${suffix}`;
+        }
     </script>
 @endsection

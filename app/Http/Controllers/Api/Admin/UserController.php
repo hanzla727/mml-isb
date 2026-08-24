@@ -40,8 +40,10 @@ class UserController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'username' => $validated['username'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'password' => $validated['password'],
+            'pin' => $validated['pin'] ?? null,
             'department_id' => $validated['department_id'] ?? null,
             'team_id' => $validated['team_id'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
@@ -64,10 +66,12 @@ class UserController extends Controller
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'username' => $validated['username'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'department_id' => $validated['department_id'] ?? null,
             'team_id' => $validated['team_id'] ?? null,
             'is_active' => $validated['is_active'] ?? $user->is_active,
+            'pin' => $validated['pin'] ?? null,
             ...(! empty($validated['password']) ? ['password' => $validated['password']] : []),
         ]);
 

@@ -8,6 +8,27 @@
         <p class="text-muted small mb-2">{{ $viewedUser->email }} &middot; {{ $viewedUser->phone ?? '—' }}</p>
         <div class="mb-2"><strong>Department:</strong> {{ $viewedUser->department?->name ?? '—' }}</div>
         <div class="mb-2"><strong>Team:</strong> {{ $viewedUser->team?->name ?? '—' }}</div>
+
+        <div class="mb-2 d-flex align-items-center gap-2">
+            <i class="bi bi-at text-muted"></i>
+            <span class="text-muted">Username</span>
+            <span class="ms-auto">{{ $viewedUser->username ?: '--' }}</span>
+        </div>
+        <div class="mb-2 d-flex align-items-center gap-2">
+            <i class="bi bi-key text-muted"></i>
+            <span class="text-muted">Pin</span>
+            <span class="ms-auto font-monospace" id="pinValue" data-pin="{{ $viewedUser->pin }}" data-masked="1">
+                {{ $viewedUser->pin ? '****' : '--' }}
+            </span>
+            @if ($viewedUser->pin)
+                <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="togglePinVisibility()" title="Show/Hide PIN">
+                    <i class="bi bi-eye" id="pinEyeIcon"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="copyPin()" title="Copy PIN">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+            @endif
+        </div>
         <a href="{{ route('admin.performance.show', $viewedUser) }}" class="btn btn-sm btn-outline-primary">View Performance</a>
     </div>
 
@@ -76,4 +97,20 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function togglePinVisibility() {
+            const el = document.getElementById('pinValue');
+            const icon = document.getElementById('pinEyeIcon');
+            const masked = el.dataset.masked === '1';
+            el.textContent = masked ? el.dataset.pin : '****';
+            el.dataset.masked = masked ? '0' : '1';
+            icon.classList.toggle('bi-eye');
+            icon.classList.toggle('bi-eye-slash');
+        }
+
+        function copyPin() {
+            navigator.clipboard.writeText(document.getElementById('pinValue').dataset.pin);
+        }
+    </script>
 @endsection

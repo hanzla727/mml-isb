@@ -104,8 +104,10 @@ class UserController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'username' => $validated['username'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'password' => $validated['password'],
+            'pin' => $validated['pin'] ?? null,
             'na_id' => $this->resolveNaId($validated),
             'uc_id' => $validated['role'] === 'na_head' ? null : ($validated['uc_id'] ?? null),
             'department_id' => $validated['department_id'] ?? null,
@@ -139,6 +141,7 @@ class UserController extends Controller
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'username' => $validated['username'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'na_id' => $this->resolveNaId($validated),
             'uc_id' => $validated['role'] === 'na_head' ? null : ($validated['uc_id'] ?? null),
@@ -146,6 +149,7 @@ class UserController extends Controller
             'team_id' => $validated['team_id'] ?? null,
             'reporting_head_id' => $validated['reporting_head_id'] ?? null,
             'is_active' => $validated['is_active'] ?? $user->is_active,
+            'pin' => $validated['pin'] ?? null,
             ...(! empty($validated['password']) ? ['password' => $validated['password']] : []),
         ]);
 
