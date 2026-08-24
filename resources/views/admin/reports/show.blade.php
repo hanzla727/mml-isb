@@ -78,7 +78,7 @@
     @endcan
 
     <div class="card stat-card p-4">
-        <h6 class="mb-3">Meetings ({{ $report->meetings->count() }})</h6>
+        <h6 class="mb-3">Meetings (Field Visits) &mdash; {{ $report->meetings->count() }}</h6>
         @foreach ($report->meetings as $meeting)
             <div class="border rounded p-3 mb-2">
                 <div class="d-flex justify-content-between">
@@ -90,6 +90,17 @@
                 @if ($meeting->follow_up_required)
                     <span class="badge bg-warning text-dark mt-2">Follow-up required</span>
                 @endif
+                <div class="mt-2">
+                    <div class="text-muted small">Participants (tagged teammates)</div>
+                    @forelse ($meeting->participants as $participant)
+                        <span class="badge bg-light text-dark border me-1">
+                            {{ $participant->name }}
+                            {{ $participant->pivot->read_at ? '(read)' : '(unread)' }}
+                        </span>
+                    @empty
+                        <span class="text-muted small">None tagged</span>
+                    @endforelse
+                </div>
             </div>
         @endforeach
     </div>

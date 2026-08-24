@@ -1,6 +1,6 @@
 @extends('layouts.user')
 
-@section('title', 'Meeting Detail')
+@section('title', 'Field Visit Detail')
 
 @section('content')
     <div class="card stat-card p-4 mb-3">

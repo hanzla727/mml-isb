@@ -85,7 +85,7 @@
                     <th>Volunteer</th>
                     <th>Department / Team</th>
                     <th>Hours</th>
-                    <th>Meetings</th>
+                    <th title="Field visits logged in each report">Meetings (Visits)</th>
                     <th>Status</th>
                     <th>Review</th>
                     <th></th>

@@ -16,7 +16,10 @@
             <thead><tr><th></th><th>Title</th><th>Date</th><th>Organizer</th><th></th></tr></thead>
             <tbody>
                 @forelse ($meetings as $meeting)
-                    @php $isRead = (bool) $meeting->participants->first()?->pivot->read_at; @endphp
+                    @php
+                        $myParticipant = $meeting->participants->firstWhere('id', auth()->id());
+                        $isRead = $myParticipant ? (bool) $myParticipant->pivot->read_at : true;
+                    @endphp
                     <tr class="{{ $isRead ? '' : 'fw-semibold' }}">
                         <td>@unless ($isRead)<span class="badge bg-primary">New</span>@endunless</td>
                         <td>{{ $meeting->title }}</td>

@@ -9,7 +9,7 @@
 
     <div class="card stat-card">
         <table class="table table-hover mb-0">
-            <thead><tr><th>Date</th><th>Hours</th><th>Meetings</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Date</th><th>Hours</th><th title="Field visits logged in this report">Meetings (Visits)</th><th>Status</th><th></th></tr></thead>
             <tbody>
                 @forelse ($reports as $report)
                     <tr>

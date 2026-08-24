@@ -12,7 +12,7 @@
         </div>
         <div class="col-md-6">
             <div class="card stat-card p-3">
-                <h6>Monthly Meetings</h6>
+                <h6>Monthly Field Visits</h6>
                 <canvas id="meetingsChart" height="200"></canvas>
             </div>
         </div>
@@ -50,7 +50,7 @@
 
         new Chart(document.getElementById('meetingsChart'), {
             type: 'bar',
-            data: { labels, datasets: [{ label: 'Meetings', data: @json($monthlyMeetings), backgroundColor: '#4f46e5' }] },
+            data: { labels, datasets: [{ label: 'Field Visits', data: @json($monthlyMeetings), backgroundColor: '#4f46e5' }] },
         });
     </script>
 @endsection

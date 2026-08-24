@@ -19,7 +19,7 @@
             <th>Start</th>
             <th>End</th>
             <th>Hours</th>
-            <th>Meetings</th>
+            <th>Meetings (Field Visits)</th>
         </tr>
     </thead>
     <tbody>

@@ -24,7 +24,7 @@
         </div>
         <div class="col-md-4">
             <div class="card stat-card p-3">
-                <div class="text-muted small">Meetings Today</div>
+                <div class="text-muted small">Field Visits Today</div>
                 <div class="fs-3 fw-semibold">{{ $stats['today']['meetings_count'] }}</div>
             </div>
         </div>
@@ -35,7 +35,7 @@
             <div class="card stat-card p-3">
                 <h6>This Month</h6>
                 <div class="text-muted small">Total Hours: <strong>{{ $stats['monthly']['total_hours'] }}</strong></div>
-                <div class="text-muted small">Total Meetings: <strong>{{ $stats['monthly']['total_meetings'] }}</strong></div>
+                <div class="text-muted small">Total Field Visits: <strong>{{ $stats['monthly']['total_meetings'] }}</strong></div>
                 <div class="text-muted small">Active Targets: <strong>{{ $stats['targets_count'] }}</strong></div>
             </div>
         </div>

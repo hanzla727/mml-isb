@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\ScheduledMeeting;
+use App\Services\HierarchyScope;
 use Illuminate\Http\Request;
 
 class ScheduledMeetingController extends Controller
@@ -13,10 +14,19 @@ class ScheduledMeetingController extends Controller
         $user = $request->user();
         $when = $request->string('when', 'upcoming')->toString();
 
-        $meetings = ScheduledMeeting::query()
-            ->whereHas('participants', fn ($q) => $q->where('user_id', $user->id))
-            ->with(['organizer'])
-            ->with(['participants' => fn ($q) => $q->where('user_id', $user->id)])
+        $query = ScheduledMeeting::query()->with(['organizer']);
+
+        // Admin/NA Head/Team Leader see every meeting across their scope
+        // (all participants), not just meetings they personally attend.
+        if ($user->hasAnyRole(['super_admin', 'admin', 'na_head', 'team_leader'])) {
+            HierarchyScope::restrictByRelation($query, $user, 'participants');
+            $query->with(['participants']);
+        } else {
+            $query->whereHas('participants', fn ($q) => $q->where('user_id', $user->id))
+                ->with(['participants' => fn ($q) => $q->where('user_id', $user->id)]);
+        }
+
+        $meetings = $query
             ->when($when === 'today', fn ($q) => $q->whereDate('meeting_date', today()))
             ->when($when === 'past', fn ($q) => $q->whereDate('meeting_date', '<', today()))
             ->when($when === 'upcoming', fn ($q) => $q->whereDate('meeting_date', '>=', today()))

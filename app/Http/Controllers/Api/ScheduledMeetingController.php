@@ -18,8 +18,12 @@ class ScheduledMeetingController extends Controller
 
         $query = ScheduledMeeting::query()->with(['organizer'])->withCount(['participants', 'tasks']);
 
-        if ($user->can('manage-meetings')) {
+        // Visibility follows the org hierarchy (Admin/NA Head/Team Leader see
+        // their scope's meetings, not just their own), independent of
+        // 'manage-meetings' which gates create/edit/delete rights instead.
+        if ($user->hasAnyRole(['super_admin', 'admin', 'na_head', 'team_leader'])) {
             HierarchyScope::restrictByRelation($query, $user, 'participants');
+            $query->with(['participants' => fn ($q) => $q->where('user_id', $user->id)]);
 
             $query->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')));
         } else {

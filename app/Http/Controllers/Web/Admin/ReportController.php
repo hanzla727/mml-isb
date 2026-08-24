@@ -22,7 +22,7 @@ class ReportController extends Controller
     public function show(DailyReport $dailyReport)
     {
         return view('admin.reports.show', [
-            'report' => $dailyReport->load(['user', 'meetings.contact', 'teamLeader', 'teamLeaderReviewer', 'adminReviewer']),
+            'report' => $dailyReport->load(['user', 'meetings.contact', 'meetings.participants', 'teamLeader', 'teamLeaderReviewer', 'adminReviewer']),
         ]);
     }
 

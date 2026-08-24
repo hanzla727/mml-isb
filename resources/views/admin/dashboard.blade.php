@@ -77,21 +77,21 @@
             <div class="card stat-card p-3">
                 <h6 class="mb-3"><i class="bi bi-calendar3 me-1 text-primary"></i> Today</h6>
                 <div class="text-muted small">Hours: <strong class="text-body">{{ $stats['today']['total_hours'] }}</strong></div>
-                <div class="text-muted small">Meetings: <strong class="text-body">{{ $stats['today']['total_meetings'] }}</strong></div>
+                <div class="text-muted small">Field Visits: <strong class="text-body">{{ $stats['today']['total_meetings'] }}</strong></div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card stat-card p-3">
                 <h6 class="mb-3"><i class="bi bi-calendar-week me-1 text-primary"></i> This Week</h6>
                 <div class="text-muted small">Hours: <strong class="text-body">{{ $stats['weekly']['total_hours'] }}</strong></div>
-                <div class="text-muted small">Meetings: <strong class="text-body">{{ $stats['weekly']['total_meetings'] }}</strong></div>
+                <div class="text-muted small">Field Visits: <strong class="text-body">{{ $stats['weekly']['total_meetings'] }}</strong></div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card stat-card p-3">
                 <h6 class="mb-3"><i class="bi bi-calendar-month me-1 text-primary"></i> This Month</h6>
                 <div class="text-muted small">Hours: <strong class="text-body">{{ $stats['monthly']['total_hours'] }}</strong></div>
-                <div class="text-muted small">Meetings: <strong class="text-body">{{ $stats['monthly']['total_meetings'] }}</strong></div>
+                <div class="text-muted small">Field Visits: <strong class="text-body">{{ $stats['monthly']['total_meetings'] }}</strong></div>
             </div>
         </div>
     </div>
