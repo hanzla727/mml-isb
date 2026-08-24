@@ -144,6 +144,8 @@ Route::middleware('auth')->group(function () {
 
             Route::put('/meetings/{scheduledMeeting}/attendance', [AdminScheduledMeetingController::class, 'markAttendance'])
                 ->name('meetings.attendance');
+            Route::put('/meetings/{scheduledMeeting}/status', [AdminScheduledMeetingController::class, 'updateStatus'])
+                ->name('meetings.status');
         });
 
         Route::middleware('permission:manage-tasks')->group(function () {

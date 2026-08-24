@@ -81,6 +81,7 @@
                                     data-description="{{ $meeting->description }}"
                                     data-agenda="{{ $meeting->agenda }}"
                                     data-organizer-id="{{ $meeting->organizer_id }}"
+                                    data-status="{{ $meeting->status }}"
                                     data-project-id="{{ $meeting->project_id }}"
                                     data-form-template-id="{{ $meeting->form_template_id }}"
                                     data-meeting-date="{{ $meeting->meeting_date->toDateString() }}"
@@ -260,6 +261,14 @@
                                 </div>
                             </div>
                             <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select name="status" id="editMeetingStatus" class="form-select">
+                                    @foreach (['upcoming', 'ongoing', 'completed', 'cancelled'] as $status)
+                                        <option value="{{ $status }}">{{ ucfirst($status) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">Location</label>
                                 <input type="text" name="location" id="editMeetingLocation" class="form-control">
                             </div>
@@ -333,6 +342,7 @@
                 document.getElementById('editMeetingDescription').value = data.description ?? '';
                 document.getElementById('editMeetingAgenda').value = data.agenda ?? '';
                 document.getElementById('editMeetingOrganizer').value = data.organizerId ?? '';
+                document.getElementById('editMeetingStatus').value = data.status ?? 'upcoming';
 
                 const scopeSelect = form.querySelector('.audience-scope-select');
                 scopeSelect.value = 'individual';

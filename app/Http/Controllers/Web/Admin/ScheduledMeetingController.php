@@ -43,6 +43,19 @@ class ScheduledMeetingController extends Controller
         ]);
     }
 
+    public function updateStatus(Request $request, ScheduledMeeting $scheduledMeeting)
+    {
+        $this->authorize('update', $scheduledMeeting);
+
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(['upcoming', 'ongoing', 'completed', 'cancelled'])],
+        ]);
+
+        $scheduledMeeting->update($validated);
+
+        return back()->with('status', 'Meeting status updated.');
+    }
+
     public function markAttendance(Request $request, ScheduledMeeting $scheduledMeeting)
     {
         $this->authorize('update', $scheduledMeeting);

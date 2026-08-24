@@ -4,9 +4,20 @@
 
 @section('content')
     <div class="card stat-card p-4 mb-3">
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between align-items-start">
             <h5>{{ $meeting->title }}</h5>
-            <span class="badge bg-secondary">{{ ucfirst($meeting->status) }}</span>
+            @can('manage-meetings')
+                <form method="POST" action="{{ route('admin.meetings.status', $meeting) }}" class="d-flex gap-2 align-items-center">
+                    @csrf @method('PUT')
+                    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()" style="width: auto;">
+                        @foreach (['upcoming', 'ongoing', 'completed', 'cancelled'] as $status)
+                            <option value="{{ $status }}" @selected($meeting->status === $status)>{{ ucfirst($status) }}</option>
+                        @endforeach
+                    </select>
+                </form>
+            @else
+                <span class="badge bg-secondary">{{ ucfirst($meeting->status) }}</span>
+            @endcan
         </div>
         <p class="text-muted small mb-2">
             {{ $meeting->meeting_date->toDateString() }}, {{ $meeting->start_time }}&ndash;{{ $meeting->end_time }}
