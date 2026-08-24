@@ -26,6 +26,15 @@ class LeaveRequestController extends Controller
         return view('admin.leave-requests.index', ['leaveRequests' => $leaveRequests]);
     }
 
+    public function show(Request $request, LeaveRequest $leaveRequest)
+    {
+        abort_unless(HierarchyScope::canView($request->user(), $leaveRequest->user), 403);
+
+        return view('admin.leave-requests.show', [
+            'leaveRequest' => $leaveRequest->load(['user', 'reviewer']),
+        ]);
+    }
+
     public function review(Request $request, LeaveRequest $leaveRequest)
     {
         abort_unless(HierarchyScope::canView($request->user(), $leaveRequest->user), 403);

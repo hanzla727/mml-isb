@@ -22,7 +22,7 @@
 
     <div class="card stat-card">
         <table class="table table-hover mb-0">
-            <thead><tr><th>Volunteer</th><th>Type</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Volunteer</th><th>Type</th><th>Amount</th><th>Date</th><th>Receipt</th><th>Status</th><th></th></tr></thead>
             <tbody>
                 @forelse ($expenseClaims as $expenseClaim)
                     <tr>
@@ -31,24 +31,36 @@
                         <td>{{ number_format($expenseClaim->amount, 2) }}</td>
                         <td>{{ $expenseClaim->date->toDateString() }}</td>
                         <td>
+                            @if ($expenseClaim->receipt)
+                                <a href="{{ route('admin.expense-claims.show', $expenseClaim) }}">
+                                    <img src="{{ asset('storage/'.$expenseClaim->receipt->path) }}" alt="Receipt" width="36" height="36" class="rounded" style="object-fit: cover;">
+                                </a>
+                            @else
+                                <span class="text-muted small">—</span>
+                            @endif
+                        </td>
+                        <td>
                             <span class="badge bg-{{ $expenseClaim->status === 'approved' ? 'success' : ($expenseClaim->status === 'rejected' ? 'danger' : 'secondary') }}">
                                 {{ ucfirst($expenseClaim->status) }}
                             </span>
                         </td>
                         <td>
-                            @if ($expenseClaim->status === 'pending')
-                                <form method="POST" action="{{ route('admin.expense-claims.review', $expenseClaim) }}" class="d-flex gap-2">
-                                    @csrf @method('PUT')
-                                    <button name="decision" value="approve" class="btn btn-sm btn-outline-success">Approve</button>
-                                    <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button>
-                                </form>
-                            @else
-                                <span class="text-muted small">by {{ $expenseClaim->reviewer?->name ?? '—' }}</span>
-                            @endif
+                            <div class="d-flex gap-2 align-items-center">
+                                <a href="{{ route('admin.expense-claims.show', $expenseClaim) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                @if ($expenseClaim->status === 'pending')
+                                    <form method="POST" action="{{ route('admin.expense-claims.review', $expenseClaim) }}" class="d-flex gap-2">
+                                        @csrf @method('PUT')
+                                        <button name="decision" value="approve" class="btn btn-sm btn-outline-success">Approve</button>
+                                        <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button>
+                                    </form>
+                                @else
+                                    <span class="text-muted small">by {{ $expenseClaim->reviewer?->name ?? '—' }}</span>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-center text-muted py-4">No expense claims found.</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-4">No expense claims found.</td></tr>
                 @endforelse
             </tbody>
         </table>

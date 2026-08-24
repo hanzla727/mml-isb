@@ -13,7 +13,7 @@ class ExpenseClaimController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ExpenseClaim::query()->with(['user', 'reviewer']);
+        $query = ExpenseClaim::query()->with(['user', 'reviewer', 'receipt']);
         HierarchyScope::restrictByOwner($query, $request->user());
 
         $expenseClaims = $query
@@ -24,6 +24,15 @@ class ExpenseClaimController extends Controller
             ->withQueryString();
 
         return view('admin.expense-claims.index', ['expenseClaims' => $expenseClaims]);
+    }
+
+    public function show(Request $request, ExpenseClaim $expenseClaim)
+    {
+        abort_unless(HierarchyScope::canView($request->user(), $expenseClaim->user), 403);
+
+        return view('admin.expense-claims.show', [
+            'expenseClaim' => $expenseClaim->load(['user', 'reviewer', 'receipt']),
+        ]);
     }
 
     public function review(Request $request, ExpenseClaim $expenseClaim)

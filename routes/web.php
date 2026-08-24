@@ -162,11 +162,13 @@ Route::middleware('auth')->group(function () {
 
         Route::middleware('permission:manage-leave-requests')->group(function () {
             Route::get('/leave-requests', [AdminLeaveRequestController::class, 'index'])->name('leave-requests.index');
+            Route::get('/leave-requests/{leaveRequest}', [AdminLeaveRequestController::class, 'show'])->name('leave-requests.show');
             Route::put('/leave-requests/{leaveRequest}/review', [AdminLeaveRequestController::class, 'review'])->name('leave-requests.review');
         });
 
         Route::middleware('permission:manage-expense-claims')->group(function () {
             Route::get('/expense-claims', [AdminExpenseClaimController::class, 'index'])->name('expense-claims.index');
+            Route::get('/expense-claims/{expenseClaim}', [AdminExpenseClaimController::class, 'show'])->name('expense-claims.show');
             Route::put('/expense-claims/{expenseClaim}/review', [AdminExpenseClaimController::class, 'review'])->name('expense-claims.review');
         });
 

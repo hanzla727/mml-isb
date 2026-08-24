@@ -36,15 +36,18 @@
                             </span>
                         </td>
                         <td>
-                            @if ($leaveRequest->status === 'pending')
-                                <form method="POST" action="{{ route('admin.leave-requests.review', $leaveRequest) }}" class="d-flex gap-2">
-                                    @csrf @method('PUT')
-                                    <button name="decision" value="approve" class="btn btn-sm btn-outline-success">Approve</button>
-                                    <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button>
-                                </form>
-                            @else
-                                <span class="text-muted small">by {{ $leaveRequest->reviewer?->name ?? '—' }}</span>
-                            @endif
+                            <div class="d-flex gap-2 align-items-center">
+                                <a href="{{ route('admin.leave-requests.show', $leaveRequest) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                @if ($leaveRequest->status === 'pending')
+                                    <form method="POST" action="{{ route('admin.leave-requests.review', $leaveRequest) }}" class="d-flex gap-2">
+                                        @csrf @method('PUT')
+                                        <button name="decision" value="approve" class="btn btn-sm btn-outline-success">Approve</button>
+                                        <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button>
+                                    </form>
+                                @else
+                                    <span class="text-muted small">by {{ $leaveRequest->reviewer?->name ?? '—' }}</span>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty
