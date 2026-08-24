@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Concerns\HasApprovalWorkflow;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -39,5 +40,14 @@ class ExpenseClaim extends Model
             ->logOnly(['expense_type', 'amount', 'date', 'status'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
+    }
+
+    /**
+     * A photo of the physical receipt — required at submission time (see
+     * StoreExpenseClaimRequest) so reviewers have proof before approving.
+     */
+    public function receipt(): MorphOne
+    {
+        return $this->morphOne(Media::class, 'mediable');
     }
 }

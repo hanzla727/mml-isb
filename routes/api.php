@@ -8,14 +8,18 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DailyReportController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\ExpenseClaimController;
+use App\Http\Controllers\Api\LeaveRequestController;
 use App\Http\Controllers\Api\MeetingController;
 use App\Http\Controllers\Api\PerformanceController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\ScheduledMeetingController;
 use App\Http\Controllers\Api\TargetController;
 use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\TaskReportController;
 use App\Http\Controllers\Api\VolunteerDirectoryController;
+use App\Http\Controllers\Api\VolunteerDocumentController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -71,6 +75,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tasks/{task}/reports', [TaskReportController::class, 'store']);
     Route::get('/tasks/{task}/reports', [TaskReportController::class, 'index']);
     Route::post('/tasks/{task}/comments', [TaskController::class, 'comments']);
+
+    Route::get('/projects', [ProjectController::class, 'index']);
+    Route::get('/projects/{project}', [ProjectController::class, 'show']);
+
+    Route::get('/leave-requests', [LeaveRequestController::class, 'index']);
+    Route::middleware('permission:submit-leave-requests')->group(function () {
+        Route::post('/leave-requests', [LeaveRequestController::class, 'store']);
+    });
+
+    Route::get('/expense-claims', [ExpenseClaimController::class, 'index']);
+    Route::middleware('permission:submit-expense-claims')->group(function () {
+        Route::post('/expense-claims', [ExpenseClaimController::class, 'store']);
+    });
+
+    Route::get('/documents', [VolunteerDocumentController::class, 'index']);
+    Route::post('/documents', [VolunteerDocumentController::class, 'store']);
+    Route::delete('/documents/{document}', [VolunteerDocumentController::class, 'destroy']);
 
     Route::prefix('admin')->group(function () {
         Route::middleware('permission:manage-targets')->group(function () {
