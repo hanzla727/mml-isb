@@ -18,17 +18,19 @@ class AuthController extends Controller
 {
     public function login(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->login)
+            ->orWhere('username', $request->login)
+            ->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $user || $user->pin === null || $user->pin !== $request->pin) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'login' => ['The provided credentials are incorrect.'],
             ]);
         }
 
         if (! $user->is_active) {
             throw ValidationException::withMessages([
-                'email' => ['Your account has been deactivated. Contact an administrator.'],
+                'login' => ['Your account has been deactivated. Contact an administrator.'],
             ]);
         }
 
