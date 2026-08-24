@@ -12,6 +12,7 @@ class TargetResource extends JsonResource
         $currentValue = (float) ($this->current_value ?? 0);
         $targetValue = (float) $this->target_value;
         $percentage = $targetValue > 0 ? min(100, round(($currentValue / $targetValue) * 100, 1)) : 0;
+        $isCompleted = (bool) ($this->is_completed ?? false) || $percentage >= 100;
 
         return [
             'id' => $this->id,
@@ -25,11 +26,13 @@ class TargetResource extends JsonResource
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
             'is_active' => $this->is_active,
+            'is_completed' => $isCompleted,
+            'notes' => $this->notes,
             'progress' => [
                 'current_value' => $currentValue,
                 'percentage' => $percentage,
                 'remaining' => max(0, $targetValue - $currentValue),
-                'status' => $percentage >= 100 ? 'completed' : 'in_progress',
+                'status' => $isCompleted ? 'completed' : 'in_progress',
             ],
             'created_at' => $this->created_at,
         ];
