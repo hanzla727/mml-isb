@@ -4,8 +4,19 @@
 
 @section('content')
     <div class="card stat-card p-4 mb-3">
-        <h5>{{ $viewedUser->name }}</h5>
-        <p class="text-muted small mb-2">{{ $viewedUser->email }} &middot; {{ $viewedUser->phone ?? '—' }}</p>
+        <div class="d-flex align-items-center gap-3 mb-3">
+            @if ($viewedUser->avatar_path)
+                <img src="{{ asset('storage/'.$viewedUser->avatar_path) }}" alt="" class="rounded-circle" width="64" height="64" style="object-fit: cover;">
+            @else
+                <div class="rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center text-secondary fw-semibold" style="width:64px; height:64px; font-size:24px;">
+                    {{ strtoupper(substr($viewedUser->name, 0, 1)) }}
+                </div>
+            @endif
+            <div>
+                <h5 class="mb-0">{{ $viewedUser->name }}</h5>
+                <p class="text-muted small mb-0">{{ $viewedUser->email }} &middot; {{ $viewedUser->phone ?? '—' }}</p>
+            </div>
+        </div>
         <div class="mb-2"><strong>Department:</strong> {{ $viewedUser->department?->name ?? '—' }}</div>
         <div class="mb-2"><strong>Team:</strong> {{ $viewedUser->team?->name ?? '—' }}</div>
 

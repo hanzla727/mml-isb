@@ -33,9 +33,19 @@
                 @forelse ($users as $user)
                     <tr>
                         <td>
-                            <a href="{{ route('admin.users.show', $user) }}">{{ $user->name }}</a>
-
-                            <div class="text-muted small">&commat;{{ $user?->username ?: '--' }}</div>
+                            <div class="d-flex align-items-center gap-2">
+                                @if ($user->avatar_path)
+                                    <img src="{{ asset('storage/'.$user->avatar_path) }}" alt="" class="rounded-circle" width="32" height="32" style="object-fit: cover;">
+                                @else
+                                    <div class="rounded-circle bg-secondary bg-opacity-25 d-flex align-items-center justify-content-center text-secondary fw-semibold" style="width:32px; height:32px; font-size:13px;">
+                                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <div>
+                                    <a href="{{ route('admin.users.show', $user) }}">{{ $user->name }}</a>
+                                    <div class="text-muted small">&commat;{{ $user?->username ?: '--' }}</div>
+                                </div>
+                            </div>
                         </td>
                         <td>{{ $user->email }}</td>
                         <td>
