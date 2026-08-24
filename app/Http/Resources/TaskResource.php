@@ -28,6 +28,12 @@ class TaskResource extends JsonResource
                 'name' => $u->name,
             ])),
             'latest_report' => $this->whenLoaded('latestReport', fn () => $this->latestReport ? new TaskReportResource($this->latestReport) : null),
+            'comments' => $this->whenLoaded('comments', fn () => $this->comments->map(fn ($comment) => [
+                'id' => $comment->id,
+                'body' => $comment->body,
+                'user' => $comment->user ? ['id' => $comment->user->id, 'name' => $comment->user->name] : null,
+                'created_at' => $comment->created_at,
+            ])),
             'created_at' => $this->created_at,
         ];
     }

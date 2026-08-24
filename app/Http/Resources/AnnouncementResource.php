@@ -16,6 +16,7 @@ class AnnouncementResource extends JsonResource
             'category' => $this->category,
             'audience_scope' => $this->audience_scope,
             'creator' => new UserResource($this->whenLoaded('creator')),
+            'is_read' => (bool) ($this->is_read ?? false),
             'published_at' => $this->published_at,
             'created_at' => $this->created_at,
         ];
