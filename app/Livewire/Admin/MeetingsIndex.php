@@ -58,7 +58,7 @@ class MeetingsIndex extends Component
     {
         $viewer = auth()->user();
 
-        $query = ScheduledMeeting::query()->with(['organizer', 'project'])->withCount(['participants', 'tasks']);
+        $query = ScheduledMeeting::query()->with(['organizer', 'project', 'participants:id'])->withCount(['participants', 'tasks']);
         HierarchyScope::restrictByRelation($query, $viewer, 'participants');
 
         $query

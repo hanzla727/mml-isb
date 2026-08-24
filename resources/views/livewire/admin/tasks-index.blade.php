@@ -112,7 +112,17 @@
                             <a href="{{ route('admin.tasks.show', $task) }}" class="btn btn-sm btn-outline-primary">View</a>
                             @can('manage-tasks')
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
-                                    onclick='openEditTaskModal(@json($task->only(["id", "title", "description", "project_id", "priority", "due_date", "due_time", "notes", "form_template_id"])))'>
+                                    data-id="{{ $task->id }}"
+                                    data-title="{{ $task->title }}"
+                                    data-description="{{ $task->description }}"
+                                    data-project-id="{{ $task->project_id }}"
+                                    data-priority="{{ $task->priority }}"
+                                    data-due-date="{{ $task->due_date?->toDateString() }}"
+                                    data-due-time="{{ $task->due_time }}"
+                                    data-notes="{{ $task->notes }}"
+                                    data-form-template-id="{{ $task->form_template_id }}"
+                                    data-assignee-ids="{{ $task->assignees->pluck('id')->implode(',') }}"
+                                    onclick="openEditTaskModal(this.dataset)">
                                     Edit
                                 </button>
                             @endcan
@@ -320,23 +330,28 @@
         <script>
             const taskUpdateUrlTemplate = @json(route('admin.tasks.update', ['task' => '__ID__']));
 
-            function openEditTaskModal(task) {
+            function openEditTaskModal(data) {
                 const form = document.getElementById('editTaskForm');
                 form.reset();
-                form.action = taskUpdateUrlTemplate.replace('__ID__', task.id);
+                form.action = taskUpdateUrlTemplate.replace('__ID__', data.id);
 
-                document.getElementById('editTaskTitle').value = task.title ?? '';
-                document.getElementById('editTaskDescription').value = task.description ?? '';
-                document.getElementById('editTaskProject').value = task.project_id ?? '';
-                document.getElementById('editTaskPriority').value = task.priority ?? 'medium';
-                document.getElementById('editTaskDueDate').value = task.due_date ? task.due_date.substring(0, 10) : '';
-                document.getElementById('editTaskDueTime').value = task.due_time ? task.due_time.substring(0, 5) : '';
-                document.getElementById('editTaskNotes').value = task.notes ?? '';
-                document.getElementById('editTaskFormTemplate').value = task.form_template_id ?? '';
+                document.getElementById('editTaskTitle').value = data.title ?? '';
+                document.getElementById('editTaskDescription').value = data.description ?? '';
+                document.getElementById('editTaskProject').value = data.projectId ?? '';
+                document.getElementById('editTaskPriority').value = data.priority ?? 'medium';
+                document.getElementById('editTaskDueDate').value = data.dueDate ?? '';
+                document.getElementById('editTaskDueTime').value = data.dueTime ? data.dueTime.substring(0, 5) : '';
+                document.getElementById('editTaskNotes').value = data.notes ?? '';
+                document.getElementById('editTaskFormTemplate').value = data.formTemplateId ?? '';
 
                 const scopeSelect = form.querySelector('.audience-scope-select');
                 scopeSelect.value = 'individual';
                 scopeSelect.dispatchEvent(new Event('change'));
+
+                const assigneeIds = (data.assigneeIds ?? '').split(',').filter(Boolean);
+                form.querySelectorAll('.audience-user-option input[type="checkbox"]').forEach((checkbox) => {
+                    checkbox.checked = assigneeIds.includes(checkbox.value);
+                });
 
                 new bootstrap.Modal(document.getElementById('editTaskModal')).show();
             }

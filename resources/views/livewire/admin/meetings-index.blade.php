@@ -86,6 +86,7 @@
                                     data-meeting-date="{{ $meeting->meeting_date->toDateString() }}"
                                     data-start-time="{{ substr($meeting->start_time, 0, 5) }}"
                                     data-end-time="{{ substr($meeting->end_time, 0, 5) }}"
+                                    data-participant-ids="{{ $meeting->participants->pluck('id')->implode(',') }}"
                                     onclick="openEditMeetingModal(this.dataset)">
                                     Edit
                                 </button>
@@ -336,6 +337,11 @@
                 const scopeSelect = form.querySelector('.audience-scope-select');
                 scopeSelect.value = 'individual';
                 scopeSelect.dispatchEvent(new Event('change'));
+
+                const participantIds = (data.participantIds ?? '').split(',').filter(Boolean);
+                form.querySelectorAll('.audience-user-option input[type="checkbox"]').forEach((checkbox) => {
+                    checkbox.checked = participantIds.includes(checkbox.value);
+                });
 
                 new bootstrap.Modal(document.getElementById('editModal')).show();
             }
