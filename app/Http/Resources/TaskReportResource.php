@@ -12,6 +12,7 @@ class TaskReportResource extends JsonResource
         return [
             'id' => $this->id,
             'task_id' => $this->task_id,
+            'task' => $this->whenLoaded('task', fn () => $this->task ? ['id' => $this->task->id, 'title' => $this->task->title] : null),
             'user' => $this->whenLoaded('user', fn () => ['id' => $this->user->id, 'name' => $this->user->name]),
             'work_summary' => $this->work_summary,
             'description' => $this->description,

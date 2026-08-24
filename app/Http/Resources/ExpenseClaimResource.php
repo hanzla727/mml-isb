@@ -11,6 +11,7 @@ class ExpenseClaimResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user' => $this->whenLoaded('user', fn () => ['id' => $this->user->id, 'name' => $this->user->name]),
             'expense_type' => $this->expense_type,
             'amount' => (float) $this->amount,
             'date' => $this->date?->toDateString(),

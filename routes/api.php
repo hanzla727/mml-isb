@@ -116,7 +116,18 @@ Route::middleware('auth:sanctum')->group(function () {
         });
 
         Route::middleware('permission:review-task-reports')->group(function () {
+            Route::get('/task-reports', [TaskReportController::class, 'pending']);
             Route::put('/task-reports/{taskReport}/review', [TaskReportController::class, 'review']);
+        });
+
+        Route::middleware('permission:manage-leave-requests')->group(function () {
+            Route::get('/leave-requests', [LeaveRequestController::class, 'adminIndex']);
+            Route::put('/leave-requests/{leaveRequest}/review', [LeaveRequestController::class, 'review']);
+        });
+
+        Route::middleware('permission:manage-expense-claims')->group(function () {
+            Route::get('/expense-claims', [ExpenseClaimController::class, 'adminIndex']);
+            Route::put('/expense-claims/{expenseClaim}/review', [ExpenseClaimController::class, 'review']);
         });
 
         Route::middleware('permission:manage-users')->group(function () {

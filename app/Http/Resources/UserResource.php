@@ -16,6 +16,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'avatar_url' => $this->avatar_path ? asset('storage/'.$this->avatar_path) : null,
             'role' => $this->getRoleNames()->first(),
+            'permissions' => $this->getAllPermissions()->pluck('name'),
             'department' => $this->whenLoaded('department', fn () => [
                 'id' => $this->department->id,
                 'name' => $this->department->name,

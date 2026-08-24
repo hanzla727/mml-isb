@@ -9,6 +9,7 @@ use App\Http\Resources\TaskReportResource;
 use App\Models\Media;
 use App\Models\Task;
 use App\Models\TaskReport;
+use App\Services\HierarchyScope;
 use App\Services\TaskWorkflowService;
 use Illuminate\Http\Request;
 
@@ -53,5 +54,27 @@ class TaskReportController extends Controller
         $this->authorize('view', $task);
 
         return TaskReportResource::collection($task->reports()->with(['user', 'attachments'])->get());
+    }
+
+    /**
+     * The review queue for Team Leaders/NA Heads/Admins — every task report
+     * awaiting a decision, scoped via App\Services\HierarchyScope. Distinct
+     * from index() above, which lists one specific task's own reports.
+     */
+    public function pending(Request $request)
+    {
+        $query = TaskReport::query()->with(['task', 'user']);
+        HierarchyScope::restrictByOwner($query, $request->user());
+
+        $reports = $query
+            ->when(
+                $request->filled('status'),
+                fn ($q) => $q->where('review_status', $request->string('status')),
+                fn ($q) => $q->whereIn('review_status', ['pending', 'under_review', 're_submitted'])
+            )
+            ->orderByDesc('submitted_at')
+            ->paginate($request->integer('per_page', 20));
+
+        return TaskReportResource::collection($reports);
     }
 }

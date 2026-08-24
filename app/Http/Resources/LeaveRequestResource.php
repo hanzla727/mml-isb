@@ -11,6 +11,7 @@ class LeaveRequestResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'user' => $this->whenLoaded('user', fn () => ['id' => $this->user->id, 'name' => $this->user->name]),
             'leave_type' => $this->leave_type,
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
