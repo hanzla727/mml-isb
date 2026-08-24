@@ -42,6 +42,7 @@ class TaskController extends Controller
 
         $task->update([
             'project_id' => $validated['project_id'] ?? $task->project_id,
+            'form_template_id' => $validated['form_template_id'] ?? $task->form_template_id,
             'title' => $validated['title'],
             'description' => $validated['description'] ?? null,
             'priority' => $validated['priority'],

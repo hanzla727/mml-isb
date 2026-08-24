@@ -32,6 +32,16 @@ class TargetController extends Controller
         return back()->with('status', 'Target created.');
     }
 
+    public function update(StoreTargetRequest $request, Target $target)
+    {
+        $target->update([
+            ...$request->validated(),
+            'is_active' => $request->boolean('is_active', true),
+        ]);
+
+        return back()->with('status', 'Target updated.');
+    }
+
     public function destroy(Target $target)
     {
         $target->delete();

@@ -103,11 +103,13 @@ Route::middleware('auth')->group(function () {
 
         Route::middleware('permission:manage-announcements')->group(function () {
             Route::post('/announcements', [AdminAnnouncementController::class, 'store'])->name('announcements.store');
+            Route::put('/announcements/{announcement}', [AdminAnnouncementController::class, 'update'])->name('announcements.update');
             Route::delete('/announcements/{announcement}', [AdminAnnouncementController::class, 'destroy'])->name('announcements.destroy');
         });
 
         Route::middleware('permission:manage-targets')->group(function () {
             Route::post('/targets', [AdminTargetController::class, 'store'])->name('targets.store');
+            Route::put('/targets/{target}', [AdminTargetController::class, 'update'])->name('targets.update');
             Route::delete('/targets/{target}', [AdminTargetController::class, 'destroy'])->name('targets.destroy');
         });
 

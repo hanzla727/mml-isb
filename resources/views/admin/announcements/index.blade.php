@@ -22,10 +22,16 @@
                     </p>
                     <p class="mb-2">{{ $announcement->body }}</p>
                     @can('manage-announcements')
-                        <form method="POST" action="{{ route('admin.announcements.destroy', $announcement) }}" onsubmit="return confirm('Delete this announcement?')">
-                            @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger">Delete</button>
-                        </form>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                onclick='openEditAnnouncementModal(@json($announcement->only(["id", "title", "body", "category", "audience_scope", "audience_id"])))'>
+                                Edit
+                            </button>
+                            <form method="POST" action="{{ route('admin.announcements.destroy', $announcement) }}" onsubmit="return confirm('Delete this announcement?')">
+                                @csrf @method('DELETE')
+                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </div>
                     @endcan
                 </div>
             </div>
@@ -111,5 +117,105 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="editModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form method="POST" id="editAnnouncementForm">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header"><h5 class="modal-title">Edit Announcement</h5></div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" name="title" id="editAnnouncementTitle" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Body</label>
+                                <textarea name="body" id="editAnnouncementBody" class="form-control" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Category</label>
+                                <select name="category" id="editAnnouncementCategory" class="form-select">
+                                    <option value="general">General</option>
+                                    <option value="meeting_reminder">Meeting Reminder</option>
+                                    <option value="event">Event</option>
+                                    <option value="deadline">Deadline</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Audience</label>
+                                <select name="audience_scope" id="editAnnouncementScope" class="form-select" onchange="toggleEditAudienceTarget(this.value)">
+                                    <option value="all">Everyone</option>
+                                    <option value="department">Specific Department</option>
+                                    <option value="team">Specific Team</option>
+                                    <option value="user">Specific User</option>
+                                </select>
+                            </div>
+                            <div class="mb-3 edit-audience-target" data-scope="department" style="display:none;">
+                                <label class="form-label">Department</label>
+                                <select name="audience_id" id="editAnnouncementDepartment" class="form-select" disabled>
+                                    @foreach ($departments as $department)
+                                        <option value="{{ $department->id }}">{{ $department->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3 edit-audience-target" data-scope="team" style="display:none;">
+                                <label class="form-label">Team</label>
+                                <select name="audience_id" id="editAnnouncementTeam" class="form-select" disabled>
+                                    @foreach ($teams as $team)
+                                        <option value="{{ $team->id }}">{{ $team->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3 edit-audience-target" data-scope="user" style="display:none;">
+                                <label class="form-label">User</label>
+                                <select name="audience_id" id="editAnnouncementUser" class="form-select" disabled>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const announcementUpdateUrlTemplate = @json(route('admin.announcements.update', ['announcement' => '__ID__']));
+
+            function toggleEditAudienceTarget(scope) {
+                document.querySelectorAll('.edit-audience-target').forEach((el) => {
+                    const active = el.dataset.scope === scope;
+                    el.style.display = active ? '' : 'none';
+                    el.querySelector('select').disabled = !active;
+                });
+            }
+
+            function openEditAnnouncementModal(announcement) {
+                const form = document.getElementById('editAnnouncementForm');
+                form.action = announcementUpdateUrlTemplate.replace('__ID__', announcement.id);
+
+                document.getElementById('editAnnouncementTitle').value = announcement.title ?? '';
+                document.getElementById('editAnnouncementBody').value = announcement.body ?? '';
+                document.getElementById('editAnnouncementCategory').value = announcement.category ?? 'general';
+                document.getElementById('editAnnouncementScope').value = announcement.audience_scope ?? 'all';
+                toggleEditAudienceTarget(announcement.audience_scope ?? 'all');
+
+                if (announcement.audience_scope === 'department') {
+                    document.getElementById('editAnnouncementDepartment').value = announcement.audience_id ?? '';
+                } else if (announcement.audience_scope === 'team') {
+                    document.getElementById('editAnnouncementTeam').value = announcement.audience_id ?? '';
+                } else if (announcement.audience_scope === 'user') {
+                    document.getElementById('editAnnouncementUser').value = announcement.audience_id ?? '';
+                }
+
+                new bootstrap.Modal(document.getElementById('editModal')).show();
+            }
+        </script>
     @endcan
 @endsection

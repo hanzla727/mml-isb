@@ -108,7 +108,15 @@
                         </td>
                         <td>{{ $task->assignees->pluck('name')->join(', ') ?: '—' }}</td>
                         <td><x-status-badge :status="$task->status" /></td>
-                        <td><a href="{{ route('admin.tasks.show', $task) }}" class="btn btn-sm btn-outline-primary">View</a></td>
+                        <td class="d-flex gap-2">
+                            <a href="{{ route('admin.tasks.show', $task) }}" class="btn btn-sm btn-outline-primary">View</a>
+                            @can('manage-tasks')
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    onclick='openEditTaskModal(@json($task->only(["id", "title", "description", "project_id", "priority", "due_date", "due_time", "notes", "form_template_id"])))'>
+                                    Edit
+                                </button>
+                            @endcan
+                        </td>
                     </tr>
                 @empty
                     <tr>
@@ -216,5 +224,122 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="editTaskModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form method="POST" id="editTaskForm">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header"><h5 class="modal-title">Edit Task</h5></div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" name="title" id="editTaskTitle" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" id="editTaskDescription" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Project (optional)</label>
+                                <select name="project_id" id="editTaskProject" class="form-select">
+                                    <option value="">— None —</option>
+                                    @foreach ($projects as $project)
+                                        <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Priority</label>
+                                    <select name="priority" id="editTaskPriority" class="form-select">
+                                        <option value="low">Low</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="critical">Critical</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Due Date</label>
+                                    <input type="date" name="due_date" id="editTaskDueDate" class="form-control">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Due Time</label>
+                                    <input type="time" name="due_time" id="editTaskDueTime" class="form-control">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Notes</label>
+                                <textarea name="notes" id="editTaskNotes" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Attached Form (optional)</label>
+                                <select name="form_template_id" id="editTaskFormTemplate" class="form-select">
+                                    <option value="">— None —</option>
+                                    @foreach ($formTemplates as $formTemplate)
+                                        <option value="{{ $formTemplate->id }}">{{ $formTemplate->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input type="checkbox" name="is_recurring" value="1" class="form-check-input" id="editTaskIsRecurring">
+                                <label class="form-check-label" for="editTaskIsRecurring">Repeats</label>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small">Frequency</label>
+                                    <select name="recurrence_frequency" class="form-select form-select-sm">
+                                        <option value="weekly">Weekly</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small">Every</label>
+                                    <input type="number" name="recurrence_interval" value="1" min="1" max="52" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small">Until</label>
+                                    <input type="date" name="recurrence_until" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <p class="text-muted small">Re-select who this task is for below — the assignees are re-applied on save.</p>
+                            @include('admin.partials.audience-picker', compact('nas', 'ucs', 'departments', 'teams', 'users'))
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const taskUpdateUrlTemplate = @json(route('admin.tasks.update', ['task' => '__ID__']));
+
+            function openEditTaskModal(task) {
+                const form = document.getElementById('editTaskForm');
+                form.reset();
+                form.action = taskUpdateUrlTemplate.replace('__ID__', task.id);
+
+                document.getElementById('editTaskTitle').value = task.title ?? '';
+                document.getElementById('editTaskDescription').value = task.description ?? '';
+                document.getElementById('editTaskProject').value = task.project_id ?? '';
+                document.getElementById('editTaskPriority').value = task.priority ?? 'medium';
+                document.getElementById('editTaskDueDate').value = task.due_date ? task.due_date.substring(0, 10) : '';
+                document.getElementById('editTaskDueTime').value = task.due_time ? task.due_time.substring(0, 5) : '';
+                document.getElementById('editTaskNotes').value = task.notes ?? '';
+                document.getElementById('editTaskFormTemplate').value = task.form_template_id ?? '';
+
+                const scopeSelect = form.querySelector('.audience-scope-select');
+                scopeSelect.value = 'individual';
+                scopeSelect.dispatchEvent(new Event('change'));
+
+                new bootstrap.Modal(document.getElementById('editTaskModal')).show();
+            }
+        </script>
     @endcan
 </div>

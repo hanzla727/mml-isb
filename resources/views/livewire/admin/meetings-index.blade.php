@@ -70,7 +70,15 @@
                         <td>{{ $meeting->participants_count }}</td>
                         <td>{{ $meeting->tasks_count }}</td>
                         <td><x-status-badge :status="$meeting->status" /></td>
-                        <td><a href="{{ route('admin.meetings.show', $meeting) }}" class="btn btn-sm btn-outline-primary">View</a></td>
+                        <td class="d-flex gap-2">
+                            <a href="{{ route('admin.meetings.show', $meeting) }}" class="btn btn-sm btn-outline-primary">View</a>
+                            @can('manage-meetings')
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    onclick='openEditMeetingModal(@json($meeting->only(["id", "title", "type", "location", "description", "agenda", "organizer_id", "project_id", "form_template_id"])), "{{ $meeting->meeting_date->toDateString() }}", "{{ substr($meeting->start_time, 0, 5) }}", "{{ substr($meeting->end_time, 0, 5) }}")'>
+                                    Edit
+                                </button>
+                            @endcan
+                        </td>
                     </tr>
                 @empty
                     <tr>
@@ -189,5 +197,136 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="editModal">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <form method="POST" id="editMeetingForm">
+                        @csrf
+                        @method('PUT')
+                        <div class="modal-header"><h5 class="modal-title">Edit Meeting</h5></div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Title</label>
+                                <input type="text" name="title" id="editMeetingTitle" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Project</label>
+                                <select name="project_id" id="editMeetingProject" class="form-select">
+                                    <option value="">— None —</option>
+                                    @foreach ($projects as $project)
+                                        <option value="{{ $project->id }}">{{ $project->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Attached Form (optional)</label>
+                                <select name="form_template_id" id="editMeetingFormTemplate" class="form-select">
+                                    <option value="">— None —</option>
+                                    @foreach ($formTemplates as $formTemplate)
+                                        <option value="{{ $formTemplate->id }}">{{ $formTemplate->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Type</label>
+                                    <input type="text" name="type" id="editMeetingType" class="form-control" placeholder="general">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Date</label>
+                                    <input type="date" name="meeting_date" id="editMeetingDate" class="form-control" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Start</label>
+                                    <input type="time" name="start_time" id="editMeetingStart" class="form-control" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">End</label>
+                                    <input type="time" name="end_time" id="editMeetingEnd" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Location</label>
+                                <input type="text" name="location" id="editMeetingLocation" class="form-control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Description</label>
+                                <textarea name="description" id="editMeetingDescription" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Agenda</label>
+                                <textarea name="agenda" id="editMeetingAgenda" class="form-control" rows="2"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Organizer</label>
+                                <select name="organizer_id" id="editMeetingOrganizer" class="form-select">
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input type="checkbox" name="is_recurring" value="1" class="form-check-input" id="editMeetingIsRecurring">
+                                <label class="form-check-label" for="editMeetingIsRecurring">Repeats</label>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label small">Frequency</label>
+                                    <select name="recurrence_frequency" class="form-select form-select-sm">
+                                        <option value="weekly">Weekly</option>
+                                        <option value="daily">Daily</option>
+                                        <option value="monthly">Monthly</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small">Every</label>
+                                    <input type="number" name="recurrence_interval" value="1" min="1" max="52" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label small">Until</label>
+                                    <input type="date" name="recurrence_until" class="form-control form-control-sm">
+                                </div>
+                            </div>
+
+                            <p class="text-muted small">Re-select who this meeting is for below — the audience is re-applied on save.</p>
+                            @include('admin.partials.audience-picker', compact('nas', 'ucs', 'departments', 'teams', 'users'))
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const meetingUpdateUrlTemplate = @json(route('admin.meetings.update', ['scheduledMeeting' => '__ID__']));
+
+            function openEditMeetingModal(meeting, meetingDate, startTime, endTime) {
+                const form = document.getElementById('editMeetingForm');
+                form.reset();
+                form.action = meetingUpdateUrlTemplate.replace('__ID__', meeting.id);
+
+                document.getElementById('editMeetingTitle').value = meeting.title ?? '';
+                document.getElementById('editMeetingType').value = meeting.type ?? '';
+                document.getElementById('editMeetingProject').value = meeting.project_id ?? '';
+                document.getElementById('editMeetingFormTemplate').value = meeting.form_template_id ?? '';
+                document.getElementById('editMeetingDate').value = meetingDate ?? '';
+                document.getElementById('editMeetingStart').value = startTime ?? '';
+                document.getElementById('editMeetingEnd').value = endTime ?? '';
+                document.getElementById('editMeetingLocation').value = meeting.location ?? '';
+                document.getElementById('editMeetingDescription').value = meeting.description ?? '';
+                document.getElementById('editMeetingAgenda').value = meeting.agenda ?? '';
+                document.getElementById('editMeetingOrganizer').value = meeting.organizer_id ?? '';
+
+                const scopeSelect = form.querySelector('.audience-scope-select');
+                scopeSelect.value = 'individual';
+                scopeSelect.dispatchEvent(new Event('change'));
+
+                new bootstrap.Modal(document.getElementById('editModal')).show();
+            }
+        </script>
     @endcan
 </div>

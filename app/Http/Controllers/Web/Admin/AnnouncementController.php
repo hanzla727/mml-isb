@@ -38,6 +38,13 @@ class AnnouncementController extends Controller
         return back()->with('status', 'Announcement published.');
     }
 
+    public function update(StoreAnnouncementRequest $request, Announcement $announcement)
+    {
+        $announcement->update($request->validated());
+
+        return back()->with('status', 'Announcement updated.');
+    }
+
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
