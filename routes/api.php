@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DailyReportController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\MeetingController;
+use App\Http\Controllers\Api\PerformanceController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ScheduledMeetingController;
 use App\Http\Controllers\Api\TargetController;
@@ -34,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update']);
 
     Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/performance', [PerformanceController::class, 'index']);
 
     Route::get('/reports', [DailyReportController::class, 'index']);
     Route::get('/my-reports', [DailyReportController::class, 'myReports']);

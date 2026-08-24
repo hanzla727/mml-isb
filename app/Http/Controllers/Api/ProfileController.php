@@ -12,7 +12,7 @@ class ProfileController extends Controller
 {
     public function show(Request $request)
     {
-        return new UserResource($request->user()->load(['department', 'team']));
+        return new UserResource($request->user()->load(['department', 'team', 'uc.na', 'na']));
     }
 
     public function update(Request $request)
@@ -33,6 +33,6 @@ class ProfileController extends Controller
 
         $user->update($validated);
 
-        return new UserResource($user->load(['department', 'team']));
+        return new UserResource($user->load(['department', 'team', 'uc.na', 'na']));
     }
 }
