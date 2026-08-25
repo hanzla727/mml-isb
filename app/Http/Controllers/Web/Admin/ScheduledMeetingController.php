@@ -88,7 +88,7 @@ class ScheduledMeetingController extends Controller
     {
         $this->authorize('update', $scheduledMeeting);
 
-        $service->update($scheduledMeeting, $request->validated());
+        $service->update($request->user(), $scheduledMeeting, $request->validated());
 
         return back()->with('status', 'Meeting updated.');
     }

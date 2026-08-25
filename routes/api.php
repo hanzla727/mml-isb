@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/my-meetings/{meeting}/read', [MeetingController::class, 'markRead']);
 
     Route::get('/contacts', [ContactController::class, 'index']);
+    Route::post('/contacts', [ContactController::class, 'store']);
     Route::get('/contacts/{contact}', [ContactController::class, 'show']);
 
     Route::get('/targets', [TargetController::class, 'index']);
@@ -69,6 +70,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // /api/my-meetings (field-visit contacts logged in daily reports).
     Route::get('/meetings', [ScheduledMeetingController::class, 'index']);
     Route::get('/meetings/{scheduledMeeting}', [ScheduledMeetingController::class, 'show']);
+    // Not gated by permission:manage-meetings — Team Leaders can also create
+    // meetings for their own team without holding that system-wide
+    // permission; ScheduledMeetingPolicy/ScheduledMeetingService enforce the
+    // real, finer-grained authorization per request.
+    Route::post('/meetings', [ScheduledMeetingController::class, 'store']);
+    Route::put('/meetings/{scheduledMeeting}', [ScheduledMeetingController::class, 'update']);
+    Route::delete('/meetings/{scheduledMeeting}', [ScheduledMeetingController::class, 'destroy']);
 
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::get('/tasks/{task}', [TaskController::class, 'show']);
@@ -102,12 +110,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::middleware('permission:manage-announcements')->group(function () {
             Route::post('/announcements', [AnnouncementController::class, 'store']);
-        });
-
-        Route::middleware('permission:manage-meetings')->group(function () {
-            Route::post('/meetings', [ScheduledMeetingController::class, 'store']);
-            Route::put('/meetings/{scheduledMeeting}', [ScheduledMeetingController::class, 'update']);
-            Route::delete('/meetings/{scheduledMeeting}', [ScheduledMeetingController::class, 'destroy']);
         });
 
         Route::middleware('permission:manage-tasks')->group(function () {

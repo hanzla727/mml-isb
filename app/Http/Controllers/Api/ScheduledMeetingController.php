@@ -71,7 +71,7 @@ class ScheduledMeetingController extends Controller
     {
         $this->authorize('update', $scheduledMeeting);
 
-        $meeting = $service->update($scheduledMeeting, $request->validated());
+        $meeting = $service->update($request->user(), $scheduledMeeting, $request->validated());
 
         return new ScheduledMeetingResource($meeting->load('organizer'));
     }
