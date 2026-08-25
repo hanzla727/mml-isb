@@ -9,13 +9,14 @@
 
     <div class="card stat-card">
         <table class="table table-hover mb-0">
-            <thead><tr><th>Name</th><th>Department</th><th>UC</th><th>Users</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>Name</th><th>Department</th><th>UC</th><th>Leader</th><th>Users</th><th>Status</th><th></th></tr></thead>
             <tbody>
                 @forelse ($teams as $team)
                     <tr>
                         <td>{{ $team->name }}</td>
                         <td>{{ $team->department->name }}</td>
                         <td class="text-muted small">{{ $team->uc->name }}</td>
+                        <td class="text-muted small">{{ $team->leader->name ?? '—' }}</td>
                         <td>{{ $team->users_count }}</td>
                         <td>
                             <span class="badge {{ $team->is_active ? 'bg-success' : 'bg-danger' }}">
@@ -57,6 +58,16 @@
                                         <div class="mb-3">
                                             <label class="form-label">Name</label>
                                             <input type="text" name="name" value="{{ $team->name }}" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Team Leader</label>
+                                            <select name="leader_id" class="form-select">
+                                                <option value="">None</option>
+                                                @foreach ($teamLeaders as $leader)
+                                                    <option value="{{ $leader->id }}" @selected($team->leader_id === $leader->id)>{{ $leader->name }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="form-text">Only users with the Team Leader role appear here. The same person can lead more than one team.</div>
                                         </div>
                                         <div class="form-check">
                                             <input type="checkbox" name="is_active" value="1" class="form-check-input" @checked($team->is_active)>
@@ -105,6 +116,16 @@
                         <div class="mb-3">
                             <label class="form-label">Name</label>
                             <input type="text" name="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Team Leader</label>
+                            <select name="leader_id" class="form-select">
+                                <option value="">None</option>
+                                @foreach ($teamLeaders as $leader)
+                                    <option value="{{ $leader->id }}">{{ $leader->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="form-text">Only users with the Team Leader role appear here. The same person can lead more than one team.</div>
                         </div>
                     </div>
                     <div class="modal-footer">

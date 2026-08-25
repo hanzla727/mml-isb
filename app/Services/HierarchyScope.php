@@ -7,14 +7,15 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * Single source of truth for the Super Admin → Admin → NA Head → Team
- * Leader → Volunteer visibility hierarchy. Every controller that queries
- * reports/tasks/meetings/volunteers goes through here instead of repeating
- * na/uc/department/team scoping logic.
+ * Single source of truth for the Super Admin → Admin → NA Head → UC Head →
+ * Team Leader → Volunteer visibility hierarchy. Every controller that
+ * queries reports/tasks/meetings/volunteers goes through here instead of
+ * repeating na/uc/department/team scoping logic.
  *
- * Admin differs from every other scoped role: it's a many-to-many (an Admin
- * can be assigned several NAs via User::adminNas()), whereas NA Head and
- * Team Leader each own exactly one NA/Team.
+ * Admin and UC Head are many-to-many (an Admin can be assigned several NAs
+ * via User::adminNas(), a UC Head several UCs via User::ucsHeaded()), and a
+ * Team Leader can likewise lead more than one Team via User::teamsLed() —
+ * only NA Head owns exactly one NA.
  */
 class HierarchyScope
 {
@@ -32,16 +33,20 @@ class HierarchyScope
             $ids = User::whereIn('na_id', $naIds)->pluck('id')->all();
         } elseif ($viewer->hasRole('na_head')) {
             $ids = User::where('na_id', $viewer->na_id)->pluck('id')->all();
+        } elseif ($viewer->hasRole('uc_head')) {
+            $ucIds = $viewer->ucsHeaded()->pluck('ucs.id');
+            $ids = User::whereIn('uc_id', $ucIds)->pluck('id')->all();
         } elseif ($viewer->hasRole('team_leader')) {
-            $ids = User::where('team_id', $viewer->team_id)->pluck('id')->all();
+            $teamIds = $viewer->teamsLed()->pluck('id');
+            $ids = User::whereIn('team_id', $teamIds)->pluck('id')->all();
         } else {
             $ids = [];
         }
 
-        // An Admin/NA Head isn't necessarily a "member" of an NA themselves
-        // (Admin especially — they hold access via the admin_na pivot, not
-        // an na_id), but they must always be able to see their own records
-        // regardless of role.
+        // An Admin/NA Head/UC Head isn't necessarily a "member" of an
+        // NA/UC themselves (Admin especially — they hold access via the
+        // admin_na pivot, not an na_id), but they must always be able to
+        // see their own records regardless of role.
         $ids[] = $viewer->id;
 
         return array_values(array_unique($ids));
@@ -62,8 +67,12 @@ class HierarchyScope
             return $target->na_id !== null && $target->na_id === $viewer->na_id;
         }
 
+        if ($viewer->hasRole('uc_head')) {
+            return $target->uc_id !== null && $viewer->ucsHeaded()->where('ucs.id', $target->uc_id)->exists();
+        }
+
         if ($viewer->hasRole('team_leader')) {
-            return $target->team_id !== null && $target->team_id === $viewer->team_id;
+            return $target->team_id !== null && $viewer->teamsLed()->where('id', $target->team_id)->exists();
         }
 
         return false;
@@ -86,17 +95,36 @@ class HierarchyScope
             return [$viewer->na_id];
         }
 
+        if ($viewer->hasRole('uc_head')) {
+            return Uc::whereIn('id', $viewer->ucsHeaded()->pluck('ucs.id'))
+                ->pluck('na_id')
+                ->unique()
+                ->values()
+                ->all();
+        }
+
         return [];
     }
 
     /**
-     * UCs the viewer can see, derived from their visible NAs — for scoping
-     * models keyed by uc_id (Team, Project) rather than na_id directly.
+     * UCs the viewer can see. For every role except UC Head this is derived
+     * from their visible NAs — for a UC Head it's their exact assigned UCs,
+     * NOT every UC in the same NA (they may only be responsible for some of
+     * them), so that case is resolved directly rather than falling through
+     * to the NA-derived logic below.
      *
      * @return int[]|null null means unrestricted (Super Admin).
      */
     public static function visibleUcIds(User $viewer): ?array
     {
+        if ($viewer->hasRole('super_admin')) {
+            return null;
+        }
+
+        if ($viewer->hasRole('uc_head')) {
+            return $viewer->ucsHeaded()->pluck('ucs.id')->all();
+        }
+
         $naIds = static::visibleNaIds($viewer);
 
         if ($naIds === null) {

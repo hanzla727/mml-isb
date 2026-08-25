@@ -56,7 +56,7 @@
             @endcan
 
             <div class="nav-section-label">Organization</div>
-            @hasanyrole('super_admin|admin|na_head')
+            @hasanyrole('super_admin|admin|na_head|uc_head')
                 <li class="nav-item">
                     <a href="{{ url('/admin/users') }}" class="nav-link {{ request()->is('admin/users*') ? 'active' : '' }}"><i class="bi bi-people"></i> Users</a>
                 </li>

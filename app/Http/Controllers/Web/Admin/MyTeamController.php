@@ -17,7 +17,7 @@ class MyTeamController extends Controller
         $members = $query->where('id', '!=', $request->user()->id)->orderBy('name')->get();
 
         return view('admin.my-team.index', [
-            'team' => $request->user()->teamLed,
+            'teams' => $request->user()->teamsLed,
             'members' => $members,
         ]);
     }

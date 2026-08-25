@@ -114,12 +114,14 @@ class User extends Authenticatable
     }
 
     /**
-     * The team this user leads (if they hold the team_leader role for it),
-     * distinct from team() which is the team they belong to as a member.
+     * The team(s) this user leads (if they hold the team_leader role) —
+     * plural, since one Team Leader can be assigned more than one team,
+     * distinct from team() which is the single team they belong to as a
+     * member.
      */
-    public function teamLed(): HasOne
+    public function teamsLed(): HasMany
     {
-        return $this->hasOne(Team::class, 'leader_id');
+        return $this->hasMany(Team::class, 'leader_id');
     }
 
     /**
@@ -138,6 +140,17 @@ class User extends Authenticatable
     public function adminNas(): BelongsToMany
     {
         return $this->belongsToMany(Na::class, 'admin_na');
+    }
+
+    /**
+     * UCs this user heads (if they hold the uc_head role) — a UC Head sits
+     * between NA Head and Team Leader, responsible for one or more UCs
+     * (every department/team under each), unlike a plain volunteer's
+     * single uc_id membership.
+     */
+    public function ucsHeaded(): BelongsToMany
+    {
+        return $this->belongsToMany(Uc::class, 'uc_heads');
     }
 
     public function dailyReports(): HasMany

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="card stat-card p-4 mb-3">
-        <h5>{{ $team->name ?? 'My Team' }}</h5>
+        <h5>{{ $teams->isNotEmpty() ? $teams->pluck('name')->join(', ') : 'My Team' }}</h5>
         <p class="text-muted small mb-0">{{ $members->count() }} member(s)</p>
     </div>
 

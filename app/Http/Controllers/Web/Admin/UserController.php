@@ -22,7 +22,7 @@ class UserController extends Controller
         // Full user management is an Admin/Super Admin/NA Head concern —
         // Team Leaders use the dedicated "My Team" page instead, scoped to
         // their own team.
-        abort_unless($request->user()->hasAnyRole(['super_admin', 'admin', 'na_head']), 403);
+        abort_unless($request->user()->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head']), 403);
 
         $query = User::query()->with(['na', 'uc', 'department', 'team', 'roles']);
         HierarchyScope::restrictUsersQuery($query, $request->user());
@@ -109,7 +109,7 @@ class UserController extends Controller
             'password' => $validated['password'],
             'pin' => $validated['pin'] ?? null,
             'na_id' => $this->resolveNaId($validated),
-            'uc_id' => $validated['role'] === 'na_head' ? null : ($validated['uc_id'] ?? null),
+            'uc_id' => in_array($validated['role'], ['na_head', 'uc_head'], true) ? null : ($validated['uc_id'] ?? null),
             'department_id' => $validated['department_id'] ?? null,
             'team_id' => $validated['team_id'] ?? null,
             'reporting_head_id' => $validated['reporting_head_id'] ?? null,
@@ -118,6 +118,7 @@ class UserController extends Controller
 
         $user->assignRole($validated['role']);
         $this->syncNaLeadership($user, $validated);
+        $this->syncUcLeadership($user, $validated);
 
         return redirect()->route('admin.users.index')->with('status', 'User created.');
     }
@@ -144,7 +145,7 @@ class UserController extends Controller
             'username' => $validated['username'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'na_id' => $this->resolveNaId($validated),
-            'uc_id' => $validated['role'] === 'na_head' ? null : ($validated['uc_id'] ?? null),
+            'uc_id' => in_array($validated['role'], ['na_head', 'uc_head'], true) ? null : ($validated['uc_id'] ?? null),
             'department_id' => $validated['department_id'] ?? null,
             'team_id' => $validated['team_id'] ?? null,
             'reporting_head_id' => $validated['reporting_head_id'] ?? null,
@@ -155,6 +156,7 @@ class UserController extends Controller
 
         $user->syncRoles([$validated['role']]);
         $this->syncNaLeadership($user, $validated);
+        $this->syncUcLeadership($user, $validated);
 
         return redirect()->route('admin.users.index')->with('status', 'User updated.');
     }
@@ -177,10 +179,13 @@ class UserController extends Controller
 
     /**
      * An NA Head has no single UC (they oversee every UC under their NA), so
-     * their na_id is picked directly. Everyone else's na_id is derived from
-     * their chosen UC rather than picked separately — it's always exactly
-     * that UC's own na_id, so asking the admin to keep both in sync
-     * manually would just invite mismatches.
+     * their na_id is picked directly. A UC Head can span several UCs (and
+     * in principle several NAs), so their na_id is left null too — their
+     * actual scope lives entirely in the uc_heads pivot, resolved via
+     * HierarchyScope, not this single column. Everyone else's na_id is
+     * derived from their chosen UC rather than picked separately — it's
+     * always exactly that UC's own na_id, so asking the admin to keep both
+     * in sync manually would just invite mismatches.
      */
     private function resolveNaId(array $validated): ?int
     {
@@ -188,9 +193,27 @@ class UserController extends Controller
             return $validated['na_id'] ?? null;
         }
 
+        if ($validated['role'] === 'uc_head') {
+            return null;
+        }
+
         $ucId = $validated['uc_id'] ?? null;
 
         return $ucId ? Uc::find($ucId)?->na_id : null;
+    }
+
+    /**
+     * Keep the uc_heads pivot in sync with the role just assigned — mirrors
+     * syncNaLeadership()'s handling of admin_na, but for a UC Head's
+     * possibly-multiple UCs (uc_ids[]) rather than an Admin's NAs.
+     */
+    private function syncUcLeadership(User $user, array $validated): void
+    {
+        if ($user->hasRole('uc_head')) {
+            $user->ucsHeaded()->sync($validated['uc_ids'] ?? []);
+        } else {
+            $user->ucsHeaded()->sync([]);
+        }
     }
 
     /**

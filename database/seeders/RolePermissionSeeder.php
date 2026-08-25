@@ -82,8 +82,16 @@ class RolePermissionSeeder extends Seeder
         Role::findOrCreate('na_head', 'web')->syncPermissions($adminPermissions);
         Role::findOrCreate('na_head', 'sanctum')->syncPermissions($adminPermissions);
 
+        // UC Head: sits between NA Head and Team Leader — same operational
+        // scope as NA Head/Admin, but HierarchyScope narrows it to exactly
+        // the UC(s) they've been assigned (User::ucsHeaded()), which can be
+        // more than one.
+        Role::findOrCreate('uc_head', 'web')->syncPermissions($adminPermissions);
+        Role::findOrCreate('uc_head', 'sanctum')->syncPermissions($adminPermissions);
+
         $teamLeaderPermissions = [
             'manage-team', 'manage-tasks', 'review-reports', 'review-task-reports', 'mark-attendance',
+            'manage-leave-requests', 'manage-expense-claims',
             'view-reports', 'view-announcements', 'view-targets',
             'submit-reports', 'view-own-reports', 'view-own-targets',
             'view-own-tasks', 'submit-task-reports',

@@ -28,7 +28,7 @@ class StoreScheduledMeetingRequest extends FormRequest
             'organizer_id' => ['nullable', 'integer', 'exists:users,id'],
             'status' => ['nullable', Rule::in(['upcoming', 'ongoing', 'completed', 'cancelled'])],
 
-            'scope' => ['required', Rule::in(['individual', 'team', 'department', 'uc', 'na', 'nas', 'all'])],
+            'scope' => ['required', Rule::in(['individual', 'team', 'department', 'uc', 'na', 'nas', 'all', 'my_scope'])],
             'user_ids' => ['required_if:scope,individual', 'array'],
             'user_ids.*' => ['integer', 'exists:users,id'],
             'department_id' => ['required_if:scope,department', 'nullable', 'integer', 'exists:departments,id'],

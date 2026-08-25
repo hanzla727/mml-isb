@@ -21,7 +21,7 @@ class ScheduledMeetingController extends Controller
         // Visibility follows the org hierarchy (Admin/NA Head/Team Leader see
         // their scope's meetings, not just their own), independent of
         // 'manage-meetings' which gates create/edit/delete rights instead.
-        if ($user->hasAnyRole(['super_admin', 'admin', 'na_head', 'team_leader'])) {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head', 'team_leader'])) {
             HierarchyScope::restrictByRelation($query, $user, 'participants');
             $query->with(['participants' => fn ($q) => $q->where('user_id', $user->id)]);
 
@@ -40,7 +40,7 @@ class ScheduledMeetingController extends Controller
                 'past' => $query->whereDate('meeting_date', '<', today()),
                 default => $query->whereDate('meeting_date', '>=', today()),
             };
-        } elseif (! $user->hasAnyRole(['super_admin', 'admin', 'na_head', 'team_leader'])) {
+        } elseif (! $user->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head', 'team_leader'])) {
             $query->whereDate('meeting_date', '>=', today());
         }
 

@@ -43,11 +43,11 @@
             <div class="mb-3">
                 <label class="form-label">Role</label>
                 <select name="role" id="roleSelect" class="form-select" required onchange="toggleRoleFields(this)">
-                    @foreach (['super_admin' => 'Super Admin', 'admin' => 'Admin', 'na_head' => 'NA Head', 'team_leader' => 'Team Leader', 'user' => 'Volunteer'] as $value => $label)
+                    @foreach (['super_admin' => 'Super Admin', 'admin' => 'Admin', 'na_head' => 'NA Head', 'uc_head' => 'UC Head', 'team_leader' => 'Team Leader', 'user' => 'Volunteer'] as $value => $label)
                         <option value="{{ $value }}" @selected(old('role', $user->roles->pluck('name')->first()) === $value)>{{ $label }}</option>
                     @endforeach
                 </select>
-                <div class="form-text">An NA Head oversees every UC in their NA. Everyone else operates within one UC.</div>
+                <div class="form-text">An NA Head oversees every UC in their NA. A UC Head oversees one or more specific UCs. Everyone else operates within one UC.</div>
             </div>
 
             <div class="mb-3" id="naIdsField">
@@ -68,6 +68,15 @@
                     @endforeach
                 </select>
                 <div class="form-text">The NA this NA Head is responsible for — every UC underneath it is their territory.</div>
+            </div>
+
+            <div class="mb-3" id="ucIdsField">
+                <label class="form-label">UCs Managed <span class="text-muted small">(UC Head only — can be assigned several)</span></label>
+                <select name="uc_ids[]" class="form-select" multiple size="4">
+                    @foreach ($ucs as $uc)
+                        <option value="{{ $uc->id }}" @selected(in_array($uc->id, old('uc_ids', $user->exists ? $user->ucsHeaded->pluck('id')->all() : [])))>{{ $uc->name }} ({{ $uc->na->name }})</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="row">
@@ -109,6 +118,7 @@
                             <option value="{{ $team->id }}" @selected(old('team_id', $user->team_id) == $team->id)>{{ $team->name }} ({{ $team->uc->name }})</option>
                         @endforeach
                     </select>
+                    <div class="form-text">Which team this person belongs to as a member. To make someone a Team Leader for one or more teams, set their role to Team Leader here, then set them as the "Leader" on each Team from the Teams page.</div>
                 </div>
             </div>
             <div class="form-check mb-3">
@@ -124,7 +134,8 @@
         function toggleRoleFields(select) {
             document.getElementById('naIdsField').style.display = select.value === 'admin' ? '' : 'none';
             document.getElementById('naIdField').style.display = select.value === 'na_head' ? '' : 'none';
-            document.getElementById('ucIdField').style.display = select.value === 'na_head' ? 'none' : '';
+            document.getElementById('ucIdsField').style.display = select.value === 'uc_head' ? '' : 'none';
+            document.getElementById('ucIdField').style.display = (select.value === 'na_head' || select.value === 'uc_head') ? 'none' : '';
         }
         toggleRoleFields(document.getElementById('roleSelect'));
 

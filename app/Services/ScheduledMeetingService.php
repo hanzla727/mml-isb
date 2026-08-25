@@ -15,8 +15,7 @@ class ScheduledMeetingService
 
     public function create(User $creator, array $data): ScheduledMeeting
     {
-        $userIds = AudienceResolver::resolve($data['scope'] ?? 'individual', $data);
-        $this->assertCanTarget($creator, $userIds);
+        $userIds = $this->resolveAudience($creator, $data);
 
         return DB::transaction(function () use ($creator, $data, $userIds) {
             $meeting = ScheduledMeeting::create([
@@ -48,24 +47,42 @@ class ScheduledMeetingService
     }
 
     /**
-     * A Team Leader/NA Head/Admin can only invite people within their own
-     * HierarchyScope (their team / their NA's every UC & department / their
-     * assigned NAs) — regardless of which `scope` value they submitted
-     * ('team', 'department', 'na', 'individual', ...). Super Admin is
-     * unrestricted (HierarchyScope::visibleUserIds returns null for them).
+     * `scope: 'my_scope'` means "resolve to whoever this creator's role
+     * already lets them see" — Team Leader's team(s), NA Head's NA, UC
+     * Head's UC(s), Admin's assigned NAs — read straight from
+     * HierarchyScope (the same source every other visibility check in the
+     * app uses) rather than needing the client to pick and send a specific
+     * team_id/na_id/uc_id. This is what the mobile app's "create meeting"
+     * screen uses for every role except Admin/Super Admin (who pick 'all').
+     *
+     * For every other scope value ('team', 'department', 'na', 'individual',
+     * ...), the resolved audience is still cross-checked against
+     * HierarchyScope so a Team Leader/NA Head/UC Head/Admin can't reach
+     * outside their own scope no matter which scope value they submit.
+     * Super Admin is unrestricted (HierarchyScope::visibleUserIds returns
+     * null for them).
      */
-    private function assertCanTarget(User $creator, array $userIds): void
+    private function resolveAudience(User $creator, array $data): array
     {
         $visibleIds = HierarchyScope::visibleUserIds($creator);
-        if ($visibleIds === null) {
-            return;
+
+        if (($data['scope'] ?? null) === 'my_scope') {
+            $pool = $visibleIds ?? User::where('is_active', true)->pluck('id')->all();
+
+            return array_values(array_diff($pool, [$creator->id]));
         }
 
-        abort_unless(
-            empty(array_diff($userIds, $visibleIds)),
-            403,
-            'You can only invite people within your own scope to a meeting.'
-        );
+        $userIds = AudienceResolver::resolve($data['scope'] ?? 'individual', $data);
+
+        if ($visibleIds !== null) {
+            abort_unless(
+                empty(array_diff($userIds, $visibleIds)),
+                403,
+                'You can only invite people within your own scope to a meeting.'
+            );
+        }
+
+        return $userIds;
     }
 
     private function buildRecurrenceRule(array $data): ?array
@@ -83,10 +100,7 @@ class ScheduledMeetingService
 
     public function update(User $editor, ScheduledMeeting $meeting, array $data): ScheduledMeeting
     {
-        $userIds = isset($data['scope']) ? AudienceResolver::resolve($data['scope'], $data) : null;
-        if ($userIds !== null) {
-            $this->assertCanTarget($editor, $userIds);
-        }
+        $userIds = isset($data['scope']) ? $this->resolveAudience($editor, $data) : null;
 
         return DB::transaction(function () use ($meeting, $data, $userIds) {
             $meeting->update([
