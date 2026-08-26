@@ -10,12 +10,25 @@ use Illuminate\Database\Seeder;
 
 class DemoUserSeeder extends Seeder
 {
+    /**
+     * Every seeded user gets a username (for app login) and a PIN. The PIN
+     * is deliberately the same "1234" for everyone — this is demo data, and
+     * a single memorable PIN means anyone can log in as any seeded account
+     * without having to look one up per person.
+     */
+    private function usernameFor(string $name): string
+    {
+        return strtolower(str_replace(' ', '.', $name));
+    }
+
     public function run(): void
     {
         $superAdmin = User::factory()->create([
             'name' => 'Ahmad Raza',
             'email' => 'superadmin@example.com',
+            'username' => $this->usernameFor('Ahmad Raza'),
             'password' => 'password',
+            'pin' => '1234',
         ]);
         $superAdmin->assignRole('super_admin');
 
@@ -36,7 +49,9 @@ class DemoUserSeeder extends Seeder
             $admin = User::factory()->create([
                 'name' => $data['name'],
                 'email' => $data['email'],
+                'username' => $this->usernameFor($data['name']),
                 'password' => 'password',
+                'pin' => '1234',
             ]);
             $admin->assignRole('admin');
             $admin->adminNas()->attach(collect($data['nas'])->pluck('id'));
@@ -57,7 +72,9 @@ class DemoUserSeeder extends Seeder
             $naHead = User::factory()->create([
                 'name' => $data['name'],
                 'email' => $data['email'],
+                'username' => $this->usernameFor($data['name']),
                 'password' => 'password',
+                'pin' => '1234',
                 'na_id' => $data['na']->id,
             ]);
             $naHead->assignRole('na_head');
@@ -73,7 +90,9 @@ class DemoUserSeeder extends Seeder
         $ucHead = User::factory()->create([
             'name' => 'Sarah Iqbal',
             'email' => 'uchead1@example.com',
+            'username' => $this->usernameFor('Sarah Iqbal'),
             'password' => 'password',
+            'pin' => '1234',
             'na_id' => $na50->id,
         ]);
         $ucHead->assignRole('uc_head');
@@ -98,7 +117,9 @@ class DemoUserSeeder extends Seeder
             $leader = User::factory()->create([
                 'name' => $data['name'],
                 'email' => $data['email'],
+                'username' => $this->usernameFor($data['name']),
                 'password' => 'password',
+                'pin' => '1234',
                 'na_id' => $team->uc->na_id,
                 'uc_id' => $team->uc_id,
                 'department_id' => $team->department_id,
@@ -130,7 +151,9 @@ class DemoUserSeeder extends Seeder
             $user = User::factory()->create([
                 'name' => $name,
                 'email' => 'volunteer'.($i + 1).'@example.com',
+                'username' => $this->usernameFor($name),
                 'password' => 'password',
+                'pin' => '1234',
                 'na_id' => $team->uc->na_id,
                 'uc_id' => $team->uc_id,
                 'department_id' => $team->department_id,
