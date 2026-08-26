@@ -1,84 +1,84 @@
 @extends('layouts.admin')
 
-@section('title', 'Report Detail')
+@section('title', __('Report Detail'))
 
 @section('content')
     <div class="card stat-card p-4 mb-3">
         <h5>{{ $report->user->name }} &mdash; {{ $report->report_date->toDateString() }}</h5>
         <div class="row mt-3">
-            <div class="col-md-3"><div class="text-muted small">Start</div>{{ $report->field_start_time }}</div>
-            <div class="col-md-3"><div class="text-muted small">End</div>{{ $report->field_end_time }}</div>
-            <div class="col-md-3"><div class="text-muted small">Total Hours</div>{{ $report->total_hours }}</div>
-            <div class="col-md-3"><div class="text-muted small">Status</div>{{ ucfirst($report->status) }}</div>
+            <div class="col-md-3"><div class="text-muted small">{{ __('Start Time') }}</div>{{ $report->field_start_time }}</div>
+            <div class="col-md-3"><div class="text-muted small">{{ __('End Time') }}</div>{{ $report->field_end_time }}</div>
+            <div class="col-md-3"><div class="text-muted small">{{ __('Total Hours') }}</div>{{ $report->total_hours }}</div>
+            <div class="col-md-3"><div class="text-muted small">{{ __('Status') }}</div>{{ ucfirst($report->status) }}</div>
         </div>
         @if ($report->review_status)
             <div class="mt-2">
-                <span class="badge bg-info text-dark">Review: {{ str_replace('_', ' ', ucfirst($report->review_status)) }}</span>
+                <span class="badge bg-info text-dark">{{ __('Review') }}: {{ str_replace('_', ' ', ucfirst($report->review_status)) }}</span>
                 @if ($report->team_leader_id)
-                    <span class="text-muted small ms-2">Team Leader: {{ $report->teamLeader?->name }}</span>
+                    <span class="text-muted small ms-2">{{ __('Team Leader') }}: {{ $report->teamLeader?->name }}</span>
                 @endif
             </div>
         @endif
         <hr>
-        <div class="mb-2"><strong>Summary:</strong> {{ $report->summary ?: '—' }}</div>
-        <div class="mb-2"><strong>Challenges:</strong> {{ $report->challenges ?: '—' }}</div>
-        <div class="mb-2"><strong>Tomorrow's Plan:</strong> {{ $report->tomorrow_plan ?: '—' }}</div>
+        <div class="mb-2"><strong>{{ __('Summary') }}:</strong> {{ $report->summary ?: '—' }}</div>
+        <div class="mb-2"><strong>{{ __('Challenges') }}:</strong> {{ $report->challenges ?: '—' }}</div>
+        <div class="mb-2"><strong>{{ __("Tomorrow's Plan") }}:</strong> {{ $report->tomorrow_plan ?: '—' }}</div>
 
         @if ($report->team_leader_remarks)
-            <div class="alert alert-light border small"><strong>Team Leader Remarks:</strong> {{ $report->team_leader_remarks }}</div>
+            <div class="alert alert-light border small"><strong>{{ __('Team Leader Remarks') }}:</strong> {{ $report->team_leader_remarks }}</div>
         @endif
         @if ($report->admin_remarks)
-            <div class="alert alert-light border small"><strong>Admin Remarks:</strong> {{ $report->admin_remarks }}</div>
+            <div class="alert alert-light border small"><strong>{{ __('Admin Remarks') }}:</strong> {{ $report->admin_remarks }}</div>
         @endif
     </div>
 
     @can('reviewAsTeamLeader', $report)
         <div class="card stat-card p-4 mb-3">
-            <h6 class="mb-3">Team Leader Review</h6>
+            <h6 class="mb-3">{{ __('Team Leader Review') }}</h6>
             <form method="POST" action="{{ route('admin.reports.review', $report) }}">
                 @csrf @method('PUT')
                 <div class="mb-3">
-                    <label class="form-label">Decision</label>
+                    <label class="form-label">{{ __('Decision') }}</label>
                     <select name="decision" class="form-select" required>
-                        <option value="recommend_approve">Recommend Approval</option>
-                        <option value="needs_revision">Needs Revision</option>
+                        <option value="recommend_approve">{{ __('Recommend Approval') }}</option>
+                        <option value="needs_revision">{{ __('Needs Revision') }}</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Remarks</label>
+                    <label class="form-label">{{ __('Remarks') }}</label>
                     <textarea name="remarks" class="form-control" rows="2"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit Review</button>
+                <button type="submit" class="btn btn-primary">{{ __('Submit Review') }}</button>
             </form>
         </div>
     @endcan
 
     @can('reviewAsAdmin', $report)
         <div class="card stat-card p-4 mb-3">
-            <h6 class="mb-3">Admin Review</h6>
+            <h6 class="mb-3">{{ __('Admin Review') }}</h6>
             <form method="POST" action="{{ route('admin.reports.review', $report) }}">
                 @csrf @method('PUT')
                 <div class="mb-3">
-                    <label class="form-label">Decision</label>
+                    <label class="form-label">{{ __('Decision') }}</label>
                     <select name="decision" class="form-select" required>
-                        <option value="approve">Approve</option>
-                        <option value="approve_with_remarks">Approve With Remarks</option>
-                        <option value="reject">Reject</option>
-                        <option value="needs_revision">Needs Revision</option>
-                        <option value="close">Close</option>
+                        <option value="approve">{{ __('Approve') }}</option>
+                        <option value="approve_with_remarks">{{ __('Approve With Remarks') }}</option>
+                        <option value="reject">{{ __('Reject') }}</option>
+                        <option value="needs_revision">{{ __('Needs Revision') }}</option>
+                        <option value="close">{{ __('Close') }}</option>
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Remarks</label>
+                    <label class="form-label">{{ __('Remarks') }}</label>
                     <textarea name="remarks" class="form-control" rows="2"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit Review</button>
+                <button type="submit" class="btn btn-primary">{{ __('Submit Review') }}</button>
             </form>
         </div>
     @endcan
 
     <div class="card stat-card p-4">
-        <h6 class="mb-3">Meetings (Field Visits) &mdash; {{ $report->meetings->count() }}</h6>
+        <h6 class="mb-3">{{ __('Meetings (Field Visits)') }} &mdash; {{ $report->meetings->count() }}</h6>
         @foreach ($report->meetings as $meeting)
             <div class="border rounded p-3 mb-2">
                 <div class="d-flex justify-content-between">
@@ -88,17 +88,17 @@
                 <div class="text-muted small">{{ $meeting->contact->phone }}</div>
                 <div class="mt-2">{{ $meeting->discussion }}</div>
                 @if ($meeting->follow_up_required)
-                    <span class="badge bg-warning text-dark mt-2">Follow-up required</span>
+                    <span class="badge bg-warning text-dark mt-2">{{ __('Follow-up required') }}</span>
                 @endif
                 <div class="mt-2">
-                    <div class="text-muted small">Participants (tagged teammates)</div>
+                    <div class="text-muted small">{{ __('Participants (tagged teammates)') }}</div>
                     @forelse ($meeting->participants as $participant)
                         <span class="badge bg-light text-dark border me-1">
                             {{ $participant->name }}
-                            {{ $participant->pivot->read_at ? '(read)' : '(unread)' }}
+                            {{ $participant->pivot->read_at ? __('(read)') : __('(unread)') }}
                         </span>
                     @empty
-                        <span class="text-muted small">None tagged</span>
+                        <span class="text-muted small">{{ __('None tagged') }}</span>
                     @endforelse
                 </div>
             </div>

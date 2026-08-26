@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Reports')
+@section('title', __('Reports'))
 
 @section('content')
     <livewire:admin.reports-index />

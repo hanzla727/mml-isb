@@ -1,28 +1,28 @@
 @extends('layouts.admin')
 
-@section('title', 'Expense Claims')
+@section('title', __('Expense Claims'))
 
 @section('content')
     <div class="card stat-card p-3 mb-3">
         <form method="GET" class="row g-2 align-items-end">
             <div class="col-md-3">
-                <label class="form-label small">Status</label>
+                <label class="form-label small">{{ __('Status') }}</label>
                 <select name="status" class="form-select form-select-sm">
-                    <option value="">All</option>
+                    <option value="">{{ __('All') }}</option>
                     @foreach (['pending', 'approved', 'rejected'] as $status)
-                        <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                        <option value="{{ $status }}" @selected(request('status') === $status)>{{ __(ucfirst($status)) }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-sm btn-primary w-100">Filter</button>
+                <button class="btn btn-sm btn-primary w-100">{{ __('Filter') }}</button>
             </div>
         </form>
     </div>
 
     <div class="card stat-card">
         <table class="table table-hover mb-0">
-            <thead><tr><th>Volunteer</th><th>Type</th><th>Amount</th><th>Date</th><th>Receipt</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>{{ __('Volunteer') }}</th><th>{{ __('Type') }}</th><th>{{ __('Amount') }}</th><th>{{ __('Date') }}</th><th>{{ __('Receipt') }}</th><th>{{ __('Status') }}</th><th></th></tr></thead>
             <tbody>
                 @forelse ($expenseClaims as $expenseClaim)
                     <tr>
@@ -33,7 +33,7 @@
                         <td>
                             @if ($expenseClaim->receipt)
                                 <a href="{{ route('admin.expense-claims.show', $expenseClaim) }}">
-                                    <img src="{{ asset('storage/'.$expenseClaim->receipt->path) }}" alt="Receipt" width="36" height="36" class="rounded" style="object-fit: cover;">
+                                    <img src="{{ asset('storage/'.$expenseClaim->receipt->path) }}" alt="{{ __('Receipt') }}" width="36" height="36" class="rounded" style="object-fit: cover;">
                                 </a>
                             @else
                                 <span class="text-muted small">—</span>
@@ -41,26 +41,26 @@
                         </td>
                         <td>
                             <span class="badge bg-{{ $expenseClaim->status === 'approved' ? 'success' : ($expenseClaim->status === 'rejected' ? 'danger' : 'secondary') }}">
-                                {{ ucfirst($expenseClaim->status) }}
+                                {{ __(ucfirst($expenseClaim->status)) }}
                             </span>
                         </td>
                         <td>
                             <div class="d-flex gap-2 align-items-center">
-                                <a href="{{ route('admin.expense-claims.show', $expenseClaim) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="{{ route('admin.expense-claims.show', $expenseClaim) }}" class="btn btn-sm btn-outline-primary">{{ __('View') }}</a>
                                 @if ($expenseClaim->status === 'pending')
                                     <form method="POST" action="{{ route('admin.expense-claims.review', $expenseClaim) }}" class="d-flex gap-2">
                                         @csrf @method('PUT')
-                                        <button name="decision" value="approve" class="btn btn-sm btn-outline-success">Approve</button>
-                                        <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button>
+                                        <button name="decision" value="approve" class="btn btn-sm btn-outline-success">{{ __('Approve') }}</button>
+                                        <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">{{ __('Reject') }}</button>
                                     </form>
                                 @else
-                                    <span class="text-muted small">by {{ $expenseClaim->reviewer?->name ?? '—' }}</span>
+                                    <span class="text-muted small">{{ __('by') }} {{ $expenseClaim->reviewer?->name ?? '—' }}</span>
                                 @endif
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-center text-muted py-4">No expense claims found.</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-4">{{ __('No expense claims found.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

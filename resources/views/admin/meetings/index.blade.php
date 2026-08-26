@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Meetings')
+@section('title', __('Meetings'))
 
 @section('content')
     <livewire:admin.meetings-index />

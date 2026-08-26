@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Tasks')
+@section('title', __('Tasks'))
 
 @section('content')
     <livewire:admin.tasks-index />

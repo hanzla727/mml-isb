@@ -1,16 +1,16 @@
 @extends('layouts.admin')
 
-@section('title', 'Users')
+@section('title', __('Users'))
 
 @section('content')
     <div class="d-flex justify-content-between mb-3">
         <form method="GET" class="d-flex gap-2">
             <input type="text" name="search" value="{{ request('search') }}" class="form-control"
-                placeholder="Search name or email">
-            <button class="btn btn-outline-secondary">Search</button>
+                placeholder="{{ __('Search name or email') }}">
+            <button class="btn btn-outline-secondary">{{ __('Search') }}</button>
         </form>
         @can('manage-users')
-            <a href="{{ route('admin.users.create') }}" class="btn btn-primary">Add User</a>
+            <a href="{{ route('admin.users.create') }}" class="btn btn-primary">{{ __('Add User') }}</a>
         @endcan
     </div>
 
@@ -18,13 +18,13 @@
         <table class="table table-hover mb-0">
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Pin</th>
-                    <th>Role</th>
-                    <th>UC</th>
-                    <th>Department</th>
-                    <th>Status</th>
+                    <th>{{ __('Name') }}</th>
+                    <th>{{ __('Email') }}</th>
+                    <th>{{ __('Pin') }}</th>
+                    <th>{{ __('Role') }}</th>
+                    <th>{{ __('UC') }}</th>
+                    <th>{{ __('Department') }}</th>
+                    <th>{{ __('Status') }}</th>
                     @can('manage-users')
                     <th></th>@endcan
                 </tr>
@@ -66,30 +66,30 @@
                         <td>{{ $user->department?->name ?? '—' }}</td>
                         <td>
                             @if ($user->is_active)
-                                <span class="badge bg-success">Active</span>
+                                <span class="badge bg-success">{{ __('Active') }}</span>
                             @else
-                                <span class="badge bg-danger">Inactive</span>
+                                <span class="badge bg-danger">{{ __('Inactive') }}</span>
                             @endif
                         </td>
                         @can('manage-users')
                             <td class="d-flex gap-2">
-                                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a href="{{ route('admin.users.edit', $user) }}" class="btn btn-sm btn-outline-primary">{{ __('Edit') }}</a>
                                 <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}">
                                     @csrf
                                     <button
-                                        class="btn btn-sm btn-outline-secondary">{{ $user->is_active ? 'Deactivate' : 'Activate' }}</button>
+                                        class="btn btn-sm btn-outline-secondary">{{ $user->is_active ? __('Deactivate') : __('Activate') }}</button>
                                 </form>
                                 <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-                                    onsubmit="return confirm('Delete this user?')">
+                                    onsubmit="return confirm('{{ __('Delete this user?') }}')">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    <button class="btn btn-sm btn-outline-danger">{{ __('Delete') }}</button>
                                 </form>
                             </td>
                         @endcan
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-4">No users found.</td>
+                        <td colspan="7" class="text-center text-muted py-4">{{ __('No users found.') }}</td>
                     </tr>
                 @endforelse
             </tbody>

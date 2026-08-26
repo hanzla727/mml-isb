@@ -14,7 +14,7 @@
     </div>
 
     <div class="card stat-card p-4">
-        <h6 class="mb-3">Submissions ({{ $submissions->count() }})</h6>
+        <h6 class="mb-3">{{ __('Submissions') }} ({{ $submissions->count() }})</h6>
         @forelse ($submissions as $submission)
             <div class="border rounded p-3 mb-2">
                 <div class="d-flex justify-content-between">
@@ -22,7 +22,7 @@
                     <span class="text-muted small">{{ $submission->created_at->format('M j, Y g:i A') }}</span>
                 </div>
                 <div class="text-muted small mb-2">
-                    On: {{ class_basename($submission->submittable_type) }} &mdash; {{ $submission->submittable?->title ?? '—' }}
+                    {{ __('On') }}: {{ class_basename($submission->submittable_type) }} &mdash; {{ $submission->submittable?->title ?? '—' }}
                 </div>
                 <ul class="mb-0 small">
                     @foreach ($submission->values as $value)
@@ -31,7 +31,7 @@
                 </ul>
             </div>
         @empty
-            <p class="text-muted small mb-0">No submissions yet.</p>
+            <p class="text-muted small mb-0">{{ __('No submissions yet.') }}</p>
         @endforelse
     </div>
 @endsection

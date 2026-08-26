@@ -17,40 +17,40 @@
                 <p class="text-muted small mb-0">{{ $viewedUser->email }} &middot; {{ $viewedUser->phone ?? '—' }}</p>
             </div>
         </div>
-        <div class="mb-2"><strong>Department:</strong> {{ $viewedUser->department?->name ?? '—' }}</div>
-        <div class="mb-2"><strong>Team:</strong> {{ $viewedUser->team?->name ?? '—' }}</div>
+        <div class="mb-2"><strong>{{ __('Department') }}:</strong> {{ $viewedUser->department?->name ?? '—' }}</div>
+        <div class="mb-2"><strong>{{ __('Team') }}:</strong> {{ $viewedUser->team?->name ?? '—' }}</div>
 
         <div class="mb-2 d-flex align-items-center gap-2">
             <i class="bi bi-at text-muted"></i>
-            <span class="text-muted">Username</span>
+            <span class="text-muted">{{ __('Username') }}</span>
             <span class="ms-auto">{{ $viewedUser->username ?: '--' }}</span>
         </div>
         <div class="mb-2 d-flex align-items-center gap-2">
             <i class="bi bi-key text-muted"></i>
-            <span class="text-muted">Pin</span>
+            <span class="text-muted">{{ __('Pin') }}</span>
             <span class="ms-auto font-monospace" id="pinValue" data-pin="{{ $viewedUser->pin }}" data-masked="1">
                 {{ $viewedUser->pin ? '****' : '--' }}
             </span>
             @if ($viewedUser->pin)
-                <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="togglePinVisibility()" title="Show/Hide PIN">
+                <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="togglePinVisibility()" title="{{ __('Show/Hide PIN') }}">
                     <i class="bi bi-eye" id="pinEyeIcon"></i>
                 </button>
-                <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="copyPin()" title="Copy PIN">
+                <button type="button" class="btn btn-sm btn-link text-muted p-0" onclick="copyPin()" title="{{ __('Copy PIN') }}">
                     <i class="bi bi-clipboard"></i>
                 </button>
             @endif
         </div>
-        <a href="{{ route('admin.performance.show', $viewedUser) }}" class="btn btn-sm btn-outline-primary">View Performance</a>
+        <a href="{{ route('admin.performance.show', $viewedUser) }}" class="btn btn-sm btn-outline-primary">{{ __('View Performance') }}</a>
     </div>
 
     <div class="card stat-card p-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="mb-0">Documents</h6>
-            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">Upload Document</button>
+            <h6 class="mb-0">{{ __('Documents') }}</h6>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadModal">{{ __('Upload Document') }}</button>
         </div>
 
         <table class="table table-hover mb-0">
-            <thead><tr><th>Title</th><th>Type</th><th>Uploaded By</th><th>Date</th><th></th></tr></thead>
+            <thead><tr><th>{{ __('Title') }}</th><th>{{ __('Type') }}</th><th>{{ __('Uploaded By') }}</th><th>{{ __('Date') }}</th><th></th></tr></thead>
             <tbody>
                 @forelse ($documents as $document)
                     <tr>
@@ -60,16 +60,16 @@
                         <td class="text-muted small">{{ $document->created_at->toDateString() }}</td>
                         <td class="d-flex gap-2">
                             @if ($document->file)
-                                <a href="{{ asset('storage/' . $document->file->path) }}" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="{{ asset('storage/' . $document->file->path) }}" target="_blank" class="btn btn-sm btn-outline-primary">{{ __('View') }}</a>
                             @endif
-                            <form method="POST" action="{{ route('admin.documents.destroy', $document) }}" onsubmit="return confirm('Delete this document?')">
+                            <form method="POST" action="{{ route('admin.documents.destroy', $document) }}" onsubmit="return confirm('{{ __('Delete this document?') }}')">
                                 @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                <button class="btn btn-sm btn-outline-danger">{{ __('Delete') }}</button>
                             </form>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="text-center text-muted py-4">No documents uploaded yet.</td></tr>
+                    <tr><td colspan="5" class="text-center text-muted py-4">{{ __('No documents uploaded yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -80,29 +80,29 @@
             <div class="modal-content">
                 <form method="POST" action="{{ route('admin.users.documents.store', $viewedUser) }}" enctype="multipart/form-data">
                     @csrf
-                    <div class="modal-header"><h5 class="modal-title">Upload Document</h5></div>
+                    <div class="modal-header"><h5 class="modal-title">{{ __('Upload Document') }}</h5></div>
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Title</label>
+                            <label class="form-label">{{ __('Title') }}</label>
                             <input type="text" name="title" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Type</label>
+                            <label class="form-label">{{ __('Type') }}</label>
                             <select name="document_type" class="form-select" required>
-                                <option value="cnic">CNIC</option>
-                                <option value="certificate">Certificate</option>
-                                <option value="agreement">Agreement</option>
-                                <option value="training">Training</option>
-                                <option value="other">Other</option>
+                                <option value="cnic">{{ __('CNIC') }}</option>
+                                <option value="certificate">{{ __('Certificate') }}</option>
+                                <option value="agreement">{{ __('Agreement') }}</option>
+                                <option value="training">{{ __('Training') }}</option>
+                                <option value="other">{{ __('Other') }}</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">File</label>
+                            <label class="form-label">{{ __('File') }}</label>
                             <input type="file" name="file" class="form-control" required>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Upload</button>
+                        <button type="submit" class="btn btn-primary">{{ __('Upload') }}</button>
                     </div>
                 </form>
             </div>

@@ -44,14 +44,23 @@ Route::get('/', function () {
         return redirect()->route('login');
     }
 
-    return redirect(auth()->user()->hasAnyRole(['super_admin', 'admin', 'na_head']) ? '/admin' : '/dashboard');
+    return redirect(auth()->user()->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head']) ? '/admin' : '/dashboard');
     // Note: team_leader intentionally lands on /dashboard (they are an
     // elevated volunteer, not an admin) — extra nav items there link into
     // the /admin/reports, /admin/tasks, /admin/task-reports controllers for
     // their review duties, reusing the same controllers/views as Admin.
-    // na_head runs their NA much like Admin runs their NAs, so they land
-    // on /admin and are scoped down entirely via HierarchyScope.
+    // na_head/uc_head run their slice of the org much like Admin runs
+    // theirs, so they land on /admin and are scoped down entirely via
+    // HierarchyScope.
 });
+
+Route::get('/language/{locale}', function (string $locale) {
+    if (in_array($locale, ['en', 'ur'], true)) {
+        session(['locale' => $locale]);
+    }
+
+    return back();
+})->name('language.switch');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
@@ -70,7 +79,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/guide', fn () => view('guide'))->name('guide');
 
-    Route::prefix('admin')->name('admin.')->middleware('role:super_admin|admin|na_head|team_leader')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('role:super_admin|admin|na_head|uc_head|team_leader')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/search', [SearchController::class, 'index'])->name('search.index');
 

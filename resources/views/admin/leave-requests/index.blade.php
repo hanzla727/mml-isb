@@ -1,28 +1,28 @@
 @extends('layouts.admin')
 
-@section('title', 'Leave Requests')
+@section('title', __('Leave Requests'))
 
 @section('content')
     <div class="card stat-card p-3 mb-3">
         <form method="GET" class="row g-2 align-items-end">
             <div class="col-md-3">
-                <label class="form-label small">Status</label>
+                <label class="form-label small">{{ __('Status') }}</label>
                 <select name="status" class="form-select form-select-sm">
-                    <option value="">All</option>
+                    <option value="">{{ __('All') }}</option>
                     @foreach (['pending', 'approved', 'rejected'] as $status)
-                        <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
+                        <option value="{{ $status }}" @selected(request('status') === $status)>{{ __(ucfirst($status)) }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-sm btn-primary w-100">Filter</button>
+                <button class="btn btn-sm btn-primary w-100">{{ __('Filter') }}</button>
             </div>
         </form>
     </div>
 
     <div class="card stat-card">
         <table class="table table-hover mb-0">
-            <thead><tr><th>Volunteer</th><th>Type</th><th>Dates</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>{{ __('Volunteer') }}</th><th>{{ __('Type') }}</th><th>{{ __('Dates') }}</th><th>{{ __('Reason') }}</th><th>{{ __('Status') }}</th><th></th></tr></thead>
             <tbody>
                 @forelse ($leaveRequests as $leaveRequest)
                     <tr>
@@ -32,26 +32,26 @@
                         <td>{{ $leaveRequest->reason ?: '—' }}</td>
                         <td>
                             <span class="badge bg-{{ $leaveRequest->status === 'approved' ? 'success' : ($leaveRequest->status === 'rejected' ? 'danger' : 'secondary') }}">
-                                {{ ucfirst($leaveRequest->status) }}
+                                {{ __(ucfirst($leaveRequest->status)) }}
                             </span>
                         </td>
                         <td>
                             <div class="d-flex gap-2 align-items-center">
-                                <a href="{{ route('admin.leave-requests.show', $leaveRequest) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                <a href="{{ route('admin.leave-requests.show', $leaveRequest) }}" class="btn btn-sm btn-outline-primary">{{ __('View') }}</a>
                                 @if ($leaveRequest->status === 'pending')
                                     <form method="POST" action="{{ route('admin.leave-requests.review', $leaveRequest) }}" class="d-flex gap-2">
                                         @csrf @method('PUT')
-                                        <button name="decision" value="approve" class="btn btn-sm btn-outline-success">Approve</button>
-                                        <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">Reject</button>
+                                        <button name="decision" value="approve" class="btn btn-sm btn-outline-success">{{ __('Approve') }}</button>
+                                        <button name="decision" value="reject" class="btn btn-sm btn-outline-danger">{{ __('Reject') }}</button>
                                     </form>
                                 @else
-                                    <span class="text-muted small">by {{ $leaveRequest->reviewer?->name ?? '—' }}</span>
+                                    <span class="text-muted small">{{ __('by') }} {{ $leaveRequest->reviewer?->name ?? '—' }}</span>
                                 @endif
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-center text-muted py-4">No leave requests found.</td></tr>
+                    <tr><td colspan="6" class="text-center text-muted py-4">{{ __('No leave requests found.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -1,17 +1,17 @@
 @extends('layouts.admin')
 
-@section('title', 'Targets')
+@section('title', __('Targets'))
 
 @section('content')
     @can('manage-targets')
         <div class="d-flex justify-content-end mb-3">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">New Target</button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">{{ __('New Target') }}</button>
         </div>
     @endcan
 
     <div class="card stat-card">
         <table class="table table-hover mb-0">
-            <thead><tr><th>Title</th><th>Type</th><th>Metric</th><th>Value</th><th>Scope</th><th>Status</th><th></th></tr></thead>
+            <thead><tr><th>{{ __('Title') }}</th><th>{{ __('Type') }}</th><th>{{ __('Metric') }}</th><th>{{ __('Value') }}</th><th>{{ __('Scope') }}</th><th>{{ __('Status') }}</th><th></th></tr></thead>
             <tbody>
                 @forelse ($targets as $target)
                     <tr>
@@ -22,7 +22,7 @@
                         <td>{{ ucfirst($target->scope) }}</td>
                         <td>
                             <span class="badge {{ $target->is_active ? 'bg-success' : 'bg-secondary' }}">
-                                {{ $target->is_active ? 'Active' : 'Inactive' }}
+                                {{ $target->is_active ? __('Active') : __('Inactive') }}
                             </span>
                         </td>
                         @can('manage-targets')
@@ -40,17 +40,17 @@
                                     data-end-date="{{ $target->end_date?->toDateString() }}"
                                     data-is-active="{{ $target->is_active ? '1' : '0' }}"
                                     onclick="openEditTargetModal(this.dataset)">
-                                    Edit
+                                    {{ __('Edit') }}
                                 </button>
-                                <form method="POST" action="{{ route('admin.targets.destroy', $target) }}" onsubmit="return confirm('Delete this target?')">
+                                <form method="POST" action="{{ route('admin.targets.destroy', $target) }}" onsubmit="return confirm('{{ __('Delete this target?') }}')">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger">Delete</button>
+                                    <button class="btn btn-sm btn-outline-danger">{{ __('Delete') }}</button>
                                 </form>
                             </td>
                         @endcan
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-center text-muted py-4">No targets yet.</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-4">{{ __('No targets yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -64,50 +64,50 @@
                 <div class="modal-content">
                     <form method="POST" action="{{ route('admin.targets.store') }}">
                         @csrf
-                        <div class="modal-header"><h5 class="modal-title">New Target</h5></div>
+                        <div class="modal-header"><h5 class="modal-title">{{ __('New Target') }}</h5></div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">Title</label>
+                                <label class="form-label">{{ __('Title') }}</label>
                                 <input type="text" name="title" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Description</label>
+                                <label class="form-label">{{ __('Description') }}</label>
                                 <textarea name="description" class="form-control"></textarea>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Type</label>
+                                    <label class="form-label">{{ __('Type') }}</label>
                                     <select name="type" class="form-select">
-                                        <option value="daily">Daily</option>
-                                        <option value="weekly">Weekly</option>
-                                        <option value="monthly">Monthly</option>
-                                        <option value="yearly">Yearly</option>
+                                        <option value="daily">{{ __('Daily') }}</option>
+                                        <option value="weekly">{{ __('Weekly') }}</option>
+                                        <option value="monthly">{{ __('Monthly') }}</option>
+                                        <option value="yearly">{{ __('Yearly') }}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Metric</label>
+                                    <label class="form-label">{{ __('Metric') }}</label>
                                     <select name="metric" class="form-select">
-                                        <option value="hours">Hours</option>
-                                        <option value="meetings">Meetings</option>
-                                        <option value="custom">Custom</option>
+                                        <option value="hours">{{ __('Hours') }}</option>
+                                        <option value="meetings">{{ __('Meetings') }}</option>
+                                        <option value="custom">{{ __('Custom') }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Target Value</label>
+                                <label class="form-label">{{ __('Target Value') }}</label>
                                 <input type="number" step="0.01" name="target_value" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Scope</label>
+                                <label class="form-label">{{ __('Scope') }}</label>
                                 <select name="scope" id="scope" class="form-select" onchange="toggleScopeTarget(this.value)">
-                                    <option value="all">Everyone</option>
-                                    <option value="department">Specific Department</option>
-                                    <option value="team">Specific Team</option>
-                                    <option value="user">Specific User</option>
+                                    <option value="all">{{ __('Everyone') }}</option>
+                                    <option value="department">{{ __('Specific Department') }}</option>
+                                    <option value="team">{{ __('Specific Team') }}</option>
+                                    <option value="user">{{ __('Specific User') }}</option>
                                 </select>
                             </div>
                             <div class="mb-3 scope-target" data-scope="department" style="display:none;">
-                                <label class="form-label">Department</label>
+                                <label class="form-label">{{ __('Department') }}</label>
                                 <select name="scope_id" class="form-select" disabled>
                                     @foreach ($departments as $department)
                                         <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -115,7 +115,7 @@
                                 </select>
                             </div>
                             <div class="mb-3 scope-target" data-scope="team" style="display:none;">
-                                <label class="form-label">Team</label>
+                                <label class="form-label">{{ __('Team') }}</label>
                                 <select name="scope_id" class="form-select" disabled>
                                     @foreach ($teams as $team)
                                         <option value="{{ $team->id }}">{{ $team->name }}</option>
@@ -123,7 +123,7 @@
                                 </select>
                             </div>
                             <div class="mb-3 scope-target" data-scope="user" style="display:none;">
-                                <label class="form-label">User</label>
+                                <label class="form-label">{{ __('User') }}</label>
                                 <select name="scope_id" class="form-select" disabled>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -141,17 +141,17 @@
                             </script>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Start Date</label>
+                                    <label class="form-label">{{ __('Start Date') }}</label>
                                     <input type="date" name="start_date" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">End Date</label>
+                                    <label class="form-label">{{ __('End Date') }}</label>
                                     <input type="date" name="end_date" class="form-control">
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button type="submit" class="btn btn-primary">{{ __('Create') }}</button>
                         </div>
                     </form>
                 </div>
@@ -164,50 +164,50 @@
                     <form method="POST" id="editTargetForm">
                         @csrf
                         @method('PUT')
-                        <div class="modal-header"><h5 class="modal-title">Edit Target</h5></div>
+                        <div class="modal-header"><h5 class="modal-title">{{ __('Edit Target') }}</h5></div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">Title</label>
+                                <label class="form-label">{{ __('Title') }}</label>
                                 <input type="text" name="title" id="editTargetTitle" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Description</label>
+                                <label class="form-label">{{ __('Description') }}</label>
                                 <textarea name="description" id="editTargetDescription" class="form-control"></textarea>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Type</label>
+                                    <label class="form-label">{{ __('Type') }}</label>
                                     <select name="type" id="editTargetType" class="form-select">
-                                        <option value="daily">Daily</option>
-                                        <option value="weekly">Weekly</option>
-                                        <option value="monthly">Monthly</option>
-                                        <option value="yearly">Yearly</option>
+                                        <option value="daily">{{ __('Daily') }}</option>
+                                        <option value="weekly">{{ __('Weekly') }}</option>
+                                        <option value="monthly">{{ __('Monthly') }}</option>
+                                        <option value="yearly">{{ __('Yearly') }}</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Metric</label>
+                                    <label class="form-label">{{ __('Metric') }}</label>
                                     <select name="metric" id="editTargetMetric" class="form-select">
-                                        <option value="hours">Hours</option>
-                                        <option value="meetings">Meetings</option>
-                                        <option value="custom">Custom</option>
+                                        <option value="hours">{{ __('Hours') }}</option>
+                                        <option value="meetings">{{ __('Meetings') }}</option>
+                                        <option value="custom">{{ __('Custom') }}</option>
                                     </select>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Target Value</label>
+                                <label class="form-label">{{ __('Target Value') }}</label>
                                 <input type="number" step="0.01" name="target_value" id="editTargetValue" class="form-control" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Scope</label>
+                                <label class="form-label">{{ __('Scope') }}</label>
                                 <select name="scope" id="editTargetScope" class="form-select" onchange="toggleEditScopeTarget(this.value)">
-                                    <option value="all">Everyone</option>
-                                    <option value="department">Specific Department</option>
-                                    <option value="team">Specific Team</option>
-                                    <option value="user">Specific User</option>
+                                    <option value="all">{{ __('Everyone') }}</option>
+                                    <option value="department">{{ __('Specific Department') }}</option>
+                                    <option value="team">{{ __('Specific Team') }}</option>
+                                    <option value="user">{{ __('Specific User') }}</option>
                                 </select>
                             </div>
                             <div class="mb-3 edit-scope-target" data-scope="department" style="display:none;">
-                                <label class="form-label">Department</label>
+                                <label class="form-label">{{ __('Department') }}</label>
                                 <select name="scope_id" id="editTargetDepartment" class="form-select" disabled>
                                     @foreach ($departments as $department)
                                         <option value="{{ $department->id }}">{{ $department->name }}</option>
@@ -215,7 +215,7 @@
                                 </select>
                             </div>
                             <div class="mb-3 edit-scope-target" data-scope="team" style="display:none;">
-                                <label class="form-label">Team</label>
+                                <label class="form-label">{{ __('Team') }}</label>
                                 <select name="scope_id" id="editTargetTeam" class="form-select" disabled>
                                     @foreach ($teams as $team)
                                         <option value="{{ $team->id }}">{{ $team->name }}</option>
@@ -223,7 +223,7 @@
                                 </select>
                             </div>
                             <div class="mb-3 edit-scope-target" data-scope="user" style="display:none;">
-                                <label class="form-label">User</label>
+                                <label class="form-label">{{ __('User') }}</label>
                                 <select name="scope_id" id="editTargetUser" class="form-select" disabled>
                                     @foreach ($users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -232,21 +232,21 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Start Date</label>
+                                    <label class="form-label">{{ __('Start Date') }}</label>
                                     <input type="date" name="start_date" id="editTargetStartDate" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">End Date</label>
+                                    <label class="form-label">{{ __('End Date') }}</label>
                                     <input type="date" name="end_date" id="editTargetEndDate" class="form-control">
                                 </div>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" name="is_active" value="1" id="editTargetIsActive" class="form-check-input">
-                                <label class="form-check-label" for="editTargetIsActive">Active</label>
+                                <label class="form-check-label" for="editTargetIsActive">{{ __('Active') }}</label>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <button type="submit" class="btn btn-primary">{{ __('Save Changes') }}</button>
                         </div>
                     </form>
                 </div>

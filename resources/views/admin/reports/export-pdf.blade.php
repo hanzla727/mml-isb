@@ -10,16 +10,16 @@
     </style>
 </head>
 <body>
-<h3>Daily Reports</h3>
+<h3>{{ __('Daily Reports') }}</h3>
 <table>
     <thead>
         <tr>
-            <th>Date</th>
-            <th>Volunteer</th>
-            <th>Start</th>
-            <th>End</th>
-            <th>Hours</th>
-            <th>Meetings (Field Visits)</th>
+            <th>{{ __('Date') }}</th>
+            <th>{{ __('Volunteer') }}</th>
+            <th>{{ __('Start Time') }}</th>
+            <th>{{ __('End Time') }}</th>
+            <th>{{ __('Hours') }}</th>
+            <th>{{ __('Meetings (Field Visits)') }}</th>
         </tr>
     </thead>
     <tbody>

@@ -1,26 +1,26 @@
 @extends('layouts.admin')
 
-@section('title', 'NA Comparison')
+@section('title', __('NA Comparison'))
 
 @section('content')
     <div class="card stat-card p-3 mb-3">
         <form method="GET" class="d-flex align-items-end gap-2">
             <div>
-                <label class="form-label small text-muted">Period</label>
+                <label class="form-label small text-muted">{{ __('Period') }}</label>
                 <select name="period" class="form-select form-select-sm" onchange="this.form.submit()">
-                    <option value="month" @selected($period === 'month')>Last 30 Days</option>
-                    <option value="quarter" @selected($period === 'quarter')>Last Quarter</option>
-                    <option value="year" @selected($period === 'year')>This Year</option>
+                    <option value="month" @selected($period === 'month')>{{ __('Last 30 Days') }}</option>
+                    <option value="quarter" @selected($period === 'quarter')>{{ __('Last Quarter') }}</option>
+                    <option value="year" @selected($period === 'year')>{{ __('This Year') }}</option>
                 </select>
             </div>
         </form>
     </div>
 
     <div class="card stat-card p-4 mb-3">
-        <h6 class="mb-3">NA Ranking</h6>
-        <p class="text-muted small">A management tool, not a leaderboard — ranked by a configurable weighted score (task completion, report submission, attendance, and activity level). See <code>config/nas.php</code>.</p>
+        <h6 class="mb-3">{{ __('NA Ranking') }}</h6>
+        <p class="text-muted small">{{ __('A management tool, not a leaderboard — ranked by a configurable weighted score (task completion, report submission, attendance, and activity level). See') }} <code>config/nas.php</code>.</p>
         <table class="table table-hover align-middle mb-0">
-            <thead><tr><th>#</th><th>NA</th><th>Score</th><th>Task Completion</th><th>Attendance</th><th>Reports Submitted</th><th>Fund Collection</th></tr></thead>
+            <thead><tr><th>#</th><th>{{ __('NA') }}</th><th>{{ __('Score') }}</th><th>{{ __('Task Completion') }}</th><th>{{ __('Attendance') }}</th><th>{{ __('Reports Submitted') }}</th><th>{{ __('Fund Collection') }}</th></tr></thead>
             <tbody>
                 @forelse ($comparison['rows'] as $index => $row)
                     <tr>
@@ -33,7 +33,7 @@
                         <td>{{ number_format($row['summary']['fund_collection'], 2) }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-center text-muted py-4">No NAs to compare yet.</td></tr>
+                    <tr><td colspan="7" class="text-center text-muted py-4">{{ __('No NAs to compare yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>
@@ -42,25 +42,25 @@
     <div class="row g-3">
         <div class="col-md-6">
             <div class="card stat-card p-3">
-                <h6>Task Completion Rate (%)</h6>
+                <h6>{{ __('Task Completion Rate (%)') }}</h6>
                 <canvas id="taskCompletionChart" height="200"></canvas>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card stat-card p-3">
-                <h6>Attendance Rate (%)</h6>
+                <h6>{{ __('Attendance Rate (%)') }}</h6>
                 <canvas id="attendanceChart" height="200"></canvas>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card stat-card p-3">
-                <h6>Reports Submitted</h6>
+                <h6>{{ __('Reports Submitted') }}</h6>
                 <canvas id="reportsChart" height="200"></canvas>
             </div>
         </div>
         <div class="col-md-6">
             <div class="card stat-card p-3">
-                <h6>Fund Collection</h6>
+                <h6>{{ __('Fund Collection') }}</h6>
                 <canvas id="fundChart" height="200"></canvas>
             </div>
         </div>
