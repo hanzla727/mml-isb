@@ -18,7 +18,7 @@ class StoreAnnouncementRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
             'category' => ['required', Rule::in(['meeting_reminder', 'event', 'deadline', 'general'])],
-            'audience_scope' => ['required', Rule::in(['all', 'department', 'team', 'user'])],
+            'audience_scope' => ['required', Rule::in(['all', 'department', 'user'])],
             'audience_id' => ['required_unless:audience_scope,all', 'nullable', 'integer'],
             'published_at' => ['nullable', 'date'],
         ];

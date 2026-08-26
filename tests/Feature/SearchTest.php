@@ -6,7 +6,7 @@ use App\Models\Contact;
 use App\Models\Task;
 use App\Models\User;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,7 +19,7 @@ class SearchTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_admin_can_search_contacts_and_tasks_scoped_to_their_area(): void

@@ -2,7 +2,6 @@
     $nas = $nas ?? [];
     $ucs = $ucs ?? [];
     $departments = $departments ?? [];
-    $teams = $teams ?? [];
     $users = $users ?? [];
 @endphp
 
@@ -11,7 +10,6 @@
     <label class="form-label">{{ __('Assign To') }}</label>
     <select name="scope" class="form-select audience-scope-select" onchange="toggleAudienceScope(this)">
         <option value="individual">{{ __('Specific User(s)') }}</option>
-        <option value="teams">{{ __('Team(s)') }}</option>
         <option value="departments">{{ __('Department(s)') }}</option>
         <option value="uc">{{ __('Entire UC') }}</option>
         <option value="na">{{ __('Entire NA') }}</option>
@@ -40,18 +38,6 @@
             <div class="form-check">
                 <input type="checkbox" name="department_ids[]" value="{{ $department->id }}" class="form-check-input" disabled>
                 <label class="form-check-label small">{{ $department->name }}</label>
-            </div>
-        @endforeach
-    </div>
-</div>
-
-<div class="mb-3 audience-scope-target" data-scope="teams" style="display:none;">
-    <label class="form-label small">{{ __('Team(s)') }} <span class="text-muted">— {{ __('tick one, a few, or all') }}</span></label>
-    <div class="border rounded p-2" style="max-height: 180px; overflow-y: auto;">
-        @foreach ($teams as $team)
-            <div class="form-check">
-                <input type="checkbox" name="team_ids[]" value="{{ $team->id }}" class="form-check-input" disabled>
-                <label class="form-check-label small">{{ $team->name }}</label>
             </div>
         @endforeach
     </div>

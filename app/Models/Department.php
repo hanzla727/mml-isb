@@ -33,11 +33,6 @@ class Department extends Model
             ->dontLogEmptyChanges();
     }
 
-    public function teams(): HasMany
-    {
-        return $this->hasMany(Team::class);
-    }
-
     public function users(): HasMany
     {
         return $this->hasMany(User::class);

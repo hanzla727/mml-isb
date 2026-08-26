@@ -20,9 +20,8 @@ class ProjectResource extends JsonResource
             'department' => $this->whenLoaded('department', fn () => $this->department ? ['id' => $this->department->id, 'name' => $this->department->name] : null),
             'uc' => $this->whenLoaded('uc', fn () => $this->uc ? ['id' => $this->uc->id, 'name' => $this->uc->name] : null),
             // Set by the controller — every volunteer (from this project's tasks
-            // + meetings) grouped by their org Team, since a Project has no
-            // direct Team relation of its own.
-            'teams' => $this->when(isset($this->team_members), fn () => $this->team_members),
+            // + meetings) grouped by their own Department.
+            'departments' => $this->when(isset($this->department_members), fn () => $this->department_members),
             'my_tasks_count' => $this->when(isset($this->my_tasks_count), fn () => $this->my_tasks_count),
             'created_at' => $this->created_at,
         ];

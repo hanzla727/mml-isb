@@ -46,34 +46,34 @@ class ProjectController extends Controller
     }
 
     /**
-     * Detail view — adds who else is working on it, grouped by their org
-     * Team (derived from task assignees + meeting participants, since
-     * Project itself carries no Team relation).
+     * Detail view — adds who else is working on it, grouped by their own
+     * Department (derived from task assignees + meeting participants,
+     * since Project itself carries no direct relation to a user).
      */
     public function show(Request $request, Project $project)
     {
         $project->load(['department', 'uc']);
 
         $taskAssignees = collect();
-        foreach ($project->tasks()->with('assignees.team')->get() as $task) {
+        foreach ($project->tasks()->with('assignees.department')->get() as $task) {
             $taskAssignees = $taskAssignees->merge($task->assignees);
         }
 
         $meetingParticipants = collect();
-        foreach ($project->meetings()->with('participants.team')->get() as $meeting) {
+        foreach ($project->meetings()->with('participants.department')->get() as $meeting) {
             $meetingParticipants = $meetingParticipants->merge($meeting->participants);
         }
 
-        $teams = $taskAssignees->merge($meetingParticipants)
+        $departments = $taskAssignees->merge($meetingParticipants)
             ->unique('id')
-            ->groupBy(fn ($user) => $user->team?->name ?? 'Unassigned')
-            ->map(fn ($users, $teamName) => [
-                'team' => $teamName,
+            ->groupBy(fn ($user) => $user->department?->name ?? 'Unassigned')
+            ->map(fn ($users, $departmentName) => [
+                'department' => $departmentName,
                 'members' => $users->map(fn ($user) => ['id' => $user->id, 'name' => $user->name])->values(),
             ])
             ->values();
 
-        $project->setAttribute('team_members', $teams);
+        $project->setAttribute('department_members', $departments);
         $project->setAttribute(
             'my_tasks_count',
             $project->tasks()->whereHas('assignees', fn ($q) => $q->where('users.id', $request->user()->id))->count()

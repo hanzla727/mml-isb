@@ -203,7 +203,7 @@
             </div>
             <div class="col-md-6">
                 <div class="quickstart-card">
-                    <h5><i class="bi bi-person-workspace"></i> {{ __('New Admin / Team Leader? Start Here') }}</h5>
+                    <h5><i class="bi bi-person-workspace"></i> {{ __('New Admin / NA Head? Start Here') }}</h5>
                     <ol class="small mb-0 ps-3">
                         <li>{!! __('Log in — you land on the :dashboard.', ['dashboard' => '<strong>' . __('Dashboard') . '</strong>']) !!}</li>
                         <li>{!! __('Create a :meeting or :task and pick who it\'s for.', ['meeting' => '<strong>' . __('Meeting') . '</strong>', 'task' => '<strong>' . __('Task') . '</strong>']) !!}</li>
@@ -233,10 +233,10 @@
 
                 <section id="structure">
                     <h2><i class="bi bi-diagram-3"></i> 1. {{ __('Organization Structure') }}</h2>
-                    <p>{!! __('This organization works within :islamabadOnly. Islamabad Capital Territory has no Provincial Assembly — it\'s a federal territory, not part of any province — so the real structure here is just two levels: :naUc. Everyone in the system sits somewhere in this chain, and every volunteer has all levels set (NA is automatic, UC/Department/Team are explicit) — none of them are optional.', ['islamabadOnly' => '<strong>' . __('Islamabad only') . '</strong>', 'naUc' => '<strong>NA &rarr; UC</strong>']) !!}</p>
+                    <p>{!! __('This organization works within :islamabadOnly. Islamabad Capital Territory has no Provincial Assembly — it\'s a federal territory, not part of any province — so the real structure here is just two levels: :naUc. Everyone in the system sits somewhere in this chain, and every volunteer has all levels set (NA is automatic, UC/Department are explicit) — neither is optional.', ['islamabadOnly' => '<strong>' . __('Islamabad only') . '</strong>', 'naUc' => '<strong>NA &rarr; UC</strong>']) !!}</p>
                     <p class="urdu">Yeh organization sirf Islamabad ke andar kaam karti hai. Islamabad me Provincial
                         Assembly nahi hoti, isliye asal structure sirf do level ka hai: NA &rarr; UC. Har volunteer ka
-                        UC, Department, Team aur Reporting Head zaroor set hota hai.</p>
+                        UC, Department aur Reporting Head zaroor set hota hai.</p>
 
                     <div class="flow-row my-4">
                         <div class="flow-box"><strong><i class="bi bi-building"></i> {{ __('Organization') }}</strong><small>{{ __('The whole organization') }}</small></div>
@@ -248,9 +248,6 @@
                         <div class="flow-box"><strong><i class="bi bi-pin-map"></i> UC</strong><small>{{ __('e.g. UC F-10 — where work happens') }}</small></div>
                         <div class="flow-arrow"><i class="bi bi-arrow-right d-none d-md-inline"></i><i
                                 class="bi bi-arrow-down d-md-none"></i></div>
-                        <div class="flow-box"><strong><i class="bi bi-people-fill"></i> {{ __('Team') }}</strong><small>{{ __('e.g. Donor Relations Team') }}</small></div>
-                        <div class="flow-arrow"><i class="bi bi-arrow-right d-none d-md-inline"></i><i
-                                class="bi bi-arrow-down d-md-none"></i></div>
                         <div class="flow-box"><strong><i class="bi bi-person"></i> {{ __('Volunteer') }}</strong><small>{{ __('Does the actual field work') }}</small></div>
                     </div>
 
@@ -259,33 +256,31 @@
                         </div>
                         <ul class="small mb-0 ps-3">
                             <li>{!! __('is the unit a person is actually put in charge of (its :naHead). Whatever UCs sit under that NA, all of them are that person\'s responsibility — that\'s the whole point of the NA level.', ['naHead' => '<strong>' . __('NA Head') . '</strong>']) !!}</li>
-                            <li>{!! __(':ucLabel is where the real, on-the-ground work lives: Teams, Volunteers, and Projects all attach to a UC. :sectorLabel (e.g. "F-10") is just an optional, informal label you can put on a UC — it doesn\'t add another level, it\'s not required, and nothing in the system depends on it.', ['ucLabel' => '<strong>UC</strong>', 'sectorLabel' => '<strong>' . __('Sector') . '</strong>']) !!}</li>
+                            <li>{!! __(':ucLabel is where the real, on-the-ground work lives: Volunteers and Projects all attach to a UC — and a UC Head can be put in charge of one or more specific UCs directly. :sectorLabel (e.g. "F-10") is just an optional, informal label you can put on a UC — it doesn\'t add another level, it\'s not required, and nothing in the system depends on it.', ['ucLabel' => '<strong>UC</strong>', 'sectorLabel' => '<strong>' . __('Sector') . '</strong>']) !!}</li>
                         </ul>
                     </div>
 
                     <div class="mockup mb-3">
                         <div class="mockup-title"><i class="bi bi-diagram-3"></i> {{ __('Department is shared across every NA/UC') }}</div>
-                        <p class="mb-2 small">{!! __('Department (Fundraising, Hospital, Mosque, Khidmat, Dawah, Administration, ...) is :not part of the NA → UC chain above — it\'s the same org-wide list everywhere. A Team is what actually connects a Department to one specific UC. So the same "Fundraising" department can have a team in UC F-10 :and a separate team in UC G-9 — it\'s one shared category, used in more than one place.', ['not' => '<strong>' . __('not') . '</strong>', 'and' => '<em>' . __('and') . '</em>']) !!}</p>
+                        <p class="mb-2 small">{!! __('Department (Fundraising, Hospital, Mosque, Khidmat, Dawah, Administration, ...) is :not part of the NA → UC chain above — it\'s the same org-wide list everywhere, and every volunteer/head belongs to one directly. So the same "Fundraising" department can have volunteers in UC F-10 :and separate volunteers in UC G-9 at the same time — it\'s one shared category, used in more than one place.', ['not' => '<strong>' . __('not') . '</strong>', 'and' => '<em>' . __('and') . '</em>']) !!}</p>
                         <div class="mockup-title"><i class="bi bi-signpost-split"></i> {{ __('A real example from this system') }}
                         </div>
-                        {!! __(':na48 (run by :naHeadOne) has two UCs: :ucF10 and :ucF11. :ucF10Again has :donorTeam (Team, under the :fundraising department, led by :teamLeaderOne) → :volunteerOne (a volunteer on that team). Meanwhile :na49 has its own :ucG9, with a :communityTeam — also under :fundraisingAgain.', [
+                        {!! __(':na48 (run by :naHeadOne) has two UCs: :ucF10 and :ucF11. :ucF10Again has :volunteerOne, a Fundraising department volunteer reporting to :naHeadOneAgain. Meanwhile :na49 has its own :ucG9, with :volunteerTwo — a Fundraising department volunteer there too, reporting to :naHeadTwo.', [
                             'na48' => '<strong>NA-48</strong>',
                             'naHeadOne' => '<em>' . __('NA Head One') . '</em>',
                             'ucF10' => '<strong>UC F-10</strong>',
                             'ucF11' => '<strong>UC F-11</strong>',
                             'ucF10Again' => '<strong>UC F-10</strong>',
-                            'donorTeam' => '<strong>' . __('Donor Relations Team') . '</strong>',
-                            'fundraising' => '<em>' . __('Fundraising') . '</em>',
-                            'teamLeaderOne' => '<em>' . __('Team Leader One') . '</em>',
                             'volunteerOne' => '<strong>' . __('Volunteer One') . '</strong>',
+                            'naHeadOneAgain' => '<em>' . __('NA Head One') . '</em>',
                             'na49' => '<strong>NA-49</strong>',
                             'ucG9' => '<strong>UC G-9</strong>',
-                            'communityTeam' => '<strong>' . __('Community Fundraising Team') . '</strong>',
-                            'fundraisingAgain' => '<em>' . __('Fundraising') . '</em>',
+                            'volunteerTwo' => '<strong>' . __('Volunteer Two') . '</strong>',
+                            'naHeadTwo' => '<em>' . __('NA Head Two') . '</em>',
                         ]) !!}
                     </div>
 
-                    <p class="mb-1">{!! __(':reportingHead is separate from the team/department chart. It\'s the one specific person answerable for a volunteer — usually their Team Leader, but it can be set to anyone (an NA Head, for a volunteer with no team leader yet). This is who gets notified first when that volunteer\'s work needs a decision.', ['reportingHead' => '<strong>' . __('Reporting Head') . '</strong>']) !!}</p>
+                    <p class="mb-1">{!! __(':reportingHead is separate from the UC/department placement above. It\'s the one specific person answerable for a volunteer — usually their UC Head or NA Head, but it can be set to anyone. This is who gets notified first when that volunteer\'s work needs a decision.', ['reportingHead' => '<strong>' . __('Reporting Head') . '</strong>']) !!}</p>
                     <p class="mb-0">{!! __(':multipleNas an Admin can be responsible for more than one NA at once (e.g. both NA-48 and NA-49). An NA Head is always scoped to exactly one NA — but every UC in it.', ['multipleNas' => '<strong>' . __('Multiple NAs:') . '</strong>']) !!}</p>
                 </section>
 
@@ -304,7 +299,7 @@
                         <div class="col-md-6">
                             <div class="role-card">
                                 <h5><i class="bi bi-shield"></i> {{ __('Admin') }}</h5>
-                                <p class="small mb-2">{{ __('Manages one or more assigned NAs: creates meetings/tasks, reviews reports, manages users, departments and teams — but only within their own NA(s).') }}</p>
+                                <p class="small mb-2">{{ __('Manages one or more assigned NAs: creates meetings/tasks, reviews reports, manages users and departments — but only within their own NA(s).') }}</p>
                                 <p class="small text-muted mb-0"><strong>{{ __('Example:') }}</strong> {{ __('Admin One → manages NA-48') }}</p>
                             </div>
                         </div>
@@ -317,17 +312,17 @@
                         </div>
                         <div class="col-md-6">
                             <div class="role-card">
-                                <h5><i class="bi bi-people-fill"></i> {{ __('Team Leader') }}</h5>
-                                <p class="small mb-2">{{ __("Runs one Team. Reviews that team's daily reports first, sees the team's tasks/meetings, and also has their own personal tasks like a volunteer does.") }}
+                                <h5><i class="bi bi-pin-map"></i> {{ __('UC Head') }}</h5>
+                                <p class="small mb-2">{{ __('Same abilities as NA Head/Admin, but scoped to one or more specific UCs rather than a whole NA — reviews reports and manages meetings/tasks only for the UC(s) they were appointed to.') }}
                                 </p>
-                                <p class="small text-muted mb-0"><strong>{{ __('Example:') }}</strong> {{ __('Team Leader One → leads Donor Relations Team') }}</p>
+                                <p class="small text-muted mb-0"><strong>{{ __('Example:') }}</strong> {{ __('UC Head One → responsible for UC Bhara Kahu and UC Tarnol') }}</p>
                             </div>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <div class="role-card">
                                 <h5><i class="bi bi-person"></i> {{ __('Volunteer') }}</h5>
                                 <p class="small mb-2">{{ __('Sees only their own meetings, tasks, reports, targets, and leave/expense history. This is the majority of the organization.') }}</p>
-                                <p class="small text-muted mb-0"><strong>{{ __('Example:') }}</strong> {{ __('Volunteer One → on Donor Relations Team, reports to Team Leader One') }}</p>
+                                <p class="small text-muted mb-0"><strong>{{ __('Example:') }}</strong> {{ __('Volunteer One → in UC F-10, reports to NA Head One') }}</p>
                             </div>
                         </div>
                     </div>
@@ -335,19 +330,19 @@
                     <div class="row g-3 mt-1">
                         <div class="col-md-6">
                             <div class="menu-preview">
-                                <div class="fw-semibold mb-2 text-white"><i class="bi bi-list"></i> {{ __('Sidebar — Admin / NA Head / Team Leader') }}</div>
+                                <div class="fw-semibold mb-2 text-white"><i class="bi bi-list"></i> {{ __('Sidebar — Admin / NA Head / UC Head') }}</div>
                                 <div class="mp-item mp-active">{{ __('Dashboard') }}</div>
                                 <div class="mp-item">{{ __('Search') }}</div>
                                 <div class="mp-item">{{ __('NAs') }} <span class="text-muted">{{ __('(+ UCs, super admin & NA managers)') }}</span></div>
                                 <div class="mp-item">{{ __('Reports') }} &middot; {{ __('Meetings') }} &middot; {{ __('Tasks') }} &middot; {{ __('Report Reviews') }}
                                     &middot; {{ __('Projects') }}</div>
-                                <div class="mp-item">{{ __('Users') }} &middot; {{ __('Departments') }} &middot; {{ __('Teams') }} &middot; {{ __('My Team') }}</div>
+                                <div class="mp-item">{{ __('Users') }} &middot; {{ __('Departments') }}</div>
                                 <div class="mp-item">{{ __('Leave Requests') }} &middot; {{ __('Expense Claims') }}</div>
                                 <div class="mp-item">{{ __('Announcements') }} &middot; {{ __('Targets') }} &middot; {{ __('Analytics') }} &middot;
                                     {{ __('Performance') }} &middot; {{ __('Forms') }}</div>
                                 <div class="mp-item">{{ __('How It Works') }}</div>
                             </div>
-                            <p class="small text-muted mt-1 mb-0">{{ __('Some items only appear if your role has that specific permission — e.g. a Team Leader won\'t see "Users" or "NAs".') }}</p>
+                            <p class="small text-muted mt-1 mb-0">{{ __('Some items only appear if your role has that specific permission — e.g. an NA Head won\'t see "Settings".') }}</p>
                         </div>
                         <div class="col-md-6">
                             <div class="menu-preview">
@@ -372,21 +367,20 @@
                         @php
                             $terms = [
                                 ['NA', __('The unit a person is actually assigned to manage (e.g. "NA-48"), via an "NA Head". Every UC under that NA is that person\'s responsibility. It is the real top-level structure here — Islamabad has no Provincial Assembly, so there is no level above NA.')],
-                                ['UC', __('The bottom-most operational unit (e.g. "UC F-10") — this is where Teams, Projects, and Volunteers actually attach. One NA can have several UCs.')],
+                                ['UC', __('The bottom-most operational unit (e.g. "UC F-10") — this is where Volunteers and Projects actually attach, and a UC Head can be appointed over one or more UCs directly. One NA can have several UCs.')],
                                 [__('Sector'), __('A purely optional, informal label you can put on a UC (e.g. "F-10"). It is not a structural level of its own and nothing depends on it.')],
-                                [__('Department'), __('A shared, org-wide function, e.g. "Fundraising" or "Hospital" — the same list applies to every UC/NA, it is never specific to just one. To give a department a presence in a specific UC, you create a Team for it there.')],
-                                [__('Team'), __('The UC-specific instance of a Department — e.g. "Donor Relations Team" is Fundraising\'s team in UC F-10. Led by one Team Leader. The same Department can have different Teams in different UCs.')],
-                                [__('Reporting Head'), __('The one specific person responsible for a volunteer. Usually the Team Leader, but can be reassigned to anyone (e.g. an NA Head).')],
-                                [__('Project'), __('A larger initiative that groups several meetings and tasks together under one name, with its own progress percentage. Belongs to one Department and one UC at the same time (e.g. a Fundraising project running specifically in UC F-10).')],
+                                [__('Department'), __('A shared, org-wide function, e.g. "Fundraising" or "Hospital" — the same list applies to every UC/NA, it is never specific to just one. Every volunteer/head belongs to one directly, independent of which UC they\'re in.')],
+                                [__('Reporting Head'), __('The one specific person responsible for a volunteer. Usually their UC Head or NA Head, but can be reassigned to anyone.')],
+                                [__('Project'), __('A larger initiative that groups several meetings and tasks together under one name, with its own progress percentage. Belongs to one UC (e.g. a Fundraising project running specifically in UC F-10).')],
                                 [__('Meeting'), __('A scheduled event (date, time, location, agenda) with invited participants. Tasks can optionally be linked to a meeting, but don\'t have to be.')],
                                 [__('Task'), __('A specific piece of work assigned to one or more people, with a priority and due date. Can exist completely on its own, with no meeting attached.')],
-                                [__('Scope / Audience'), __('Who a meeting or task is for. One of: a specific person or people, an entire Team, an entire Department, an entire UC, an entire NA, several NAs at once, or every volunteer in the organization.')],
+                                [__('Scope / Audience'), __('Who a meeting or task is for. One of: a specific person or people, an entire Department, an entire UC, an entire NA, several NAs at once, or every volunteer in the organization.')],
                                 [__('Report'), __('What a volunteer submits after doing the work — a written summary, working hours, amount collected (if any), and file attachments like receipts.')],
                                 [__('Version'), __('Every time a report is sent back and resubmitted, it becomes a new version (v1, v2, v3...). Nothing is ever deleted or overwritten.')],
                                 [__('Review'), __('The decision a reviewer makes on a submitted report: Approve, Approve with Remarks, Reject, Return for Revision, or Request More Information.')],
                                 [__('Attachment'), __('Any file uploaded with a report — a receipt, a photo, a document.')],
-                                [__('Target'), __('A goal set for a person, team, UC, or NA with a deadline, tracked until it\'s met.')],
-                                [__('Announcement'), __('A one-way message from leadership to a Team, Department, UC, NA, or everyone.')],
+                                [__('Target'), __('A goal set for a person, department, UC, or NA with a deadline, tracked until it\'s met.')],
+                                [__('Announcement'), __('A one-way message from leadership to a Department, UC, NA, or everyone.')],
                                 [__('NA Dashboard'), __('A single screen showing an NA\'s health: volunteers, meetings, attendance, tasks, reports, fund collection, and working hours.')],
                                 [__('NA Comparison / Ranking'), __('A side-by-side comparison of NAs against each other, for management planning only — not a leaderboard, and never about individual volunteers.')],
                             ];
@@ -418,15 +412,15 @@
                         <div class="story-msg">
                             <div class="who"><i class="bi bi-1-circle-fill"></i> {{ __('Admin One (Admin, NA-48) creates a task') }}
                             </div>
-                            {!! __('Opens :tasksAddTask. Title: "Collect donations after Friday prayer". Priority: Medium. Under "Assign To" picks scope :entireTeam and selects :donorTeam. No meeting is attached — this task stands on its own. Saves it.', [
+                            {!! __('Opens :tasksAddTask. Title: "Collect donations after Friday prayer". Priority: Medium. Under "Assign To" picks scope :entireUc and selects :ucF10. No meeting is attached — this task stands on its own. Saves it.', [
                                 'tasksAddTask' => '<strong>' . __('Tasks → Add Task') . '</strong>',
-                                'entireTeam' => '<strong>' . __('Entire Team') . '</strong>',
-                                'donorTeam' => '<strong>' . __('Donor Relations Team') . '</strong>',
+                                'entireUc' => '<strong>' . __('Entire UC') . '</strong>',
+                                'ucF10' => '<strong>UC F-10</strong>',
                             ]) !!}
                         </div>
                         <div class="story-msg">
                             <div class="who"><i class="bi bi-2-circle-fill"></i> {{ __('The system assigns it instantly') }}</div>
-                            {!! __('Every current member of Donor Relations Team — including :volunteerOne — is attached to the task right away and gets a notification. The task\'s status becomes :assigned.', [
+                            {!! __('Every current active volunteer in UC F-10 — including :volunteerOne — is attached to the task right away and gets a notification. The task\'s status becomes :assigned.', [
                                 'volunteerOne' => '<strong>' . __('Volunteer One') . '</strong>',
                                 'assigned' => '<span class="badge bg-info text-dark">' . __('Assigned') . '</span>',
                             ]) !!}
@@ -446,8 +440,8 @@
                             ]) !!}
                         </div>
                         <div class="story-msg">
-                            <div class="who"><i class="bi bi-5-circle-fill"></i> {{ __('Team Leader One reviews it first') }}</div>
-                            {!! __('Because Team Leader One leads Donor Relations Team, the report lands in their :reportReviews queue. They open it, read the summary, see the receipt, and check the amount matches. They approve it.', ['reportReviews' => '<strong>' . __('Report Reviews') . '</strong>']) !!}
+                            <div class="who"><i class="bi bi-5-circle-fill"></i> {{ __('NA Head One reviews it directly') }}</div>
+                            {!! __('Because NA Head One leads NA-48 (which UC F-10 sits under), the report lands in their :reportReviews queue — no separate stage in between. They open it, read the summary, see the receipt, and check the amount matches. They approve it.', ['reportReviews' => '<strong>' . __('Report Reviews') . '</strong>']) !!}
                         </div>
                         <div class="story-msg">
                             <div class="who"><i class="bi bi-6-circle-fill"></i> {{ __("It's done") }}</div>
@@ -459,7 +453,7 @@
                         </div>
                         <div class="story-msg">
                             <div class="who"><i class="bi bi-exclamation-circle-fill"></i> {{ __('If instead it needed a fix…') }}</div>
-                            {!! __('Team Leader One could have chosen :returnForRevision with a remark like "please attach a clearer receipt photo". The task would show :needsRevision, Volunteer One would see the remark, fix it, and resubmit — creating version 2 of the report. Nothing from version 1 is lost.', [
+                            {!! __('NA Head One could have chosen :returnForRevision with a remark like "please attach a clearer receipt photo". The task would show :needsRevision, Volunteer One would see the remark, fix it, and resubmit — creating version 2 of the report. Nothing from version 1 is lost.', [
                                 'returnForRevision' => '<strong>' . __('Return for Revision') . '</strong>',
                                 'needsRevision' => '<span class="badge bg-warning text-dark">' . __('Needs Revision') . '</span>',
                             ]) !!}
@@ -481,7 +475,7 @@
                                 </tr>
                                 <tr>
                                     <td><span class="badge bg-info text-dark">{{ __('Assigned') }}</span></td>
-                                    <td class="small">{{ __('Someone (or a whole team/department/UC/NA) has been given this task.') }}</td>
+                                    <td class="small">{{ __('Someone (or a whole department/UC/NA) has been given this task.') }}</td>
                                 </tr>
                                 <tr>
                                     <td><span class="badge bg-info text-dark">{{ __('In Progress') }}</span></td>
@@ -563,7 +557,7 @@
                     </div>
                     <div class="d-flex gap-3 mb-3">
                         <div class="step-num">2</div>
-                        <div><strong>{{ __('Check "My Tasks" and "Meetings" / "Field Visits".') }}</strong> {{ __('Anything assigned to you — individually, or because your whole team/department/UC/NA was assigned — shows up here automatically. A task never requires a meeting to exist; treat each list separately.') }}
+                        <div><strong>{{ __('Check "My Tasks" and "Meetings" / "Field Visits".') }}</strong> {{ __('Anything assigned to you — individually, or because your whole department/UC/NA was assigned — shows up here automatically. A task never requires a meeting to exist; treat each list separately.') }}
                         </div>
                     </div>
                     <div class="d-flex gap-3 mb-3">
@@ -588,9 +582,9 @@
                 </section>
 
                 <section id="leader">
-                    <h2><i class="bi bi-person-workspace"></i> 7. {{ __('If You Manage Others (Team Leader / NA Head / Admin)') }}
+                    <h2><i class="bi bi-person-workspace"></i> 7. {{ __('If You Manage Others (NA Head / UC Head / Admin)') }}
                     </h2>
-                    <p class="urdu">Agar aap kisi team, department, UC ya NA ke zimmedar hain:</p>
+                    <p class="urdu">Agar aap kisi department, UC ya NA ke zimmedar hain:</p>
 
                     <div class="d-flex gap-3 mb-3">
                         <div class="step-num">1</div>
@@ -599,23 +593,22 @@
                     <div class="d-flex gap-3 mb-3">
                         <div class="step-num">2</div>
                         <div>
-                            <strong>{{ __('Choose the audience ("Assign To").') }}</strong> {{ __("You'll always see the same seven options:") }}
+                            <strong>{{ __('Choose the audience ("Assign To").') }}</strong> {{ __("You'll always see the same six options:") }}
                             <ul class="small mb-0 mt-1">
                                 <li><strong>{{ __('Specific User(s)') }}</strong> — {{ __('hand-pick exactly who, one or many.') }}</li>
-                                <li><strong>{{ __('Entire Team') }}</strong> — {{ __('everyone currently on that team.') }}</li>
-                                <li><strong>{{ __('Entire Department') }}</strong> — {{ __("everyone in that department's teams, across") }}
+                                <li><strong>{{ __('Entire Department') }}</strong> — {{ __('everyone in that department, across') }}
                                     <em>{{ __('every') }}</em> {{ __('UC/NA (Department is shared, not tied to one UC).') }}</li>
                                 <li><strong>{{ __('Entire UC') }}</strong> — {{ __('every active volunteer in that UC.') }}</li>
                                 <li><strong>{{ __('Entire NA') }}</strong> — {{ __('every active volunteer across every UC in that NA.') }}</li>
                                 <li><strong>{{ __('Multiple NAs') }}</strong> — {{ __('pick two or more NAs at once.') }}</li>
                                 <li><strong>{{ __('All Volunteers') }}</strong> — {{ __('the whole organization.') }}</li>
                             </ul>
-                            <span class="small text-muted">{{ __("Whichever you pick, the exact list of people is locked in the moment you save — someone joining the team later won't retroactively appear on an older meeting/task.") }}</span>
+                            <span class="small text-muted">{{ __("Whichever you pick, the exact list of people is locked in the moment you save — someone joining later won't retroactively appear on an older meeting/task.") }}</span>
                         </div>
                     </div>
                     <div class="d-flex gap-3 mb-3">
                         <div class="step-num">3</div>
-                        <div><strong>{{ __('Wait for reports to come in.') }}</strong> <strong>{{ __('Report Reviews') }}</strong> {{ __("lists every report currently waiting on your decision. A Team Leader only sees their own team's reports; an Admin/NA Head sees their whole NA's (every UC in it).") }}</div>
+                        <div><strong>{{ __('Wait for reports to come in.') }}</strong> <strong>{{ __('Report Reviews') }}</strong> {{ __('lists every report currently waiting on your decision. A UC Head only sees their UC(s) reports; an Admin/NA Head sees their whole NA\'s (every UC in it).') }}</div>
                     </div>
                     <div class="d-flex gap-3 mb-3">
                         <div class="step-num">4</div>
@@ -650,13 +643,13 @@
                         <div class="col-md-6">
                             <div class="role-card">
                                 <h5 class="fs-6"><i class="bi bi-broadcast"></i> {{ __('Announcements') }}</h5>
-                                <p class="small mb-0">{{ __('One-way messages from leadership, sent to a Team, Department, UC, NA, or everyone.') }}</p>
+                                <p class="small mb-0">{{ __('One-way messages from leadership, sent to a Department, UC, NA, or everyone.') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="role-card">
                                 <h5 class="fs-6"><i class="bi bi-bullseye"></i> {{ __('Targets') }}</h5>
-                                <p class="small mb-0">{{ __('A goal set for a person/team/UC/NA with a deadline, tracked to completion.') }}</p>
+                                <p class="small mb-0">{{ __('A goal set for a person/department/UC/NA with a deadline, tracked to completion.') }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -669,7 +662,7 @@
                         <div class="col-md-6">
                             <div class="role-card">
                                 <h5 class="fs-6"><i class="bi bi-folder"></i> {{ __('Documents') }}</h5>
-                                <p class="small mb-0">{{ __("A volunteer's CNIC, certificates, or agreements — visible to them, their Team Leader/Reporting Head, and their NA's Admin.") }}</p>
+                                <p class="small mb-0">{{ __("A volunteer's CNIC, certificates, or agreements — visible to them, their Reporting Head, and their NA's Admin.") }}</p>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -712,7 +705,7 @@
                     </div>
                     <div class="mb-3">
                         <strong>{{ __('Who can see my data?') }}</strong>
-                        <p class="mb-0 small text-muted">{{ __("Only your Reporting Head, your Team Leader, your NA's Admin or NA Head, and Super Admin — strictly based on where you sit in the org chart in section 1. No one outside your chain can see your reports.") }}</p>
+                        <p class="mb-0 small text-muted">{{ __("Only your Reporting Head, your UC Head, your NA's Admin or NA Head, and Super Admin — strictly based on where you sit in the org chart in section 1. No one outside your chain can see your reports.") }}</p>
                     </div>
                     <div class="mb-3">
                         <strong>{{ __('Is there a leaderboard or ranking of volunteers?') }}</strong>
@@ -720,7 +713,7 @@
                     </div>
                     <div class="mb-3">
                         <strong>{{ __("Why isn't there a Provincial Assembly (PP) level?") }}</strong>
-                        <p class="mb-0 small text-muted">{{ __('Islamabad Capital Territory is a federal territory, not part of any province, so it has no real Provincial Assembly constituencies — only NA (National Assembly) and UC (local government) exist. NA is the unit someone is actually put in charge of — and every UC inside it is their responsibility. UC is where volunteers, teams, and projects actually attach and do work. "Sector" is just an optional label on a UC, not a real level.') }}</p>
+                        <p class="mb-0 small text-muted">{{ __('Islamabad Capital Territory is a federal territory, not part of any province, so it has no real Provincial Assembly constituencies — only NA (National Assembly) and UC (local government) exist. NA is the unit someone is actually put in charge of — and every UC inside it is their responsibility. UC is where volunteers and projects actually attach and do work. "Sector" is just an optional label on a UC, not a real level.') }}</p>
                     </div>
                     <div class="mb-3">
                         <strong>{{ __("What's the difference between a Meeting and a Task?") }}</strong>
@@ -728,11 +721,11 @@
                     </div>
                     <div class="mb-3">
                         <strong>{{ __('Can one task be assigned to more than one person?') }}</strong>
-                        <p class="mb-0 small text-muted">{{ __('Yes — pick "Specific User(s)" and select several, or use "Entire Team"/"Entire Department"/"Entire UC"/"Entire NA"/"All Volunteers" to assign it to everyone in that group at once. Each assignee submits and tracks their own report separately.') }}</p>
+                        <p class="mb-0 small text-muted">{{ __('Yes — pick "Specific User(s)" and select several, or use "Entire Department"/"Entire UC"/"Entire NA"/"All Volunteers" to assign it to everyone in that group at once. Each assignee submits and tracks their own report separately.') }}</p>
                     </div>
                     <div>
-                        <strong>{{ __("I'm a Team Leader — do I also get assigned tasks like a volunteer?") }}</strong>
-                        <p class="mb-0 small text-muted">{{ __("Yes. A Team Leader has two hats: reviewing their team's reports, and also receiving and completing their own tasks/meetings just like any volunteer.") }}</p>
+                        <strong>{{ __("I'm an NA Head/UC Head — do I also get assigned tasks like a volunteer?") }}</strong>
+                        <p class="mb-0 small text-muted">{{ __('Yes. Anyone can be picked as an individual assignee on a task or meeting, regardless of role — an NA Head or UC Head can receive and complete their own tasks/meetings, on top of reviewing everyone else\'s.') }}</p>
                     </div>
                 </section>
 

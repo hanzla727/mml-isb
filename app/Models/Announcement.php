@@ -43,7 +43,6 @@ class Announcement extends Model
             'na' => User::query()->where('na_id', $this->audience_id),
             'uc' => User::query()->where('uc_id', $this->audience_id),
             'department' => User::query()->where('department_id', $this->audience_id),
-            'team' => User::query()->where('team_id', $this->audience_id),
             'user' => User::query()->where('id', $this->audience_id),
         };
     }
@@ -58,7 +57,6 @@ class Announcement extends Model
                 ->orWhere(fn ($q) => $q->where('audience_scope', 'na')->where('audience_id', $user->na_id))
                 ->orWhere(fn ($q) => $q->where('audience_scope', 'uc')->where('audience_id', $user->uc_id))
                 ->orWhere(fn ($q) => $q->where('audience_scope', 'department')->where('audience_id', $user->department_id))
-                ->orWhere(fn ($q) => $q->where('audience_scope', 'team')->where('audience_id', $user->team_id))
                 ->orWhere(fn ($q) => $q->where('audience_scope', 'user')->where('audience_id', $user->id));
         });
     }

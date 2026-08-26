@@ -80,18 +80,15 @@ class DailyReportController extends Controller
 
     public function review(ReviewDailyReportRequest $request, DailyReport $dailyReport, ReportApprovalService $service)
     {
-        $user = $request->user();
-        $decision = $request->string('decision')->toString();
-        $remarks = $request->input('remarks');
+        $this->authorize('review', $dailyReport);
 
-        if ($dailyReport->review_status === 'pending_review') {
-            $this->authorize('reviewAsTeamLeader', $dailyReport);
-            $report = $service->teamLeaderReview($dailyReport, $user, $decision, $remarks);
-        } else {
-            $this->authorize('reviewAsAdmin', $dailyReport);
-            $report = $service->adminReview($dailyReport, $user, $decision, $remarks);
-        }
+        $report = $service->review(
+            $dailyReport,
+            $request->user(),
+            $request->string('decision')->toString(),
+            $request->input('remarks'),
+        );
 
-        return new DailyReportResource($report->load(['user', 'teamLeader', 'teamLeaderReviewer', 'adminReviewer']));
+        return new DailyReportResource($report->load(['user', 'adminReviewer']));
     }
 }

@@ -11,7 +11,7 @@ class DepartmentController extends Controller
 {
     public function index()
     {
-        return Department::withCount(['teams', 'users'])->orderBy('name')->get();
+        return Department::withCount(['users'])->orderBy('name')->get();
     }
 
     public function store(Request $request)

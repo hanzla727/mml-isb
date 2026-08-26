@@ -8,7 +8,6 @@ use App\Http\Controllers\Web\Admin\DepartmentController;
 use App\Http\Controllers\Web\Admin\ExpenseClaimController as AdminExpenseClaimController;
 use App\Http\Controllers\Web\Admin\FormTemplateController;
 use App\Http\Controllers\Web\Admin\LeaveRequestController as AdminLeaveRequestController;
-use App\Http\Controllers\Web\Admin\MyTeamController;
 use App\Http\Controllers\Web\Admin\NaController;
 use App\Http\Controllers\Web\Admin\ProjectController;
 use App\Http\Controllers\Web\Admin\PerformanceController as AdminPerformanceController;
@@ -19,7 +18,6 @@ use App\Http\Controllers\Web\Admin\SettingController;
 use App\Http\Controllers\Web\Admin\TargetController as AdminTargetController;
 use App\Http\Controllers\Web\Admin\TaskController as AdminTaskController;
 use App\Http\Controllers\Web\Admin\TaskReportController as AdminTaskReportController;
-use App\Http\Controllers\Web\Admin\TeamController;
 use App\Http\Controllers\Web\Admin\UcController;
 use App\Http\Controllers\Web\Admin\UserController;
 use App\Http\Controllers\Web\Auth\AuthenticatedSessionController;
@@ -46,11 +44,7 @@ Route::get('/', function () {
     }
 
     return redirect(auth()->user()->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head']) ? '/admin' : '/dashboard');
-    // Note: team_leader intentionally lands on /dashboard (they are an
-    // elevated volunteer, not an admin) — extra nav items there link into
-    // the /admin/reports, /admin/tasks, /admin/task-reports controllers for
-    // their review duties, reusing the same controllers/views as Admin.
-    // na_head/uc_head run their slice of the org much like Admin runs
+    // Note: na_head/uc_head run their slice of the org much like Admin runs
     // theirs, so they land on /admin and are scoped down entirely via
     // HierarchyScope.
 });
@@ -80,7 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/guide', fn () => view('guide'))->name('guide');
 
-    Route::prefix('admin')->name('admin.')->middleware('role:super_admin|admin|na_head|uc_head|team_leader')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('role:super_admin|admin|na_head|uc_head')->group(function () {
         Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/search', [SearchController::class, 'index'])->name('search.index');
 
@@ -138,10 +132,6 @@ Route::middleware('auth')->group(function () {
             Route::resource('departments', DepartmentController::class)->only(['index', 'store', 'update', 'destroy']);
         });
 
-        Route::middleware('permission:manage-teams')->group(function () {
-            Route::resource('teams', TeamController::class)->only(['index', 'store', 'update', 'destroy']);
-        });
-
         Route::middleware('permission:manage-settings')->group(function () {
             Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
             Route::put('/settings', [SettingController::class, 'update'])->name('settings.update');
@@ -190,13 +180,9 @@ Route::middleware('auth')->group(function () {
         Route::middleware('permission:manage-forms')->group(function () {
             Route::resource('forms', FormTemplateController::class)->parameters(['forms' => 'formTemplate']);
         });
-
-        Route::middleware('permission:manage-team')->group(function () {
-            Route::get('/my-team', [MyTeamController::class, 'index'])->name('my-team.index');
-        });
     });
 
-    Route::prefix('dashboard')->name('user.')->middleware('role:user|team_leader')->group(function () {
+    Route::prefix('dashboard')->name('user.')->middleware('role:user')->group(function () {
         Route::get('/', [UserDashboardController::class, 'index'])->name('dashboard');
 
         Route::get('/reports', [UserReportController::class, 'index'])->name('reports.index');

@@ -16,9 +16,9 @@ class ScheduledMeetingController extends Controller
 
         $query = ScheduledMeeting::query()->with(['organizer']);
 
-        // Admin/NA Head/Team Leader see every meeting across their scope
+        // Admin/NA Head/UC Head see every meeting across their scope
         // (all participants), not just meetings they personally attend.
-        if ($user->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head', 'team_leader'])) {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head'])) {
             HierarchyScope::restrictByRelation($query, $user, 'participants');
             $query->with(['participants']);
         } else {

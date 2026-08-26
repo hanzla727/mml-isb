@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query()->with(['department', 'team', 'roles']);
+        $query = User::query()->with(['department', 'roles']);
 
         $query->when($request->filled('search'), function ($q) use ($request) {
             $search = $request->string('search');
@@ -25,8 +25,7 @@ class UserController extends Controller
             });
         })
             ->when($request->filled('role'), fn ($q) => $q->role($request->string('role')))
-            ->when($request->filled('department_id'), fn ($q) => $q->where('department_id', $request->integer('department_id')))
-            ->when($request->filled('team_id'), fn ($q) => $q->where('team_id', $request->integer('team_id')));
+            ->when($request->filled('department_id'), fn ($q) => $q->where('department_id', $request->integer('department_id')));
 
         $users = $query->orderBy('name')->paginate($request->integer('per_page', 20));
 
@@ -45,18 +44,17 @@ class UserController extends Controller
             'password' => $validated['password'],
             'pin' => $validated['pin'] ?? null,
             'department_id' => $validated['department_id'] ?? null,
-            'team_id' => $validated['team_id'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
         ]);
 
         $user->assignRole($validated['role']);
 
-        return new UserResource($user->load(['department', 'team', 'roles']));
+        return new UserResource($user->load(['department', 'roles']));
     }
 
     public function show(User $user)
     {
-        return new UserResource($user->load(['department', 'team', 'roles']));
+        return new UserResource($user->load(['department', 'roles']));
     }
 
     public function update(StoreUserRequest $request, User $user)
@@ -69,7 +67,6 @@ class UserController extends Controller
             'username' => $validated['username'] ?? null,
             'phone' => $validated['phone'] ?? null,
             'department_id' => $validated['department_id'] ?? null,
-            'team_id' => $validated['team_id'] ?? null,
             'is_active' => $validated['is_active'] ?? $user->is_active,
             'pin' => $validated['pin'] ?? null,
             ...(! empty($validated['password']) ? ['password' => $validated['password']] : []),
@@ -77,7 +74,7 @@ class UserController extends Controller
 
         $user->syncRoles([$validated['role']]);
 
-        return new UserResource($user->load(['department', 'team', 'roles']));
+        return new UserResource($user->load(['department', 'roles']));
     }
 
     public function destroy(Request $request, User $user)

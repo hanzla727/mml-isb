@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreTargetRequest;
 use App\Models\Department;
 use App\Models\Target;
-use App\Models\Team;
 use App\Models\User;
 
 class TargetController extends Controller
@@ -16,7 +15,6 @@ class TargetController extends Controller
         return view('admin.targets.index', [
             'targets' => Target::with('creator')->orderByDesc('created_at')->paginate(20),
             'departments' => Department::orderBy('name')->get(),
-            'teams' => Team::orderBy('name')->get(),
             'users' => User::role('user')->orderBy('name')->get(),
         ]);
     }

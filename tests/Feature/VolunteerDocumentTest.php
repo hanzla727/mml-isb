@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Models\VolunteerDocument;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -20,7 +20,7 @@ class VolunteerDocumentTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
         Storage::fake('public');
     }
 

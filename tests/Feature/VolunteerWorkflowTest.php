@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use App\Notifications\MeetingAssignedNotification;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -20,7 +20,7 @@ class VolunteerWorkflowTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_user_can_create_a_draft_report_with_no_notifications_sent(): void

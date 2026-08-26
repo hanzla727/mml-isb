@@ -6,7 +6,7 @@ use App\Models\ScheduledMeeting;
 use App\Models\Task;
 use App\Models\User;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -20,7 +20,7 @@ class RecurrenceTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_creating_a_recurring_weekly_meeting_immediately_generates_upcoming_occurrences(): void

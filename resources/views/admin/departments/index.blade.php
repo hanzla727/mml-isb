@@ -9,16 +9,15 @@
         </div>
     @endcan
 
-    <p class="text-muted small">{{ __('Departments are shared across every UC — the same list applies organization-wide. To assign a department to a specific UC, create a Team for it under that UC.') }}</p>
+    <p class="text-muted small">{{ __('Departments are shared across every UC — the same list applies organization-wide.') }}</p>
 
     <div class="card stat-card">
         <table class="table table-hover mb-0">
-            <thead><tr><th>{{ __('Name') }}</th><th>{{ __('Teams') }}</th><th>{{ __('Users') }}</th><th>{{ __('Status') }}</th><th></th></tr></thead>
+            <thead><tr><th>{{ __('Name') }}</th><th>{{ __('Users') }}</th><th>{{ __('Status') }}</th><th></th></tr></thead>
             <tbody>
                 @forelse ($departments as $department)
                     <tr>
                         <td>{{ $department->name }}</td>
-                        <td>{{ $department->teams_count }}</td>
                         <td>{{ $department->users_count }}</td>
                         <td>
                             <span class="badge {{ $department->is_active ? 'bg-success' : 'bg-danger' }}">
@@ -66,7 +65,7 @@
                     </div>
                     @endcan
                 @empty
-                    <tr><td colspan="5" class="text-center text-muted py-4">{{ __('No departments yet.') }}</td></tr>
+                    <tr><td colspan="4" class="text-center text-muted py-4">{{ __('No departments yet.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

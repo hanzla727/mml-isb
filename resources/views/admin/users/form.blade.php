@@ -43,7 +43,7 @@
             <div class="mb-3">
                 <label class="form-label">{{ __('Role') }}</label>
                 <select name="role" id="roleSelect" class="form-select" required onchange="toggleRoleFields(this)">
-                    @foreach (['super_admin' => __('Super Admin'), 'admin' => __('Admin'), 'na_head' => __('NA Head'), 'uc_head' => __('UC Head'), 'team_leader' => __('Team Leader'), 'user' => __('Volunteer')] as $value => $label)
+                    @foreach (['super_admin' => __('Super Admin'), 'admin' => __('Admin'), 'na_head' => __('NA Head'), 'uc_head' => __('UC Head'), 'user' => __('Volunteer')] as $value => $label)
                         <option value="{{ $value }}" @selected(old('role', $user->roles->pluck('name')->first()) === $value)>{{ $label }}</option>
                     @endforeach
                 </select>
@@ -106,26 +106,14 @@
                     </select>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">{{ __('Department') }}</label>
-                    <select name="department_id" class="form-select">
-                        <option value="">{{ __('None') }}</option>
-                        @foreach ($departments as $department)
-                            <option value="{{ $department->id }}" @selected(old('department_id', $user->department_id) == $department->id)>{{ $department->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">{{ __('Team') }}</label>
-                    <select name="team_id" class="form-select">
-                        <option value="">{{ __('None') }}</option>
-                        @foreach ($teams as $team)
-                            <option value="{{ $team->id }}" @selected(old('team_id', $user->team_id) == $team->id)>{{ $team->name }} ({{ $team->uc->name }})</option>
-                        @endforeach
-                    </select>
-                    <div class="form-text">{{ __('Which team this person belongs to as a member. To make someone a Team Leader for one or more teams, set their role to Team Leader here, then set them as the "Leader" on each Team from the Teams page.') }}</div>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">{{ __('Department') }}</label>
+                <select name="department_id" class="form-select">
+                    <option value="">{{ __('None') }}</option>
+                    @foreach ($departments as $department)
+                        <option value="{{ $department->id }}" @selected(old('department_id', $user->department_id) == $department->id)>{{ $department->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="form-check mb-3">
                 <input type="checkbox" name="is_active" value="1" class="form-check-input" id="is_active" @checked(old('is_active', $user->is_active ?? true))>

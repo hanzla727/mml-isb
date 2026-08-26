@@ -40,16 +40,10 @@ class DailyReportPolicy
         return $dailyReport->report_date->isToday() || $dailyReport->review_status === 'needs_revision';
     }
 
-    public function reviewAsTeamLeader(User $user, DailyReport $dailyReport): bool
+    public function review(User $user, DailyReport $dailyReport): bool
     {
         return $user->can('review-reports')
-            && $dailyReport->team_leader_id === $user->id
-            && $dailyReport->review_status === 'pending_review';
-    }
-
-    public function reviewAsAdmin(User $user, DailyReport $dailyReport): bool
-    {
-        return ($user->can('view-reports') && HierarchyScope::canView($user, $dailyReport->user))
+            && HierarchyScope::canView($user, $dailyReport->user)
             && in_array($dailyReport->review_status, ['under_review', 're_submitted'], true);
     }
 }

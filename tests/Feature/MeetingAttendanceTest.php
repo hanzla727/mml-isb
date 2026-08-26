@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\ScheduledMeeting;
 use App\Models\User;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,7 +18,7 @@ class MeetingAttendanceTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_admin_marks_attendance_for_meeting_participants(): void

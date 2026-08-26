@@ -37,7 +37,6 @@ class User extends Authenticatable
         'na_id',
         'uc_id',
         'department_id',
-        'team_id',
         'reporting_head_id',
         'is_active',
         'last_login_at',
@@ -72,7 +71,7 @@ class User extends Authenticatable
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'email', 'phone', 'na_id', 'uc_id', 'department_id', 'team_id', 'reporting_head_id', 'is_active'])
+            ->logOnly(['name', 'email', 'phone', 'na_id', 'uc_id', 'department_id', 'reporting_head_id', 'is_active'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
     }
@@ -92,16 +91,10 @@ class User extends Authenticatable
         return $this->belongsTo(Department::class);
     }
 
-    public function team(): BelongsTo
-    {
-        return $this->belongsTo(Team::class);
-    }
-
     /**
-     * The generalized "who this person answers to" pointer — for a plain
-     * Volunteer this is normally their Team Leader, for a Team Leader it's
-     * their NA Head. Explicit rather than derived from team()/uc() so it
-     * survives a volunteer moving between teams and can be overridden.
+     * The generalized "who this person answers to" pointer — explicit
+     * rather than derived from uc()/na() so it can be freely overridden
+     * (e.g. a volunteer with no obvious head yet, or a direct exception).
      */
     public function reportingHead(): BelongsTo
     {
@@ -111,17 +104,6 @@ class User extends Authenticatable
     public function directReports(): HasMany
     {
         return $this->hasMany(self::class, 'reporting_head_id');
-    }
-
-    /**
-     * The team(s) this user leads (if they hold the team_leader role) —
-     * plural, since one Team Leader can be assigned more than one team,
-     * distinct from team() which is the single team they belong to as a
-     * member.
-     */
-    public function teamsLed(): HasMany
-    {
-        return $this->hasMany(Team::class, 'leader_id');
     }
 
     /**

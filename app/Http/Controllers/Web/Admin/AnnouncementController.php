@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreAnnouncementRequest;
 use App\Models\Announcement;
 use App\Models\Department;
-use App\Models\Team;
 use App\Models\User;
 use App\Notifications\AnnouncementPublished;
 use Illuminate\Support\Facades\Notification;
@@ -18,7 +17,6 @@ class AnnouncementController extends Controller
         return view('admin.announcements.index', [
             'announcements' => Announcement::with('creator')->orderByDesc('created_at')->paginate(20),
             'departments' => Department::orderBy('name')->get(),
-            'teams' => Team::orderBy('name')->get(),
             'users' => User::role('user')->orderBy('name')->get(),
         ]);
     }

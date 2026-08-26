@@ -7,7 +7,6 @@ use App\Models\Department;
 use App\Models\FormTemplate;
 use App\Models\Project;
 use App\Models\ScheduledMeeting;
-use App\Models\Team;
 use App\Models\Uc;
 use App\Models\User;
 use App\Services\HierarchyScope;
@@ -78,7 +77,6 @@ class MeetingsIndex extends Component
             'nas' => Na::when($naIds !== null, fn ($q) => $q->whereIn('id', $naIds))->orderBy('name')->get(),
             'ucs' => Uc::when($ucIds !== null, fn ($q) => $q->whereIn('id', $ucIds))->orderBy('name')->get(),
             'departments' => Department::orderBy('name')->get(),
-            'teams' => Team::orderBy('name')->get(),
             'users' => User::where('is_active', true)->orderBy('name')->get(),
             'projects' => Project::orderBy('name')->get(),
             'formTemplates' => FormTemplate::orderBy('name')->get(),

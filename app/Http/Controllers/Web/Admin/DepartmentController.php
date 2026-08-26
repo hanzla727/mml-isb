@@ -17,7 +17,7 @@ class DepartmentController extends Controller
     public function index()
     {
         return view('admin.departments.index', [
-            'departments' => Department::withCount(['teams', 'users'])->orderBy('name')->get(),
+            'departments' => Department::withCount(['users'])->orderBy('name')->get(),
         ]);
     }
 

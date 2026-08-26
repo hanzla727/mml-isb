@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use App\Models\DailyReport;
 use App\Models\User;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,7 +18,7 @@ class PerformanceTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_admin_can_view_performance_list_and_a_volunteers_summary(): void
@@ -42,8 +42,8 @@ class PerformanceTest extends TestCase
 
     public function test_admin_cannot_view_performance_of_volunteer_in_another_area(): void
     {
-        $admin = User::where('email', 'admin1@example.com')->first(); // NA-48 only.
-        $otherVolunteer = User::where('email', 'volunteer5@example.com')->first(); // NA-49.
+        $admin = User::where('email', 'admin1@example.com')->first(); // NA-48 + NA-50 only.
+        $otherVolunteer = User::role('user')->whereNotIn('na_id', $admin->adminNas->pluck('id'))->firstOrFail();
 
         $this->actingAs($admin)->get("/admin/performance/{$otherVolunteer->id}")->assertForbidden();
     }

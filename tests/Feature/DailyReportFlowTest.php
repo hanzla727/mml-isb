@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -16,7 +16,7 @@ class DailyReportFlowTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_user_can_submit_a_report_with_meetings_and_it_computes_hours_and_upserts_contacts(): void
@@ -120,8 +120,8 @@ class DailyReportFlowTest extends TestCase
     private function loginAs(string $email): string
     {
         $response = $this->postJson('/api/auth/login', [
-            'email' => $email,
-            'password' => 'password',
+            'login' => $email,
+            'pin' => '1234',
         ]);
 
         $response->assertOk();

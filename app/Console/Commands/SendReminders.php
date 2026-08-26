@@ -113,7 +113,7 @@ class SendReminders extends Command
 
         $submittedUserIds = DB::table('daily_reports')->whereDate('report_date', $today)->pluck('user_id');
 
-        $volunteers = User::role(['user', 'team_leader'])
+        $volunteers = User::role('user')
             ->where('is_active', true)
             ->whereNotIn('id', $submittedUserIds)
             ->get();

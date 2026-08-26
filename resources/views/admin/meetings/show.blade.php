@@ -196,7 +196,7 @@
                                 </div>
                             </div>
 
-                            @include('admin.partials.audience-picker', compact('nas', 'ucs', 'departments', 'teams', 'users'))
+                            @include('admin.partials.audience-picker', compact('nas', 'ucs', 'departments', 'users'))
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">{{ __('Add Task') }}</button>

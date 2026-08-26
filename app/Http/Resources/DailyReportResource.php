@@ -21,8 +21,6 @@ class DailyReportResource extends JsonResource
             'tomorrow_plan' => $this->tomorrow_plan,
             'status' => $this->status,
             'review_status' => $this->review_status,
-            'team_leader' => $this->whenLoaded('teamLeader', fn () => $this->teamLeader ? ['id' => $this->teamLeader->id, 'name' => $this->teamLeader->name] : null),
-            'team_leader_remarks' => $this->team_leader_remarks,
             'admin_remarks' => $this->admin_remarks,
             'meetings' => MeetingResource::collection($this->whenLoaded('meetings')),
             'meetings_count' => $this->whenCounted('meetings'),

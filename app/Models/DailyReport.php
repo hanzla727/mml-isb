@@ -26,10 +26,6 @@ class DailyReport extends Model
         'tomorrow_plan',
         'status',
         'review_status',
-        'team_leader_id',
-        'team_leader_reviewed_by',
-        'team_leader_reviewed_at',
-        'team_leader_remarks',
         'admin_reviewed_by',
         'admin_reviewed_at',
         'admin_remarks',
@@ -40,7 +36,6 @@ class DailyReport extends Model
         return [
             'report_date' => 'date',
             'total_hours' => 'decimal:2',
-            'team_leader_reviewed_at' => 'datetime',
             'admin_reviewed_at' => 'datetime',
         ];
     }
@@ -59,7 +54,7 @@ class DailyReport extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['status', 'review_status', 'team_leader_reviewed_by', 'admin_reviewed_by'])
+            ->logOnly(['status', 'review_status', 'admin_reviewed_by'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
     }
@@ -72,16 +67,6 @@ class DailyReport extends Model
     public function meetings(): HasMany
     {
         return $this->hasMany(Meeting::class);
-    }
-
-    public function teamLeader(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'team_leader_id');
-    }
-
-    public function teamLeaderReviewer(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'team_leader_reviewed_by');
     }
 
     public function adminReviewer(): BelongsTo

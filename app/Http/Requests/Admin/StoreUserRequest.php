@@ -23,7 +23,7 @@ class StoreUserRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:50'],
             'password' => [$userId ? 'nullable' : 'required', 'string', 'min:8'],
             'pin' => ['nullable', 'digits_between:4,6'],
-            'role' => ['required', Rule::in(['super_admin', 'admin', 'na_head', 'uc_head', 'team_leader', 'user'])],
+            'role' => ['required', Rule::in(['super_admin', 'admin', 'na_head', 'uc_head', 'user'])],
             'na_id' => ['nullable', 'exists:nas,id'],
             'na_ids' => ['nullable', 'array'],
             'na_ids.*' => ['exists:nas,id'],
@@ -31,7 +31,6 @@ class StoreUserRequest extends FormRequest
             'uc_ids' => ['nullable', 'array'],
             'uc_ids.*' => ['exists:ucs,id'],
             'department_id' => ['nullable', 'exists:departments,id'],
-            'team_id' => ['nullable', 'exists:teams,id'],
             'reporting_head_id' => ['nullable', 'exists:users,id'],
             'is_active' => ['boolean'],
         ];

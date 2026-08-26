@@ -3,14 +3,14 @@
 namespace Tests\Feature;
 
 use App\Models\Task;
-use App\Models\Team;
+use App\Models\Uc;
 use App\Models\User;
 use App\Notifications\MeetingCreatedNotification;
 use App\Notifications\TaskAssignedNotification;
 use App\Notifications\TaskNeedsRevisionNotification;
 use App\Notifications\TaskReportSubmittedNotification;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -28,30 +28,30 @@ class MeetingTaskWorkflowTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
         Storage::fake('public');
     }
 
-    public function test_admin_creates_meeting_for_entire_team_and_all_members_are_notified(): void
+    public function test_admin_creates_meeting_for_entire_uc_and_all_members_are_notified(): void
     {
         Notification::fake();
 
         $admin = User::where('email', 'admin1@example.com')->first();
-        $team = Team::where('name', 'Donor Relations Team')->first();
-        $teamMembers = User::where('team_id', $team->id)->get();
+        $uc = Uc::where('name', 'UC F-10')->firstOrFail();
+        $ucMembers = User::where('uc_id', $uc->id)->where('is_active', true)->get();
 
-        $response = $this->actingAs($admin, 'sanctum')->postJson('/api/admin/meetings', [
+        $response = $this->actingAs($admin, 'sanctum')->postJson('/api/meetings', [
             'title' => 'Weekly Sync',
             'meeting_date' => '2026-08-10',
             'start_time' => '10:00',
             'end_time' => '11:00',
-            'scope' => 'team',
-            'team_id' => $team->id,
+            'scope' => 'uc',
+            'uc_id' => $uc->id,
         ]);
 
         $response->assertCreated();
 
-        foreach ($teamMembers as $member) {
+        foreach ($ucMembers as $member) {
             $this->assertDatabaseHas('scheduled_meeting_participants', [
                 'scheduled_meeting_id' => $response->json('data.id'),
                 'user_id' => $member->id,
@@ -60,16 +60,18 @@ class MeetingTaskWorkflowTest extends TestCase
         }
     }
 
-    public function test_admin_assigns_task_to_all_users_and_each_is_notified(): void
+    public function test_super_admin_assigns_task_to_all_users_and_each_is_notified(): void
     {
         Notification::fake();
 
-        $admin = User::where('email', 'admin1@example.com')->first();
-        // scope=all intentionally means every active user org-wide (not just
-        // volunteers) — admins/super_admin can be assigned tasks too.
+        $superAdmin = User::where('email', 'superadmin@example.com')->first();
+        // scope=all means every active user org-wide (not just volunteers) —
+        // admins/super_admin can be assigned tasks too. Only Super Admin is
+        // truly unrestricted, so this uses Super Admin rather than a
+        // scoped Admin (for whom 'all' means everyone *they* can see).
         $activeUserCount = User::where('is_active', true)->count();
 
-        $response = $this->actingAs($admin, 'sanctum')->postJson('/api/admin/tasks', [
+        $response = $this->actingAs($superAdmin, 'sanctum')->postJson('/api/admin/tasks', [
             'title' => 'Prepare quarterly report',
             'priority' => 'high',
             'scope' => 'all',
@@ -82,6 +84,27 @@ class MeetingTaskWorkflowTest extends TestCase
 
         $activeUsers = User::where('is_active', true)->get();
         Notification::assertSentTo($activeUsers, TaskAssignedNotification::class);
+    }
+
+    public function test_scoped_admin_assigning_task_to_all_only_reaches_their_own_scope(): void
+    {
+        Notification::fake();
+
+        $admin = User::where('email', 'admin1@example.com')->first(); // NA-48 + NA-50 only.
+        $visibleCount = count(\App\Services\HierarchyScope::visibleUserIds($admin));
+
+        $response = $this->actingAs($admin, 'sanctum')->postJson('/api/admin/tasks', [
+            'title' => 'Prepare regional report',
+            'priority' => 'high',
+            'scope' => 'all',
+        ]);
+
+        $response->assertCreated();
+        $taskId = $response->json('data.id');
+
+        $assignedCount = DB::table('task_assignees')->where('task_id', $taskId)->count();
+        $this->assertSame($visibleCount, $assignedCount);
+        $this->assertLessThan(User::where('is_active', true)->count(), $assignedCount);
     }
 
     public function test_assignee_submits_report_and_reviewer_is_notified_then_admin_can_approve(): void
@@ -224,14 +247,14 @@ class MeetingTaskWorkflowTest extends TestCase
         Notification::fake();
 
         $admin = User::where('email', 'admin1@example.com')->first();
-        $teamLeader = User::where('email', 'teamleader1@example.com')->first();
+        $ucHead = User::where('email', 'uchead1@example.com')->first();
         $naHead = User::where('email', 'nahead1@example.com')->first();
 
         $response = $this->actingAs($admin)->post(route('admin.tasks.store'), [
             'title' => 'Standalone task with no meeting',
             'priority' => 'medium',
             'scope' => 'individual',
-            'user_ids' => [$teamLeader->id, $naHead->id],
+            'user_ids' => [$ucHead->id, $naHead->id],
         ]);
 
         $response->assertRedirect();
@@ -239,9 +262,9 @@ class MeetingTaskWorkflowTest extends TestCase
         $task = \App\Models\Task::where('title', 'Standalone task with no meeting')->firstOrFail();
 
         $this->assertNull($task->scheduled_meeting_id);
-        $this->assertDatabaseHas('task_assignees', ['task_id' => $task->id, 'user_id' => $teamLeader->id]);
+        $this->assertDatabaseHas('task_assignees', ['task_id' => $task->id, 'user_id' => $ucHead->id]);
         $this->assertDatabaseHas('task_assignees', ['task_id' => $task->id, 'user_id' => $naHead->id]);
-        Notification::assertSentTo([$teamLeader, $naHead], TaskAssignedNotification::class);
+        Notification::assertSentTo([$ucHead, $naHead], TaskAssignedNotification::class);
     }
 
     public function test_assignee_sees_task_on_login_submits_report_with_receipt_and_admin_approves_via_web(): void

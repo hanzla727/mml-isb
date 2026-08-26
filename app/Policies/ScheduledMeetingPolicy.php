@@ -14,16 +14,9 @@ class ScheduledMeetingPolicy
             || $meeting->isParticipant($user);
     }
 
-    /**
-     * Broader than 'manage-meetings' on purpose: Team Leaders can create
-     * meetings for their own team even though they don't hold the
-     * system-wide meeting-management permission. Who they're actually
-     * allowed to invite is enforced separately, in
-     * ScheduledMeetingService::assertCanTarget().
-     */
     public function create(User $user): bool
     {
-        return $user->can('manage-meetings') || $user->hasRole('team_leader');
+        return $user->can('manage-meetings');
     }
 
     public function update(User $user, ScheduledMeeting $meeting): bool

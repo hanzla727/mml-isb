@@ -102,7 +102,6 @@
                                 <select name="scope" id="scope" class="form-select" onchange="toggleScopeTarget(this.value)">
                                     <option value="all">{{ __('Everyone') }}</option>
                                     <option value="department">{{ __('Specific Department') }}</option>
-                                    <option value="team">{{ __('Specific Team') }}</option>
                                     <option value="user">{{ __('Specific User') }}</option>
                                 </select>
                             </div>
@@ -111,14 +110,6 @@
                                 <select name="scope_id" class="form-select" disabled>
                                     @foreach ($departments as $department)
                                         <option value="{{ $department->id }}">{{ $department->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3 scope-target" data-scope="team" style="display:none;">
-                                <label class="form-label">{{ __('Team') }}</label>
-                                <select name="scope_id" class="form-select" disabled>
-                                    @foreach ($teams as $team)
-                                        <option value="{{ $team->id }}">{{ $team->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -202,7 +193,6 @@
                                 <select name="scope" id="editTargetScope" class="form-select" onchange="toggleEditScopeTarget(this.value)">
                                     <option value="all">{{ __('Everyone') }}</option>
                                     <option value="department">{{ __('Specific Department') }}</option>
-                                    <option value="team">{{ __('Specific Team') }}</option>
                                     <option value="user">{{ __('Specific User') }}</option>
                                 </select>
                             </div>
@@ -211,14 +201,6 @@
                                 <select name="scope_id" id="editTargetDepartment" class="form-select" disabled>
                                     @foreach ($departments as $department)
                                         <option value="{{ $department->id }}">{{ $department->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3 edit-scope-target" data-scope="team" style="display:none;">
-                                <label class="form-label">{{ __('Team') }}</label>
-                                <select name="scope_id" id="editTargetTeam" class="form-select" disabled>
-                                    @foreach ($teams as $team)
-                                        <option value="{{ $team->id }}">{{ $team->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -282,8 +264,6 @@
 
                 if (data.scope === 'department') {
                     document.getElementById('editTargetDepartment').value = data.scopeId ?? '';
-                } else if (data.scope === 'team') {
-                    document.getElementById('editTargetTeam').value = data.scopeId ?? '';
                 } else if (data.scope === 'user') {
                     document.getElementById('editTargetUser').value = data.scopeId ?? '';
                 }

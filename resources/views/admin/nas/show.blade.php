@@ -14,7 +14,6 @@
         <div class="text-muted small">
             <i class="bi bi-person-badge"></i> {{ __('NA Head') }}: {{ $na->naHead?->name ?? __('Unassigned') }}
             &middot; <i class="bi bi-diagram-3"></i> {{ $na->ucs->pluck('id')->count() }} {{ __('UCs') }}
-            &middot; <i class="bi bi-people-fill"></i> {{ $na->ucs->flatMap->teams->count() }} {{ __('Teams') }}
         </div>
 
         <form method="GET" class="row g-2 align-items-end mt-3">
@@ -64,11 +63,11 @@
     <div class="row g-3">
         <div class="col-md-6">
             <div class="card stat-card p-4 mb-3">
-                <h6 class="mb-3">{{ __('UCs, Departments & Teams') }}</h6>
+                <h6 class="mb-3">{{ __('UCs') }}</h6>
                 @forelse ($na->ucs as $uc)
                     <div class="mb-2">
                         <strong>{{ $uc->name }}</strong>{{ $uc->sector ? ' ('.$uc->sector.')' : '' }}
-                        <span class="text-muted small">— {{ $uc->teams->pluck('name')->join(', ') ?: __('No teams yet') }}</span>
+                        <span class="text-muted small">— {{ $uc->members->count() }} {{ __('Volunteers') }}</span>
                     </div>
                 @empty
                     <p class="text-muted small mb-0">{{ __('No UCs yet.') }}</p>

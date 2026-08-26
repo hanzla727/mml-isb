@@ -14,16 +14,8 @@ class ReviewDailyReportRequest extends FormRequest
 
     public function rules(): array
     {
-        $report = $this->route('dailyReport');
-        $isTeamLeaderStage = $report && $report->review_status === 'pending_review';
-
         return [
-            'decision' => [
-                'required',
-                $isTeamLeaderStage
-                    ? Rule::in(['recommend_approve', 'needs_revision'])
-                    : Rule::in(['approve', 'approve_with_remarks', 'reject', 'needs_revision', 'close']),
-            ],
+            'decision' => ['required', Rule::in(['approve', 'approve_with_remarks', 'reject', 'needs_revision', 'close'])],
             'remarks' => ['nullable', 'string'],
         ];
     }

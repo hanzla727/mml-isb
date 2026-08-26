@@ -13,7 +13,6 @@ use App\Models\Na;
 use App\Models\Project;
 use App\Models\Setting;
 use App\Models\Target;
-use App\Models\Team;
 use App\Models\Uc;
 use App\Models\User;
 use App\Models\VolunteerDocument;
@@ -30,8 +29,8 @@ use Illuminate\Support\Facades\Storage;
  * Populates every table in the app with realistic, interconnected demo data
  * so the whole NA/UC-based system can be browsed end-to-end without
  * manually creating records first. Assumes RolePermissionSeeder +
- * DepartmentTeamSeeder + DemoUserSeeder have already run (see
- * DatabaseSeeder) — it only looks up nas/ucs/users/teams/departments those
+ * OrganizationSeeder + DemoUserSeeder have already run (see
+ * DatabaseSeeder) — it only looks up nas/ucs/users/departments those
  * seeders create, it doesn't create its own hierarchy.
  */
 class DemoDataSeeder extends Seeder
@@ -47,8 +46,6 @@ class DemoDataSeeder extends Seeder
     private User $naHead2;
 
     private User $ucHead1;
-
-    private User $teamLeader1;
 
     /** @var \Illuminate\Support\Collection<int, User> */
     private $volunteers;
@@ -67,7 +64,6 @@ class DemoDataSeeder extends Seeder
         $this->naHead1 = User::where('email', 'nahead1@example.com')->firstOrFail();
         $this->naHead2 = User::where('email', 'nahead2@example.com')->firstOrFail();
         $this->ucHead1 = User::where('email', 'uchead1@example.com')->firstOrFail();
-        $this->teamLeader1 = User::where('email', 'teamleader1@example.com')->firstOrFail();
         $this->volunteers = User::role('user')->orderBy('email')->get();
 
         $this->seedSettings();
@@ -132,7 +128,7 @@ class DemoDataSeeder extends Seeder
 
     private function seedTargets(): void
     {
-        $donorRelationsTeam = Team::where('name', 'Donor Relations Team')->firstOrFail();
+        $ucF10 = Uc::where('name', 'UC F-10')->firstOrFail();
         $fundraising = Department::where('name', 'Fundraising')->firstOrFail();
 
         $targets = [
@@ -143,8 +139,8 @@ class DemoDataSeeder extends Seeder
             ],
             [
                 'title' => 'Weekly Donor Visits', 'metric' => 'meetings', 'type' => 'weekly',
-                'scope' => 'team', 'scope_id' => $donorRelationsTeam->id, 'target_value' => 5,
-                'description' => 'The Donor Relations Team should complete 5 visits per week.',
+                'scope' => 'uc', 'scope_id' => $ucF10->id, 'target_value' => 5,
+                'description' => 'UC F-10 volunteers should complete 5 donor visits per week.',
             ],
             [
                 'title' => 'Quarterly Fundraising Drive', 'metric' => 'custom', 'type' => 'monthly',
@@ -195,7 +191,7 @@ class DemoDataSeeder extends Seeder
         foreach ($announcements as $data) {
             Announcement::create([
                 ...$data,
-                'body' => 'See the attached details and reach out to your team leader with questions.',
+                'body' => 'See the attached details and reach out to your reporting head with questions.',
                 'created_by' => $this->superAdmin->id,
                 'published_at' => now()->subDays(random_int(1, 10)),
             ]);
@@ -254,6 +250,7 @@ class DemoDataSeeder extends Seeder
     {
         $service = app(ScheduledMeetingService::class);
         $winterRelief = $this->projects->firstWhere('name', 'Winter Relief Drive');
+        $ucF10 = Uc::where('name', 'UC F-10')->firstOrFail();
 
         $past = collect();
         foreach ([14, 7, 3] as $daysAgo) {
@@ -262,8 +259,8 @@ class DemoDataSeeder extends Seeder
                 'meeting_date' => now()->subDays($daysAgo)->toDateString(),
                 'start_time' => '10:00', 'end_time' => '12:00',
                 'project_id' => $winterRelief->id,
-                'organizer_id' => $this->teamLeader1->id,
-                'scope' => 'team', 'team_id' => $this->teamLeader1->team_id,
+                'organizer_id' => $this->admin1->id,
+                'scope' => 'uc', 'uc_id' => $ucF10->id,
             ]));
         }
 
@@ -282,8 +279,8 @@ class DemoDataSeeder extends Seeder
             'title' => 'Weekly Donor Relations Sync',
             'meeting_date' => now()->addDay()->toDateString(),
             'start_time' => '11:00', 'end_time' => '11:30',
-            'organizer_id' => $this->teamLeader1->id,
-            'scope' => 'team', 'team_id' => $this->teamLeader1->team_id,
+            'organizer_id' => $this->admin1->id,
+            'scope' => 'uc', 'uc_id' => $ucF10->id,
             'is_recurring' => true, 'recurrence_frequency' => 'weekly', 'recurrence_interval' => 1,
             'recurrence_until' => now()->addWeeks(6)->toDateString(),
         ]));
@@ -319,8 +316,8 @@ class DemoDataSeeder extends Seeder
     {
         $service = app(TaskWorkflowService::class);
         $winterRelief = $this->projects->firstWhere('name', 'Winter Relief Drive');
-        $donorRelationsTeamId = $this->teamLeader1->team_id;
-        $teamVolunteers = $this->volunteers->where('team_id', $donorRelationsTeamId)->values();
+        $ucF10 = Uc::where('name', 'UC F-10')->firstOrFail();
+        $ucF10Volunteers = $this->volunteers->where('uc_id', $ucF10->id)->values();
 
         // A completed, reviewed task with an attached dynamic form + submission.
         $checklistTask = $service->create($this->admin1, [
@@ -331,19 +328,19 @@ class DemoDataSeeder extends Seeder
             'description' => 'Follow up on relief package delivery.',
             'priority' => 'high',
             'due_date' => now()->subDays(10)->toDateString(),
-            'scope' => 'individual', 'user_ids' => [$teamVolunteers->first()->id],
+            'scope' => 'individual', 'user_ids' => [$ucF10Volunteers->first()->id],
         ]);
 
-        $report = $service->submitReport($checklistTask, $teamVolunteers->first(), [
+        $report = $service->submitReport($checklistTask, $ucF10Volunteers->first(), [
             'work_summary' => 'Delivered winter relief package and checked on the family.',
             'working_hours' => 3,
             'amount_collected' => 5000,
         ]);
-        $service->review($report, $this->teamLeader1, 'approve');
+        $service->review($report, $this->admin1, 'approve');
 
         $submission = $checklistTask->formSubmissions()->create([
             'form_template_id' => $formTemplate->id,
-            'user_id' => $teamVolunteers->first()->id,
+            'user_id' => $ucF10Volunteers->first()->id,
         ]);
         $fields = $formTemplate->fields;
         $submission->values()->create(['form_field_id' => $fields[0]->id, 'value' => 'F-10 Markaz, Islamabad']);
@@ -356,7 +353,7 @@ class DemoDataSeeder extends Seeder
             'title' => 'Coordinate relief supply drop-off',
             'priority' => 'medium',
             'due_date' => now()->subDays(5)->toDateString(),
-            'scope' => 'individual', 'user_ids' => [$teamVolunteers->get(1)?->id ?? $teamVolunteers->first()->id],
+            'scope' => 'individual', 'user_ids' => [$ucF10Volunteers->get(1)?->id ?? $ucF10Volunteers->first()->id],
         ]);
         $assignee = $revisedTask->assignees->first();
         $firstReport = $service->submitReport($revisedTask, $assignee, ['work_summary' => 'Dropped off supplies at the wrong location.']);
@@ -373,7 +370,7 @@ class DemoDataSeeder extends Seeder
             'title' => 'Log outreach session outcomes',
             'priority' => 'medium',
             'due_date' => now()->addDays(2)->toDateString(),
-            'scope' => 'team', 'team_id' => $donorRelationsTeamId,
+            'scope' => 'uc', 'uc_id' => $ucF10->id,
         ]);
 
         $service->create($this->admin2, [
@@ -381,7 +378,7 @@ class DemoDataSeeder extends Seeder
             'priority' => 'low',
             'due_date' => now()->subDays(2)->toDateString(),
             // Admin Two only covers NA-49 — this volunteer must be one of
-            // theirs (Khidmat Team, UC G-9, NA-49), not just any volunteer.
+            // theirs (Dawah department, UC G-9, NA-49), not just any volunteer.
             'scope' => 'individual', 'user_ids' => [$this->volunteers->firstWhere('email', 'volunteer8@example.com')->id],
         ]);
 
@@ -390,7 +387,7 @@ class DemoDataSeeder extends Seeder
             'title' => 'Prepare orientation materials',
             'priority' => 'medium',
             'due_date' => now()->addDay()->toDateString(),
-            'scope' => 'individual', 'user_ids' => [$teamVolunteers->first()->id],
+            'scope' => 'individual', 'user_ids' => [$ucF10Volunteers->first()->id],
             'is_recurring' => true, 'recurrence_frequency' => 'monthly', 'recurrence_interval' => 1,
         ]);
 
@@ -430,7 +427,7 @@ class DemoDataSeeder extends Seeder
                 $meeting->attendances()->create([
                     'user_id' => $participant->id,
                     'status' => $statuses[$i % count($statuses)],
-                    'marked_by' => $this->teamLeader1->id,
+                    'marked_by' => $this->admin1->id,
                     'marked_at' => Carbon::parse($meeting->meeting_date)->addHours(13),
                 ]);
             }
@@ -469,17 +466,10 @@ class DemoDataSeeder extends Seeder
                     continue;
                 }
 
-                if ($report->review_status === 'pending_review' && $daysAgo !== 1) {
+                if ($report->review_status === 'under_review' && $daysAgo !== 1) {
                     // Leave the most recent one pending; drive the rest through review.
-                    $decision = $daysAgo === 2 ? 'needs_revision' : 'recommend_approve';
-                    $report = $approval->teamLeaderReview($report, $this->teamLeader1, $decision, 'Reviewed by team leader.');
-
-                    if ($decision === 'recommend_approve') {
-                        $approval->adminReview($report, $this->admin1, $daysAgo === 3 ? 'approve_with_remarks' : 'approve', 'Looks good.');
-                    }
-                } elseif ($report->review_status === 'under_review' && $daysAgo !== 1) {
-                    $decision = $daysAgo === 2 ? 'reject' : 'approve';
-                    $approval->adminReview($report, $this->reviewerFor($volunteer), $decision, $decision === 'reject' ? 'Please provide more detail.' : 'Approved.');
+                    $decision = $daysAgo === 2 ? 'reject' : ($daysAgo === 3 ? 'approve_with_remarks' : 'approve');
+                    $approval->review($report, $this->reviewerFor($volunteer), $decision, $decision === 'reject' ? 'Please provide more detail.' : 'Looks good.');
                 }
             }
         }

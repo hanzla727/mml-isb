@@ -12,7 +12,7 @@ use App\Notifications\MissedReportReminderNotification;
 use App\Notifications\TaskDeadlineNearNotification;
 use App\Notifications\TaskOverdueNotification;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -26,7 +26,7 @@ class ReminderTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_reminds_participants_of_meetings_starting_within_24_hours(): void

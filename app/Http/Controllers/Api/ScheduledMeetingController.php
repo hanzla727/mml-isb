@@ -18,10 +18,10 @@ class ScheduledMeetingController extends Controller
 
         $query = ScheduledMeeting::query()->with(['organizer'])->withCount(['participants', 'tasks']);
 
-        // Visibility follows the org hierarchy (Admin/NA Head/Team Leader see
+        // Visibility follows the org hierarchy (Admin/NA Head/UC Head see
         // their scope's meetings, not just their own), independent of
         // 'manage-meetings' which gates create/edit/delete rights instead.
-        if ($user->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head', 'team_leader'])) {
+        if ($user->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head'])) {
             HierarchyScope::restrictByRelation($query, $user, 'participants');
             $query->with(['participants' => fn ($q) => $q->where('user_id', $user->id)]);
 
@@ -32,7 +32,7 @@ class ScheduledMeetingController extends Controller
         }
 
         // The Upcoming/Today/Past tabs apply to every role's list, not just
-        // the self-only branch — Team Leaders/NA Heads/Admins get the same
+        // the self-only branch — NA Heads/UC Heads/Admins get the same
         // date scoping over their wider set of visible meetings.
         if ($request->filled('when')) {
             match ($request->string('when')->toString()) {
@@ -40,7 +40,7 @@ class ScheduledMeetingController extends Controller
                 'past' => $query->whereDate('meeting_date', '<', today()),
                 default => $query->whereDate('meeting_date', '>=', today()),
             };
-        } elseif (! $user->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head', 'team_leader'])) {
+        } elseif (! $user->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head'])) {
             $query->whereDate('meeting_date', '>=', today());
         }
 

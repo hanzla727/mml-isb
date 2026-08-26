@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Notifications\LeaveRequestDecidedNotification;
 use App\Notifications\LeaveRequestSubmittedNotification;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -21,7 +21,7 @@ class LeaveRequestTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_volunteer_submits_leave_request_and_their_departments_admin_is_notified(): void
@@ -40,13 +40,13 @@ class LeaveRequestTest extends TestCase
         $leaveRequest = LeaveRequest::where('user_id', $volunteer->id)->first();
         $this->assertSame('pending', $leaveRequest->status);
 
-        // Leave/expense management is Admin + Super Admin only (not Team
-        // Leader — team_leader only holds submit-leave-requests).
+        // Leave/expense management is Admin + Super Admin only — a plain
+        // volunteer never receives this notification, even one in the same NA.
         $admin = User::where('email', 'admin1@example.com')->first();
-        $teamLeader = User::where('email', 'teamleader1@example.com')->first();
+        $otherVolunteer = User::where('email', 'volunteer2@example.com')->first();
 
         Notification::assertSentTo($admin, LeaveRequestSubmittedNotification::class);
-        Notification::assertNotSentTo($teamLeader, LeaveRequestSubmittedNotification::class);
+        Notification::assertNotSentTo($otherVolunteer, LeaveRequestSubmittedNotification::class);
     }
 
     public function test_admin_can_approve_a_leave_request_and_volunteer_is_notified(): void

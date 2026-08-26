@@ -32,15 +32,6 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-4 col-lg-2">
-                <label class="form-label small text-muted">Team</label>
-                <select wire:model.live="teamId" class="form-select form-select-sm">
-                    <option value="">All</option>
-                    @foreach ($teams as $team)
-                        <option value="{{ $team->id }}">{{ $team->name }}</option>
-                    @endforeach
-                </select>
-            </div>
             <div class="col-md-4 col-lg-1">
                 <label class="form-label small text-muted">Project</label>
                 <select wire:model.live="projectId" class="form-select form-select-sm">
@@ -83,7 +74,7 @@
         </div>
     </div>
 
-    <div class="card stat-card" wire:loading.class="is-loading-target" wire:target="search,status,priority,departmentId,teamId,userId,projectId,overdueOnly,resetFilters">
+    <div class="card stat-card" wire:loading.class="is-loading-target" wire:target="search,status,priority,departmentId,userId,projectId,overdueOnly,resetFilters">
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
@@ -225,7 +216,7 @@
                                 </div>
                             </div>
 
-                            @include('admin.partials.audience-picker', compact('nas', 'ucs', 'departments', 'teams', 'users'))
+                            @include('admin.partials.audience-picker', compact('nas', 'ucs', 'departments', 'users'))
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Create Task</button>
@@ -317,7 +308,7 @@
                             </div>
 
                             <p class="text-muted small">Re-select who this task is for below — the assignees are re-applied on save.</p>
-                            @include('admin.partials.audience-picker', compact('nas', 'ucs', 'departments', 'teams', 'users'))
+                            @include('admin.partials.audience-picker', compact('nas', 'ucs', 'departments', 'users'))
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Save Changes</button>

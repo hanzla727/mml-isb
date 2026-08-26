@@ -66,15 +66,7 @@
                 <li class="nav-item">
                     <a href="{{ url('/admin/departments') }}" class="nav-link {{ request()->is('admin/departments*') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> {{ __('Departments') }}</a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ url('/admin/teams') }}" class="nav-link {{ request()->is('admin/teams*') ? 'active' : '' }}"><i class="bi bi-people-fill"></i> {{ __('Teams') }}</a>
-                </li>
             @endhasanyrole
-            @can('manage-team')
-                <li class="nav-item">
-                    <a href="{{ url('/admin/my-team') }}" class="nav-link {{ request()->is('admin/my-team*') ? 'active' : '' }}"><i class="bi bi-people-fill"></i> {{ __('My Team') }}</a>
-                </li>
-            @endcan
             @can('manage-leave-requests')
                 <li class="nav-item">
                     <a href="{{ url('/admin/leave-requests') }}" class="nav-link {{ request()->is('admin/leave-requests*') ? 'active' : '' }}"><i class="bi bi-airplane"></i> {{ __('Leave Requests') }}</a>

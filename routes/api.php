@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Api\Admin\DepartmentController;
-use App\Http\Controllers\Api\Admin\TeamController;
 use App\Http\Controllers\Api\Admin\UserController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\AuthController;
@@ -64,7 +63,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/volunteers', [VolunteerDirectoryController::class, 'index']);
     Route::get('/departments', [OrgDirectoryController::class, 'departments']);
-    Route::get('/teams', [OrgDirectoryController::class, 'teams']);
 
     Route::get('/announcements', [AnnouncementController::class, 'index']);
     Route::post('/announcements/{announcement}/read', [AnnouncementController::class, 'markRead']);
@@ -73,10 +71,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // /api/my-meetings (field-visit contacts logged in daily reports).
     Route::get('/meetings', [ScheduledMeetingController::class, 'index']);
     Route::get('/meetings/{scheduledMeeting}', [ScheduledMeetingController::class, 'show']);
-    // Not gated by permission:manage-meetings — Team Leaders can also create
-    // meetings for their own team without holding that system-wide
-    // permission; ScheduledMeetingPolicy/ScheduledMeetingService enforce the
-    // real, finer-grained authorization per request.
     Route::post('/meetings', [ScheduledMeetingController::class, 'store']);
     Route::put('/meetings/{scheduledMeeting}', [ScheduledMeetingController::class, 'update']);
     Route::delete('/meetings/{scheduledMeeting}', [ScheduledMeetingController::class, 'destroy']);
@@ -143,10 +137,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::middleware('permission:manage-departments')->group(function () {
             Route::apiResource('departments', DepartmentController::class)->except(['show']);
-        });
-
-        Route::middleware('permission:manage-teams')->group(function () {
-            Route::apiResource('teams', TeamController::class)->except(['show']);
         });
     });
 });

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Department;
 use App\Models\Na;
-use App\Models\Team;
 use App\Models\Uc;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -59,10 +59,9 @@ class DemoUserSeeder extends Seeder
 
         // NA Head: scoped to exactly one NA (na_id, no single uc_id — every
         // UC under the NA is their responsibility), and that NA points back
-        // at them (na_head_id) — kept in sync both ways, same pattern as
-        // Team::leader_id <-> User::team_id below. NA-50 is deliberately
-        // left without a dedicated NA Head — it's run by Admin + its UC
-        // Head instead, showing that's a valid, real configuration too.
+        // at them (na_head_id). NA-50 is deliberately left without a
+        // dedicated NA Head — it's run by Admin + its UC Head instead,
+        // showing that's a valid, real configuration too.
         $naHeads = [
             ['name' => 'Tariq Mehmood', 'email' => 'nahead1@example.com', 'na' => $na48],
             ['name' => 'Farah Naz', 'email' => 'nahead2@example.com', 'na' => $na49],
@@ -98,43 +97,35 @@ class DemoUserSeeder extends Seeder
         $ucHead->assignRole('uc_head');
         $ucHead->ucsHeaded()->attach([$ucBharaKahu->id, $ucTarnol->id]);
 
-        $teams = Team::with('uc.na')->orderBy('id')->get();
+        // Volunteers: each placed in a specific (UC, Department) pair — a
+        // few UCs are left with no volunteers on purpose, to show an NA/UC
+        // can exist with nobody assigned there yet. reporting_head_id
+        // resolves to whichever head actually oversees that placement: the
+        // UC Head if they cover that UC, otherwise the NA Head for that NA,
+        // otherwise the Admin responsible for it.
+        $departments = Department::pluck('id', 'name');
+        $ucs = Uc::pluck('id', 'name');
 
-        // Team Leader: leads one or more Teams (via Team::leader_id — a
-        // Team Leader is never limited to exactly one team). Spread across
-        // all three NAs so every NA has at least one staffed, led team.
-        $teamLeaders = [
-            ['name' => 'Bilal Chaudhry', 'email' => 'teamleader1@example.com', 'team' => 'Donor Relations Team', 'reports_to' => fn () => Na::where('name', 'NA-48')->firstOrFail()->na_head_id],
-            ['name' => 'Ayesha Siddiqui', 'email' => 'teamleader2@example.com', 'team' => 'Hospital Volunteers Team', 'reports_to' => fn () => Na::where('name', 'NA-48')->firstOrFail()->na_head_id],
-            ['name' => 'Hassan Raza', 'email' => 'teamleader3@example.com', 'team' => 'Community Fundraising Team', 'reports_to' => fn () => Na::where('name', 'NA-49')->firstOrFail()->na_head_id],
-            ['name' => 'Zainab Malik', 'email' => 'teamleader4@example.com', 'team' => 'G-10 Khidmat Squad', 'reports_to' => fn () => Na::where('name', 'NA-49')->firstOrFail()->na_head_id],
-            ['name' => 'Omar Farooqi', 'email' => 'teamleader5@example.com', 'team' => 'Bhara Kahu Khidmat Team', 'reports_to' => fn () => $ucHead->id],
+        $placements = [
+            ['uc' => 'UC F-10', 'department' => 'Fundraising'],
+            ['uc' => 'UC F-10', 'department' => 'Hospital'],
+            ['uc' => 'UC F-10', 'department' => 'Mosque'],
+            ['uc' => 'UC F-6', 'department' => 'Fundraising'],
+            ['uc' => 'UC F-8', 'department' => 'Hospital'],
+            ['uc' => 'UC G-6', 'department' => 'Mosque'],
+            ['uc' => 'UC G-9', 'department' => 'Khidmat'],
+            ['uc' => 'UC G-9', 'department' => 'Dawah'],
+            ['uc' => 'UC G-9', 'department' => 'Administration'],
+            ['uc' => 'UC G-9', 'department' => 'Fundraising'],
+            ['uc' => 'UC G-10', 'department' => 'Khidmat'],
+            ['uc' => 'UC I-8', 'department' => 'Dawah'],
+            ['uc' => 'UC I-9', 'department' => 'Administration'],
+            ['uc' => 'UC Bahria Town', 'department' => 'Fundraising'],
+            ['uc' => 'UC Bhara Kahu', 'department' => 'Khidmat'],
+            ['uc' => 'UC Tarnol', 'department' => 'Hospital'],
+            ['uc' => 'UC Sihala', 'department' => 'Mosque'],
+            ['uc' => 'UC Humak', 'department' => 'Fundraising'],
         ];
-
-        foreach ($teamLeaders as $data) {
-            $team = $teams->firstWhere('name', $data['team']);
-
-            $leader = User::factory()->create([
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'username' => $this->usernameFor($data['name']),
-                'password' => 'password',
-                'pin' => '1234',
-                'na_id' => $team->uc->na_id,
-                'uc_id' => $team->uc_id,
-                'department_id' => $team->department_id,
-                'team_id' => $team->id,
-                'reporting_head_id' => ($data['reports_to'])(),
-            ]);
-            $leader->assignRole('team_leader');
-            $team->update(['leader_id' => $leader->id]);
-        }
-
-        $teams = $teams->fresh(); // pick up leader_id updates for reporting_head fallback below
-
-        // Volunteers: spread across every staffed team in every NA so the
-        // whole org chart has real people in it, not just NA-48.
-        $staffedTeams = Team::whereNotNull('department_id')->orderBy('id')->get();
 
         $volunteerNames = [
             'Ali Hassan', 'Fatima Noor', 'Usman Ghani', 'Mariam Yousuf', 'Hamza Tariq',
@@ -142,11 +133,13 @@ class DemoUserSeeder extends Seeder
             'Kashif Mehmood', 'Sadia Batool', 'Waqas Ahmed', 'Iqra Nawaz', 'Faisal Rashid',
             'Hira Younas', 'Junaid Malik', 'Mahnoor Siddiqi', 'Asad Bhatti', 'Sobia Rehman',
             'Danish Iqbal', 'Laiba Khalid', 'Shahzaib Qureshi', 'Noreen Akhtar',
+            'Bilal Chaudhry', 'Ayesha Siddiqui', 'Hassan Raza', 'Zainab Malik', 'Omar Farooqi',
         ];
 
         foreach ($volunteerNames as $i => $name) {
-            $team = $staffedTeams->get($i % $staffedTeams->count());
-            $na = Na::find($team->uc->na_id);
+            $placement = $placements[$i % count($placements)];
+            $ucId = $ucs[$placement['uc']];
+            $uc = Uc::find($ucId);
 
             $user = User::factory()->create([
                 'name' => $name,
@@ -154,13 +147,29 @@ class DemoUserSeeder extends Seeder
                 'username' => $this->usernameFor($name),
                 'password' => 'password',
                 'pin' => '1234',
-                'na_id' => $team->uc->na_id,
-                'uc_id' => $team->uc_id,
-                'department_id' => $team->department_id,
-                'team_id' => $team->id,
-                'reporting_head_id' => $team->leader_id ?? $na?->na_head_id ?? $ucHead->id,
+                'na_id' => $uc->na_id,
+                'uc_id' => $ucId,
+                'department_id' => $departments[$placement['department']],
+                'reporting_head_id' => $this->reportingHeadFor($uc, $ucHead, $na48, $na49),
             ]);
             $user->assignRole('user');
         }
+    }
+
+    private function reportingHeadFor(Uc $uc, User $ucHead, Na $na48, Na $na49): ?int
+    {
+        if ($ucHead->ucsHeaded()->where('ucs.id', $uc->id)->exists()) {
+            return $ucHead->id;
+        }
+
+        if ($uc->na_id === $na48->id) {
+            return $na48->na_head_id;
+        }
+
+        if ($uc->na_id === $na49->id) {
+            return $na49->na_head_id;
+        }
+
+        return null;
     }
 }

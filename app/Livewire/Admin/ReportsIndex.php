@@ -4,7 +4,6 @@ namespace App\Livewire\Admin;
 
 use App\Models\DailyReport;
 use App\Models\Department;
-use App\Models\Team;
 use App\Models\User;
 use App\Services\HierarchyScope;
 use Livewire\Attributes\Url;
@@ -22,9 +21,6 @@ class ReportsIndex extends Component
 
     #[Url(history: true)]
     public string $departmentId = '';
-
-    #[Url(history: true)]
-    public string $teamId = '';
 
     #[Url(history: true)]
     public string $status = '';
@@ -47,12 +43,12 @@ class ReportsIndex extends Component
 
     public function resetFilters(): void
     {
-        $this->reset(['userId', 'departmentId', 'teamId', 'status', 'reviewStatus', 'from', 'to']);
+        $this->reset(['userId', 'departmentId', 'status', 'reviewStatus', 'from', 'to']);
     }
 
     public function getHasActiveFiltersProperty(): bool
     {
-        return $this->userId !== '' || $this->departmentId !== '' || $this->teamId !== ''
+        return $this->userId !== '' || $this->departmentId !== ''
             || $this->status !== '' || $this->reviewStatus !== '' || $this->from !== '' || $this->to !== '';
     }
 
@@ -61,7 +57,6 @@ class ReportsIndex extends Component
         return array_filter([
             'user_id' => $this->userId,
             'department_id' => $this->departmentId,
-            'team_id' => $this->teamId,
             'status' => $this->status,
             'review_status' => $this->reviewStatus,
             'from' => $this->from,
@@ -74,13 +69,12 @@ class ReportsIndex extends Component
         $viewer = auth()->user();
         $visibleIds = HierarchyScope::visibleUserIds($viewer);
 
-        $query = DailyReport::query()->with(['user.department', 'user.team'])->withCount('meetings');
+        $query = DailyReport::query()->with(['user.department'])->withCount('meetings');
         HierarchyScope::restrictByOwner($query, $viewer);
 
         $query
             ->when($this->userId !== '', fn ($q) => $q->where('user_id', $this->userId))
             ->when($this->departmentId !== '', fn ($q) => $q->whereHas('user', fn ($q2) => $q2->where('department_id', $this->departmentId)))
-            ->when($this->teamId !== '', fn ($q) => $q->whereHas('user', fn ($q2) => $q2->where('team_id', $this->teamId)))
             ->when($this->status !== '', fn ($q) => $q->where('status', $this->status))
             ->when($this->reviewStatus !== '', fn ($q) => $q->where('review_status', $this->reviewStatus))
             ->when($this->from !== '', fn ($q) => $q->whereDate('report_date', '>=', $this->from))
@@ -97,7 +91,6 @@ class ReportsIndex extends Component
             'reports' => $reports,
             'users' => $users,
             'departments' => Department::orderBy('name')->get(),
-            'teams' => Team::orderBy('name')->get(),
         ]);
     }
 }

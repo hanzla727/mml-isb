@@ -47,7 +47,7 @@ class Na extends Model
     }
 
     /**
-     * Every volunteer/team-leader/NA-head directly assigned to this NA
+     * Every volunteer/NA-head directly assigned to this NA
      * (User::na_id, denormalized alongside their uc_id) — not the Admins
      * who merely have access to it.
      */

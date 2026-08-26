@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Notifications\ExpenseClaimDecidedNotification;
 use App\Notifications\ExpenseClaimSubmittedNotification;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
@@ -21,7 +21,7 @@ class ExpenseClaimTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_volunteer_submits_expense_claim_and_departments_admin_is_notified(): void

@@ -40,7 +40,7 @@ class AuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user' => new UserResource($user->load(['department', 'team'])),
+            'user' => new UserResource($user->load(['department'])),
         ]);
     }
 
@@ -53,7 +53,7 @@ class AuthController extends Controller
 
     public function me(Request $request)
     {
-        return new UserResource($request->user()->load(['department', 'team']));
+        return new UserResource($request->user()->load(['department']));
     }
 
     public function forgotPassword(Request $request)

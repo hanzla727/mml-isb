@@ -18,7 +18,6 @@ class RolePermissionSeeder extends Seeder
             'manage-nas',
             'manage-users',
             'manage-departments',
-            'manage-teams',
             'manage-settings',
             'manage-permissions',
             'manage-announcements',
@@ -35,13 +34,11 @@ class RolePermissionSeeder extends Seeder
             'manage-meetings',
             'manage-tasks',
             'review-task-reports',
-            // Super Admin + Admin + NA Head + Team Leader (org hierarchy)
+            // Super Admin + Admin + NA Head + UC Head (org hierarchy)
             'review-reports',
             'mark-attendance',
             'manage-leave-requests',
             'manage-expense-claims',
-            // Team Leader only
-            'manage-team',
             // All roles
             'submit-reports',
             'view-own-reports',
@@ -82,23 +79,12 @@ class RolePermissionSeeder extends Seeder
         Role::findOrCreate('na_head', 'web')->syncPermissions($adminPermissions);
         Role::findOrCreate('na_head', 'sanctum')->syncPermissions($adminPermissions);
 
-        // UC Head: sits between NA Head and Team Leader — same operational
-        // scope as NA Head/Admin, but HierarchyScope narrows it to exactly
-        // the UC(s) they've been assigned (User::ucsHeaded()), which can be
-        // more than one.
+        // UC Head: sits between NA Head and its volunteers — same
+        // operational scope as NA Head/Admin, but HierarchyScope narrows it
+        // to exactly the UC(s) they've been assigned (User::ucsHeaded()),
+        // which can be more than one.
         Role::findOrCreate('uc_head', 'web')->syncPermissions($adminPermissions);
         Role::findOrCreate('uc_head', 'sanctum')->syncPermissions($adminPermissions);
-
-        $teamLeaderPermissions = [
-            'manage-team', 'manage-tasks', 'review-reports', 'review-task-reports', 'mark-attendance',
-            'manage-leave-requests', 'manage-expense-claims',
-            'view-reports', 'view-announcements', 'view-targets',
-            'submit-reports', 'view-own-reports', 'view-own-targets',
-            'view-own-tasks', 'submit-task-reports',
-            'submit-leave-requests', 'submit-expense-claims',
-        ];
-        Role::findOrCreate('team_leader', 'web')->syncPermissions($teamLeaderPermissions);
-        Role::findOrCreate('team_leader', 'sanctum')->syncPermissions($teamLeaderPermissions);
 
         $userPermissions = [
             'submit-reports', 'view-own-reports', 'view-own-targets', 'view-announcements',

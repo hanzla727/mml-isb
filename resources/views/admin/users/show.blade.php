@@ -18,7 +18,6 @@
             </div>
         </div>
         <div class="mb-2"><strong>{{ __('Department') }}:</strong> {{ $viewedUser->department?->name ?? '—' }}</div>
-        <div class="mb-2"><strong>{{ __('Team') }}:</strong> {{ $viewedUser->team?->name ?? '—' }}</div>
 
         <div class="mb-2 d-flex align-items-center gap-2">
             <i class="bi bi-at text-muted"></i>

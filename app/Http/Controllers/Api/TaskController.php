@@ -22,7 +22,6 @@ class TaskController extends Controller
             HierarchyScope::restrictByRelation($query, $user, 'assignees');
 
             $query->when($request->filled('department_id'), fn ($q) => $q->whereHas('assignees', fn ($q2) => $q2->where('department_id', $request->integer('department_id'))))
-                ->when($request->filled('team_id'), fn ($q) => $q->whereHas('assignees', fn ($q2) => $q2->where('team_id', $request->integer('team_id'))))
                 ->when($request->filled('user_id'), fn ($q) => $q->whereHas('assignees', fn ($q2) => $q2->where('users.id', $request->integer('user_id'))))
                 ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
                 ->when($request->filled('priority'), fn ($q) => $q->where('priority', $request->string('priority')))

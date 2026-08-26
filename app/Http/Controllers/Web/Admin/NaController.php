@@ -8,7 +8,6 @@ use App\Models\DailyReport;
 use App\Models\Na;
 use App\Models\ScheduledMeeting;
 use App\Models\Task;
-use App\Models\Team;
 use App\Models\User;
 use App\Services\HierarchyScope;
 use App\Services\NaPerformanceService;
@@ -45,7 +44,7 @@ class NaController extends Controller
         $memberIds = User::where('na_id', $na->id)->pluck('id');
 
         return view('admin.nas.show', [
-            'na' => $na->load(['naHead', 'ucs.teams.department']),
+            'na' => $na->load(['naHead', 'ucs.members']),
             'summary' => $performance->summarize($na, $from, $to),
             'from' => $from->toDateString(),
             'to' => $to->toDateString(),
@@ -61,16 +60,14 @@ class NaController extends Controller
             'pendingReports' => DailyReport::whereIn('user_id', $memberIds)
                 ->whereIn('review_status', ['pending_review', 'under_review', 're_submitted'])
                 ->with('user')->orderByDesc('report_date')->limit(5)->get(),
-            'announcements' => Announcement::where(function ($q) use ($na) {
+            'announcements' => Announcement::where(function ($q) use ($na, $memberIds) {
                 $ucIds = $na->ucs()->pluck('id');
-                $teamIds = Team::whereIn('uc_id', $ucIds)->pluck('id');
-                $departmentIds = Team::whereIn('uc_id', $ucIds)->pluck('department_id')->unique();
+                $departmentIds = User::whereIn('id', $memberIds)->pluck('department_id')->filter()->unique();
 
                 $q->where('audience_scope', 'all')
                     ->orWhere(fn ($q2) => $q2->where('audience_scope', 'na')->where('audience_id', $na->id))
                     ->orWhere(fn ($q2) => $q2->where('audience_scope', 'uc')->whereIn('audience_id', $ucIds))
-                    ->orWhere(fn ($q2) => $q2->where('audience_scope', 'department')->whereIn('audience_id', $departmentIds))
-                    ->orWhere(fn ($q2) => $q2->where('audience_scope', 'team')->whereIn('audience_id', $teamIds));
+                    ->orWhere(fn ($q2) => $q2->where('audience_scope', 'department')->whereIn('audience_id', $departmentIds));
             })->orderByDesc('published_at')->limit(5)->get(),
         ]);
     }

@@ -22,22 +22,20 @@ class ReportController extends Controller
     public function show(DailyReport $dailyReport)
     {
         return view('admin.reports.show', [
-            'report' => $dailyReport->load(['user', 'meetings.contact', 'meetings.participants', 'teamLeader', 'teamLeaderReviewer', 'adminReviewer']),
+            'report' => $dailyReport->load(['user', 'meetings.contact', 'meetings.participants', 'adminReviewer']),
         ]);
     }
 
     public function review(ReviewDailyReportRequest $request, DailyReport $dailyReport, ReportApprovalService $service)
     {
-        $decision = $request->string('decision')->toString();
-        $remarks = $request->input('remarks');
+        $this->authorize('review', $dailyReport);
 
-        if ($dailyReport->review_status === 'pending_review') {
-            $this->authorize('reviewAsTeamLeader', $dailyReport);
-            $service->teamLeaderReview($dailyReport, $request->user(), $decision, $remarks);
-        } else {
-            $this->authorize('reviewAsAdmin', $dailyReport);
-            $service->adminReview($dailyReport, $request->user(), $decision, $remarks);
-        }
+        $service->review(
+            $dailyReport,
+            $request->user(),
+            $request->string('decision')->toString(),
+            $request->input('remarks'),
+        );
 
         return back()->with('status', 'Report reviewed.');
     }
@@ -67,7 +65,6 @@ class ReportController extends Controller
         return $query
             ->when($request->filled('user_id'), fn ($q) => $q->where('user_id', $request->integer('user_id')))
             ->when($request->filled('department_id'), fn ($q) => $q->whereHas('user', fn ($q2) => $q2->where('department_id', $request->integer('department_id'))))
-            ->when($request->filled('team_id'), fn ($q) => $q->whereHas('user', fn ($q2) => $q2->where('team_id', $request->integer('team_id'))))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('review_status'), fn ($q) => $q->where('review_status', $request->string('review_status')))
             ->when($request->filled('from'), fn ($q) => $q->whereDate('report_date', '>=', $request->date('from')))

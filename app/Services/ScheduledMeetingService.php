@@ -48,15 +48,15 @@ class ScheduledMeetingService
 
     /**
      * `scope: 'my_scope'` means "resolve to whoever this creator's role
-     * already lets them see" — Team Leader's team(s), NA Head's NA, UC
-     * Head's UC(s), Admin's assigned NAs — read straight from
-     * HierarchyScope (the same source every other visibility check in the
-     * app uses) rather than needing the client to pick and send a specific
-     * team_id/na_id/uc_id. This is what the mobile app's "create meeting"
-     * screen uses for every role except Admin/Super Admin (who pick 'all').
+     * already lets them see" — NA Head's NA, UC Head's UC(s), Admin's
+     * assigned NAs — read straight from HierarchyScope (the same source
+     * every other visibility check in the app uses) rather than needing the
+     * client to pick and send a specific na_id/uc_id. This is what the
+     * mobile app's "create meeting" screen uses for every role except
+     * Admin/Super Admin (who pick 'all').
      *
-     * For every other scope value ('team', 'department', 'na', 'individual',
-     * ...), the resolved audience is still cross-checked against
+     * For every other scope value ('department', 'na', 'individual', ...),
+     * the resolved audience is still cross-checked against
      * HierarchyScope so a Team Leader/NA Head/UC Head/Admin can't reach
      * outside their own scope no matter which scope value they submit.
      * Super Admin is unrestricted (HierarchyScope::visibleUserIds returns

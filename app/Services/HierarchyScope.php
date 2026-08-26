@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Single source of truth for the Super Admin → Admin → NA Head → UC Head →
- * Team Leader → Volunteer visibility hierarchy. Every controller that
- * queries reports/tasks/meetings/volunteers goes through here instead of
- * repeating na/uc/department/team scoping logic.
+ * Volunteer visibility hierarchy. Every controller that queries
+ * reports/tasks/meetings/volunteers goes through here instead of repeating
+ * na/uc scoping logic.
  *
  * Admin and UC Head are many-to-many (an Admin can be assigned several NAs
- * via User::adminNas(), a UC Head several UCs via User::ucsHeaded()), and a
- * Team Leader can likewise lead more than one Team via User::teamsLed() —
- * only NA Head owns exactly one NA.
+ * via User::adminNas(), a UC Head several UCs via User::ucsHeaded()) — only
+ * NA Head owns exactly one NA.
  */
 class HierarchyScope
 {
@@ -36,9 +35,6 @@ class HierarchyScope
         } elseif ($viewer->hasRole('uc_head')) {
             $ucIds = $viewer->ucsHeaded()->pluck('ucs.id');
             $ids = User::whereIn('uc_id', $ucIds)->pluck('id')->all();
-        } elseif ($viewer->hasRole('team_leader')) {
-            $teamIds = $viewer->teamsLed()->pluck('id');
-            $ids = User::whereIn('team_id', $teamIds)->pluck('id')->all();
         } else {
             $ids = [];
         }
@@ -69,10 +65,6 @@ class HierarchyScope
 
         if ($viewer->hasRole('uc_head')) {
             return $target->uc_id !== null && $viewer->ucsHeaded()->where('ucs.id', $target->uc_id)->exists();
-        }
-
-        if ($viewer->hasRole('team_leader')) {
-            return $target->team_id !== null && $viewer->teamsLed()->where('id', $target->team_id)->exists();
         }
 
         return false;

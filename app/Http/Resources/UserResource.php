@@ -21,10 +21,6 @@ class UserResource extends JsonResource
                 'id' => $this->department->id,
                 'name' => $this->department->name,
             ]),
-            'team' => $this->whenLoaded('team', fn () => [
-                'id' => $this->team->id,
-                'name' => $this->team->name,
-            ]),
             'uc' => $this->whenLoaded('uc', fn () => $this->uc ? [
                 'id' => $this->uc->id,
                 'name' => $this->uc->name,

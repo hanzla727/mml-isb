@@ -20,15 +20,6 @@
                 </select>
             </div>
             <div class="col-md-3 col-lg-2">
-                <label class="form-label small text-muted">Team</label>
-                <select wire:model.live="teamId" class="form-select form-select-sm">
-                    <option value="">All</option>
-                    @foreach ($teams as $team)
-                        <option value="{{ $team->id }}">{{ $team->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="col-md-3 col-lg-2">
                 <label class="form-label small text-muted">Status</label>
                 <select wire:model.live="status" class="form-select form-select-sm">
                     <option value="">All</option>
@@ -77,13 +68,13 @@
         </div>
     </div>
 
-    <div class="card stat-card" wire:loading.class="is-loading-target" wire:target="userId,departmentId,teamId,status,reviewStatus,from,to,resetFilters">
+    <div class="card stat-card" wire:loading.class="is-loading-target" wire:target="userId,departmentId,status,reviewStatus,from,to,resetFilters">
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
                     <th>Date</th>
                     <th>Volunteer</th>
-                    <th>Department / Team</th>
+                    <th>Department</th>
                     <th>Hours</th>
                     <th title="Field visits logged in each report">Meetings (Visits)</th>
                     <th>Status</th>
@@ -96,7 +87,7 @@
                     <tr wire:key="report-{{ $report->id }}">
                         <td>{{ $report->report_date->toDateString() }}</td>
                         <td>{{ $report->user->name }}</td>
-                        <td class="text-muted small">{{ $report->user->department?->name ?? '—' }} / {{ $report->user->team?->name ?? '—' }}</td>
+                        <td class="text-muted small">{{ $report->user->department?->name ?? '—' }}</td>
                         <td>{{ $report->total_hours }}</td>
                         <td>{{ $report->meetings_count }}</td>
                         <td><x-status-badge :status="$report->status" /></td>

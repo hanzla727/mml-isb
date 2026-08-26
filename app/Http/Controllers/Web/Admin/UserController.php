@@ -7,7 +7,6 @@ use App\Http\Requests\Admin\StoreUserRequest;
 use App\Models\Department;
 use App\Models\Media;
 use App\Models\Na;
-use App\Models\Team;
 use App\Models\Uc;
 use App\Models\User;
 use App\Models\VolunteerDocument;
@@ -19,12 +18,9 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        // Full user management is an Admin/Super Admin/NA Head concern —
-        // Team Leaders use the dedicated "My Team" page instead, scoped to
-        // their own team.
         abort_unless($request->user()->hasAnyRole(['super_admin', 'admin', 'na_head', 'uc_head']), 403);
 
-        $query = User::query()->with(['na', 'uc', 'department', 'team', 'roles']);
+        $query = User::query()->with(['na', 'uc', 'department', 'roles']);
         HierarchyScope::restrictUsersQuery($query, $request->user());
 
         $users = $query
@@ -44,7 +40,7 @@ class UserController extends Controller
         abort_unless(HierarchyScope::canView($request->user(), $user), 403);
 
         return view('admin.users.show', [
-            'viewedUser' => $user->load(['na', 'uc', 'department', 'team']),
+            'viewedUser' => $user->load(['na', 'uc', 'department']),
             'documents' => $user->documents()->with(['file', 'uploader'])->orderByDesc('created_at')->get(),
         ]);
     }
@@ -92,7 +88,6 @@ class UserController extends Controller
             'nas' => Na::orderBy('name')->get(),
             'ucs' => Uc::with('na')->orderBy('name')->get(),
             'departments' => Department::orderBy('name')->get(),
-            'teams' => Team::with('uc')->orderBy('name')->get(),
             'potentialHeads' => User::where('is_active', true)->orderBy('name')->get(),
         ]);
     }
@@ -111,7 +106,6 @@ class UserController extends Controller
             'na_id' => $this->resolveNaId($validated),
             'uc_id' => in_array($validated['role'], ['na_head', 'uc_head'], true) ? null : ($validated['uc_id'] ?? null),
             'department_id' => $validated['department_id'] ?? null,
-            'team_id' => $validated['team_id'] ?? null,
             'reporting_head_id' => $validated['reporting_head_id'] ?? null,
             'is_active' => $validated['is_active'] ?? true,
         ]);
@@ -130,7 +124,6 @@ class UserController extends Controller
             'nas' => Na::orderBy('name')->get(),
             'ucs' => Uc::with('na')->orderBy('name')->get(),
             'departments' => Department::orderBy('name')->get(),
-            'teams' => Team::with('uc')->orderBy('name')->get(),
             'potentialHeads' => User::where('is_active', true)->where('id', '!=', $user->id)->orderBy('name')->get(),
         ]);
     }
@@ -147,7 +140,6 @@ class UserController extends Controller
             'na_id' => $this->resolveNaId($validated),
             'uc_id' => in_array($validated['role'], ['na_head', 'uc_head'], true) ? null : ($validated['uc_id'] ?? null),
             'department_id' => $validated['department_id'] ?? null,
-            'team_id' => $validated['team_id'] ?? null,
             'reporting_head_id' => $validated['reporting_head_id'] ?? null,
             'is_active' => $validated['is_active'] ?? $user->is_active,
             'pin' => $validated['pin'] ?? null,

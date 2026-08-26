@@ -11,7 +11,7 @@ use App\Models\Task;
 use App\Models\Uc;
 use App\Models\User;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -24,7 +24,7 @@ class NaTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_super_admin_can_create_a_na_and_assign_a_na_head(): void
@@ -122,11 +122,12 @@ class NaTest extends TestCase
 
     public function test_volunteers_on_leave_only_counted_within_the_admins_nas(): void
     {
-        $admin1 = User::where('email', 'admin1@example.com')->first(); // NA-48.
-        $na48Volunteer = User::where('email', 'volunteer1@example.com')->first();
-        $na49Volunteer = User::where('email', 'volunteer5@example.com')->first();
+        $admin1 = User::where('email', 'admin1@example.com')->first(); // NA-48 + NA-50.
+        $admin1NaIds = $admin1->adminNas->pluck('id');
+        $ownScopeVolunteer = User::role('user')->whereIn('na_id', $admin1NaIds)->firstOrFail();
+        $otherScopeVolunteer = User::role('user')->whereNotIn('na_id', $admin1NaIds)->firstOrFail();
 
-        foreach ([$na48Volunteer, $na49Volunteer] as $volunteer) {
+        foreach ([$ownScopeVolunteer, $otherScopeVolunteer] as $volunteer) {
             LeaveRequest::create([
                 'user_id' => $volunteer->id, 'leave_type' => 'sick',
                 'start_date' => now()->subDay()->toDateString(), 'end_date' => now()->addDay()->toDateString(),
@@ -134,7 +135,7 @@ class NaTest extends TestCase
             ]);
         }
 
-        // Only the NA-48 volunteer's leave should count toward admin1's scope.
+        // Only the in-scope volunteer's leave should count toward admin1's scope.
         $stats = app(\App\Services\DashboardMetrics::class)->forAdmin($admin1);
         $this->assertSame(1, $stats['volunteers_on_leave']);
     }

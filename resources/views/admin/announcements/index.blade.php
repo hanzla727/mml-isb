@@ -78,7 +78,6 @@
                                 <select name="audience_scope" id="audience_scope" class="form-select" onchange="toggleAudienceTarget(this.value)">
                                     <option value="all">{{ __('Everyone') }}</option>
                                     <option value="department">{{ __('Specific Department') }}</option>
-                                    <option value="team">{{ __('Specific Team') }}</option>
                                     <option value="user">{{ __('Specific User') }}</option>
                                 </select>
                             </div>
@@ -87,14 +86,6 @@
                                 <select name="audience_id" class="form-select" disabled>
                                     @foreach ($departments as $department)
                                         <option value="{{ $department->id }}">{{ $department->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3 audience-target" data-scope="team" style="display:none;">
-                                <label class="form-label">{{ __('Team') }}</label>
-                                <select name="audience_id" class="form-select" disabled>
-                                    @foreach ($teams as $team)
-                                        <option value="{{ $team->id }}">{{ $team->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -154,7 +145,6 @@
                                 <select name="audience_scope" id="editAnnouncementScope" class="form-select" onchange="toggleEditAudienceTarget(this.value)">
                                     <option value="all">{{ __('Everyone') }}</option>
                                     <option value="department">{{ __('Specific Department') }}</option>
-                                    <option value="team">{{ __('Specific Team') }}</option>
                                     <option value="user">{{ __('Specific User') }}</option>
                                 </select>
                             </div>
@@ -163,14 +153,6 @@
                                 <select name="audience_id" id="editAnnouncementDepartment" class="form-select" disabled>
                                     @foreach ($departments as $department)
                                         <option value="{{ $department->id }}">{{ $department->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-3 edit-audience-target" data-scope="team" style="display:none;">
-                                <label class="form-label">{{ __('Team') }}</label>
-                                <select name="audience_id" id="editAnnouncementTeam" class="form-select" disabled>
-                                    @foreach ($teams as $team)
-                                        <option value="{{ $team->id }}">{{ $team->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -214,8 +196,6 @@
 
                 if (data.audienceScope === 'department') {
                     document.getElementById('editAnnouncementDepartment').value = data.audienceId ?? '';
-                } else if (data.audienceScope === 'team') {
-                    document.getElementById('editAnnouncementTeam').value = data.audienceId ?? '';
                 } else if (data.audienceScope === 'user') {
                     document.getElementById('editAnnouncementUser').value = data.audienceId ?? '';
                 }

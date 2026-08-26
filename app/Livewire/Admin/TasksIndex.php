@@ -7,7 +7,6 @@ use App\Models\FormTemplate;
 use App\Models\Na;
 use App\Models\Project;
 use App\Models\Task;
-use App\Models\Team;
 use App\Models\Uc;
 use App\Models\User;
 use App\Services\HierarchyScope;
@@ -34,9 +33,6 @@ class TasksIndex extends Component
     public string $departmentId = '';
 
     #[Url(history: true)]
-    public string $teamId = '';
-
-    #[Url(history: true)]
     public string $userId = '';
 
     #[Url(history: true)]
@@ -54,13 +50,13 @@ class TasksIndex extends Component
 
     public function resetFilters(): void
     {
-        $this->reset(['search', 'status', 'priority', 'departmentId', 'teamId', 'userId', 'projectId', 'overdueOnly']);
+        $this->reset(['search', 'status', 'priority', 'departmentId', 'userId', 'projectId', 'overdueOnly']);
     }
 
     public function getHasActiveFiltersProperty(): bool
     {
         return $this->search !== '' || $this->status !== '' || $this->priority !== ''
-            || $this->departmentId !== '' || $this->teamId !== '' || $this->userId !== ''
+            || $this->departmentId !== '' || $this->userId !== ''
             || $this->projectId !== '' || $this->overdueOnly;
     }
 
@@ -76,7 +72,6 @@ class TasksIndex extends Component
             ->when($this->status !== '', fn ($q) => $q->where('status', $this->status))
             ->when($this->priority !== '', fn ($q) => $q->where('priority', $this->priority))
             ->when($this->departmentId !== '', fn ($q) => $q->whereHas('assignees', fn ($q2) => $q2->where('department_id', $this->departmentId)))
-            ->when($this->teamId !== '', fn ($q) => $q->whereHas('assignees', fn ($q2) => $q2->where('team_id', $this->teamId)))
             ->when($this->userId !== '', fn ($q) => $q->whereHas('assignees', fn ($q2) => $q2->where('users.id', $this->userId)))
             ->when($this->projectId !== '', fn ($q) => $q->where('project_id', $this->projectId))
             ->when($this->overdueOnly, fn ($q) => $q->overdue());
@@ -91,7 +86,6 @@ class TasksIndex extends Component
             'nas' => Na::when($naIds !== null, fn ($q) => $q->whereIn('id', $naIds))->orderBy('name')->get(),
             'ucs' => Uc::when($ucIds !== null, fn ($q) => $q->whereIn('id', $ucIds))->orderBy('name')->get(),
             'departments' => Department::orderBy('name')->get(),
-            'teams' => Team::orderBy('name')->get(),
             'users' => User::where('is_active', true)->orderBy('name')->get(),
             'projects' => Project::orderBy('name')->get(),
             'formTemplates' => FormTemplate::orderBy('name')->get(),

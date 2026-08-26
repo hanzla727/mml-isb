@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\Uc;
 use App\Models\User;
 use Database\Seeders\DemoUserSeeder;
-use Database\Seeders\DepartmentTeamSeeder;
+use Database\Seeders\OrganizationSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,7 +17,7 @@ class WebDashboardTest extends TestCase
     {
         parent::setUp();
 
-        $this->seed([RolePermissionSeeder::class, DepartmentTeamSeeder::class, DemoUserSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, OrganizationSeeder::class, DemoUserSeeder::class]);
     }
 
     public function test_login_redirects_super_admin_to_admin_dashboard(): void
@@ -68,10 +67,9 @@ class WebDashboardTest extends TestCase
         ])->assertForbidden();
     }
 
-    public function test_super_admin_can_manage_users_departments_and_teams(): void
+    public function test_super_admin_can_manage_users_and_departments(): void
     {
         $superAdmin = User::where('email', 'superadmin@example.com')->first();
-        $uc = Uc::first();
 
         $this->actingAs($superAdmin)->get('/admin/users')->assertOk()->assertSee('Add User');
 
@@ -82,14 +80,6 @@ class WebDashboardTest extends TestCase
 
         $department = \App\Models\Department::where('name', 'Welfare')->first();
         $this->assertNotNull($department);
-
-        $this->actingAs($superAdmin)->post('/admin/teams', [
-            'department_id' => $department->id,
-            'uc_id' => $uc->id,
-            'name' => 'Welfare Response Team',
-        ])->assertRedirect();
-
-        $this->assertDatabaseHas('teams', ['name' => 'Welfare Response Team', 'department_id' => $department->id, 'uc_id' => $uc->id]);
     }
 
     public function test_volunteer_sees_own_dashboard_and_reports(): void
@@ -115,7 +105,7 @@ class WebDashboardTest extends TestCase
 
     public function test_the_how_it_works_guide_is_reachable_by_every_role(): void
     {
-        foreach (['superadmin@example.com', 'admin1@example.com', 'nahead1@example.com', 'teamleader1@example.com', 'volunteer1@example.com'] as $email) {
+        foreach (['superadmin@example.com', 'admin1@example.com', 'nahead1@example.com', 'uchead1@example.com', 'volunteer1@example.com'] as $email) {
             $user = User::where('email', $email)->first();
 
             $this->actingAs($user)->get(route('guide'))
