@@ -51,12 +51,15 @@
             </div>
 
             <div class="mb-3" id="naIdsField">
-                <label class="form-label">NAs Managed <span class="text-muted small">(Admin only — can be assigned several)</span></label>
-                <select name="na_ids[]" class="form-select" multiple size="4">
+                <label class="form-label">NAs Managed <span class="text-muted small">(Admin only — can be assigned several; tick as many as apply)</span></label>
+                <div class="border rounded p-2" style="max-height: 180px; overflow-y: auto;">
                     @foreach ($nas as $na)
-                        <option value="{{ $na->id }}" @selected(in_array($na->id, old('na_ids', $user->exists ? $user->adminNas->pluck('id')->all() : [])))>{{ $na->name }}</option>
+                        <div class="form-check">
+                            <input type="checkbox" name="na_ids[]" value="{{ $na->id }}" class="form-check-input" id="na_id_{{ $na->id }}" @checked(in_array($na->id, old('na_ids', $user->exists ? $user->adminNas->pluck('id')->all() : [])))>
+                            <label class="form-check-label" for="na_id_{{ $na->id }}">{{ $na->name }}</label>
+                        </div>
                     @endforeach
-                </select>
+                </div>
             </div>
 
             <div class="mb-3" id="naIdField">
@@ -71,12 +74,15 @@
             </div>
 
             <div class="mb-3" id="ucIdsField">
-                <label class="form-label">UCs Managed <span class="text-muted small">(UC Head only — can be assigned several)</span></label>
-                <select name="uc_ids[]" class="form-select" multiple size="4">
+                <label class="form-label">UCs Managed <span class="text-muted small">(UC Head only — can be assigned several; tick as many as apply)</span></label>
+                <div class="border rounded p-2" style="max-height: 180px; overflow-y: auto;">
                     @foreach ($ucs as $uc)
-                        <option value="{{ $uc->id }}" @selected(in_array($uc->id, old('uc_ids', $user->exists ? $user->ucsHeaded->pluck('id')->all() : [])))>{{ $uc->name }} ({{ $uc->na->name }})</option>
+                        <div class="form-check">
+                            <input type="checkbox" name="uc_ids[]" value="{{ $uc->id }}" class="form-check-input" id="uc_id_{{ $uc->id }}" @checked(in_array($uc->id, old('uc_ids', $user->exists ? $user->ucsHeaded->pluck('id')->all() : [])))>
+                            <label class="form-check-label" for="uc_id_{{ $uc->id }}">{{ $uc->name }} ({{ $uc->na->name }})</label>
+                        </div>
                     @endforeach
-                </select>
+                </div>
             </div>
 
             <div class="row">

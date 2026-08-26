@@ -34,21 +34,27 @@
 </div>
 
 <div class="mb-3 audience-scope-target" data-scope="departments" style="display:none;">
-    <label class="form-label small">Department(s) <span class="text-muted">— pick one, a few, or all</span></label>
-    <select name="department_ids[]" class="form-select" multiple size="4" disabled>
+    <label class="form-label small">Department(s) <span class="text-muted">— tick one, a few, or all</span></label>
+    <div class="border rounded p-2" style="max-height: 180px; overflow-y: auto;">
         @foreach ($departments as $department)
-            <option value="{{ $department->id }}">{{ $department->name }}</option>
+            <div class="form-check">
+                <input type="checkbox" name="department_ids[]" value="{{ $department->id }}" class="form-check-input" disabled>
+                <label class="form-check-label small">{{ $department->name }}</label>
+            </div>
         @endforeach
-    </select>
+    </div>
 </div>
 
 <div class="mb-3 audience-scope-target" data-scope="teams" style="display:none;">
-    <label class="form-label small">Team(s) <span class="text-muted">— pick one, a few, or all</span></label>
-    <select name="team_ids[]" class="form-select" multiple size="4" disabled>
+    <label class="form-label small">Team(s) <span class="text-muted">— tick one, a few, or all</span></label>
+    <div class="border rounded p-2" style="max-height: 180px; overflow-y: auto;">
         @foreach ($teams as $team)
-            <option value="{{ $team->id }}">{{ $team->name }}</option>
+            <div class="form-check">
+                <input type="checkbox" name="team_ids[]" value="{{ $team->id }}" class="form-check-input" disabled>
+                <label class="form-check-label small">{{ $team->name }}</label>
+            </div>
         @endforeach
-    </select>
+    </div>
 </div>
 
 <div class="mb-3 audience-scope-target" data-scope="uc" style="display:none;">
@@ -70,12 +76,15 @@
 </div>
 
 <div class="mb-3 audience-scope-target" data-scope="nas" style="display:none;">
-    <label class="form-label small">NAs</label>
-    <select name="na_ids[]" class="form-select" multiple size="4" disabled>
+    <label class="form-label small">NAs <span class="text-muted">— tick one, a few, or all</span></label>
+    <div class="border rounded p-2" style="max-height: 180px; overflow-y: auto;">
         @foreach ($nas as $na)
-            <option value="{{ $na->id }}">{{ $na->name }}</option>
+            <div class="form-check">
+                <input type="checkbox" name="na_ids[]" value="{{ $na->id }}" class="form-check-input" disabled>
+                <label class="form-check-label small">{{ $na->name }}</label>
+            </div>
         @endforeach
-    </select>
+    </div>
 </div>
 
 <script>
