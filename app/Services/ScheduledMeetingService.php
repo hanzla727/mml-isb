@@ -75,6 +75,15 @@ class ScheduledMeetingService
         $userIds = AudienceResolver::resolve($data['scope'] ?? 'individual', $data);
 
         if ($visibleIds !== null) {
+            // "All Volunteers" has no specific target to be outside of — for
+            // a scoped creator it means "everyone I have authority over",
+            // the same as :my_scope, rather than a hard block. Every other
+            // scope (team/department/uc/na/...) names a specific target, so
+            // reaching outside it is a real authorization violation.
+            if (($data['scope'] ?? null) === 'all') {
+                return array_values(array_intersect($userIds, $visibleIds));
+            }
+
             abort_unless(
                 empty(array_diff($userIds, $visibleIds)),
                 403,

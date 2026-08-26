@@ -44,6 +44,10 @@ class DemoDataSeeder extends Seeder
 
     private User $naHead1;
 
+    private User $naHead2;
+
+    private User $ucHead1;
+
     private User $teamLeader1;
 
     /** @var \Illuminate\Support\Collection<int, User> */
@@ -61,6 +65,8 @@ class DemoDataSeeder extends Seeder
         $this->admin1 = User::where('email', 'admin1@example.com')->firstOrFail();
         $this->admin2 = User::where('email', 'admin2@example.com')->firstOrFail();
         $this->naHead1 = User::where('email', 'nahead1@example.com')->firstOrFail();
+        $this->naHead2 = User::where('email', 'nahead2@example.com')->firstOrFail();
+        $this->ucHead1 = User::where('email', 'uchead1@example.com')->firstOrFail();
         $this->teamLeader1 = User::where('email', 'teamleader1@example.com')->firstOrFail();
         $this->volunteers = User::role('user')->orderBy('email')->get();
 
@@ -103,15 +109,25 @@ class DemoDataSeeder extends Seeder
             ['name' => 'Kamran Yousaf', 'phone' => '0303-8888888', 'address' => 'F-6, Islamabad'],
             ['name' => 'Nadia Sheikh', 'phone' => '0304-9999999', 'address' => 'G-8, Islamabad'],
             ['name' => 'Imran Qureshi', 'phone' => '0304-1010101', 'address' => 'I-8, Islamabad'],
+            ['name' => 'Rukhsana Bibi', 'phone' => '0305-1212121', 'address' => 'Bhara Kahu, Islamabad'],
+            ['name' => 'Shahid Latif', 'phone' => '0305-1313131', 'address' => 'Tarnol, Islamabad'],
+            ['name' => 'Farzana Kausar', 'phone' => '0306-1414141', 'address' => 'Sihala, Islamabad'],
+            ['name' => 'Naveed Anjum', 'phone' => '0306-1515151', 'address' => 'Humak, Islamabad'],
         ];
 
         $creators = $this->volunteers->concat([$this->admin1, $this->admin2]);
 
-        return collect($people)->map(fn (array $person, int $i) => Contact::create([
-            ...$person,
-            'notes' => 'Long-term community contact.',
-            'created_by' => $creators[$i % $creators->count()]->id,
-        ]));
+        return collect($people)->map(function (array $person, int $i) use ($creators) {
+            $creator = $creators[$i % $creators->count()];
+
+            return Contact::create([
+                ...$person,
+                'notes' => 'Long-term community contact.',
+                'created_by' => $creator->id,
+                'na_id' => $creator->na_id,
+                'uc_id' => $creator->uc_id,
+            ]);
+        });
     }
 
     private function seedTargets(): void
@@ -162,12 +178,16 @@ class DemoDataSeeder extends Seeder
     private function seedAnnouncements(): void
     {
         $na48 = Na::where('name', 'NA-48')->firstOrFail();
+        $na49 = Na::where('name', 'NA-49')->firstOrFail();
+        $na50 = Na::where('name', 'NA-50')->firstOrFail();
         $fundraising = Department::where('name', 'Fundraising')->firstOrFail();
         $hospital = Department::where('name', 'Hospital')->firstOrFail();
 
         $announcements = [
             ['title' => 'Welcome to the new volunteer portal', 'audience_scope' => 'all', 'audience_id' => null, 'category' => 'general'],
             ['title' => 'NA-48: new safety checklist', 'audience_scope' => 'na', 'audience_id' => $na48->id, 'category' => 'general'],
+            ['title' => 'NA-49: volunteer orientation this Friday', 'audience_scope' => 'na', 'audience_id' => $na49->id, 'category' => 'event'],
+            ['title' => 'NA-50: welcome to our newest region', 'audience_scope' => 'na', 'audience_id' => $na50->id, 'category' => 'general'],
             ['title' => 'Fundraising Q3 kickoff meeting notes', 'audience_scope' => 'department', 'audience_id' => $fundraising->id, 'category' => 'event'],
             ['title' => 'Hospital ward visiting hours updated', 'audience_scope' => 'department', 'audience_id' => $hospital->id, 'category' => 'general'],
         ];
@@ -189,8 +209,10 @@ class DemoDataSeeder extends Seeder
     {
         $fundraising = Department::where('name', 'Fundraising')->firstOrFail();
         $hospital = Department::where('name', 'Hospital')->firstOrFail();
+        $khidmat = Department::where('name', 'Khidmat')->firstOrFail();
         $ucF10 = Uc::where('name', 'UC F-10')->firstOrFail();
         $ucG9 = Uc::where('name', 'UC G-9')->firstOrFail();
+        $ucBharaKahu = Uc::where('name', 'UC Bhara Kahu')->firstOrFail();
 
         $projects = [
             ['department_id' => $fundraising->id, 'uc_id' => $ucF10->id, 'name' => 'Winter Relief Drive', 'status' => 'active', 'start_date' => now()->subMonth(), 'end_date' => now()->addMonth()],
@@ -198,6 +220,7 @@ class DemoDataSeeder extends Seeder
             // demonstrates one department reused across UCs/NAs.
             ['department_id' => $fundraising->id, 'uc_id' => $ucG9->id, 'name' => 'Annual Fundraising Gala', 'status' => 'planning', 'start_date' => now()->addMonths(2), 'end_date' => now()->addMonths(2)->addDays(1)],
             ['department_id' => $hospital->id, 'uc_id' => $ucF10->id, 'name' => 'Spring Health Camp', 'status' => 'completed', 'start_date' => now()->subMonths(3), 'end_date' => now()->subMonths(2)],
+            ['department_id' => $khidmat->id, 'uc_id' => $ucBharaKahu->id, 'name' => 'Rural Outreach Program', 'status' => 'active', 'start_date' => now()->subWeeks(2), 'end_date' => now()->addMonths(3)],
         ];
 
         return collect($projects)->map(fn (array $data) => Project::create([
@@ -273,6 +296,22 @@ class DemoDataSeeder extends Seeder
             'scope' => 'na', 'na_id' => $this->naHead1->na_id,
         ]));
 
+        $upcoming->push($service->create($this->naHead2, [
+            'title' => 'NA-49 Volunteer Orientation',
+            'meeting_date' => now()->addDays(4)->toDateString(),
+            'start_time' => '10:00', 'end_time' => '11:30',
+            'organizer_id' => $this->naHead2->id,
+            'scope' => 'na', 'na_id' => $this->naHead2->na_id,
+        ]));
+
+        $upcoming->push($service->create($this->ucHead1, [
+            'title' => 'Bhara Kahu Rural Outreach Kickoff',
+            'meeting_date' => now()->addDays(3)->toDateString(),
+            'start_time' => '14:00', 'end_time' => '15:00',
+            'organizer_id' => $this->ucHead1->id,
+            'scope' => 'uc', 'uc_id' => Uc::where('name', 'UC Bhara Kahu')->firstOrFail()->id,
+        ]));
+
         return [$past, $upcoming];
     }
 
@@ -341,7 +380,9 @@ class DemoDataSeeder extends Seeder
             'title' => 'Draft donor thank-you letters',
             'priority' => 'low',
             'due_date' => now()->subDays(2)->toDateString(),
-            'scope' => 'individual', 'user_ids' => [$this->volunteers->firstWhere('email', 'volunteer5@example.com')->id],
+            // Admin Two only covers NA-49 — this volunteer must be one of
+            // theirs (Khidmat Team, UC G-9, NA-49), not just any volunteer.
+            'scope' => 'individual', 'user_ids' => [$this->volunteers->firstWhere('email', 'volunteer8@example.com')->id],
         ]);
 
         $service->create($this->admin1, [
@@ -359,6 +400,15 @@ class DemoDataSeeder extends Seeder
             'priority' => 'medium',
             'due_date' => now()->addDays(7)->toDateString(),
             'scope' => 'na', 'na_id' => $this->naHead1->na_id,
+        ]);
+
+        // UC-wide task, assigned via the "uc" audience scope — UC Head's
+        // own equivalent of an NA Head's NA-wide task above.
+        $service->create($this->ucHead1, [
+            'title' => 'Survey households for winter relief eligibility',
+            'priority' => 'high',
+            'due_date' => now()->addDays(6)->toDateString(),
+            'scope' => 'uc', 'uc_id' => Uc::where('name', 'UC Bhara Kahu')->firstOrFail()->id,
         ]);
 
         // A pending report awaiting review (leave one report un-reviewed).

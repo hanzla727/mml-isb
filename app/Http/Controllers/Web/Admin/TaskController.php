@@ -51,7 +51,7 @@ class TaskController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
-        $service->assign($task, $validated);
+        $service->assign($task, $validated, $request->user());
 
         return back()->with('status', 'Task updated.');
     }

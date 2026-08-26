@@ -47,7 +47,7 @@ class TaskWorkflowService
                 'recurrence_rule' => $this->buildRecurrenceRule($data),
             ]);
 
-            $this->assign($task, $data);
+            $this->assign($task, $data, $creator);
 
             if ($task->recurrence_rule) {
                 $this->recurrenceGenerator->generateUpcoming($task->fresh());
@@ -70,9 +70,9 @@ class TaskWorkflowService
         ];
     }
 
-    public function assign(Task $task, array $data): Task
+    public function assign(Task $task, array $data, ?User $creator = null): Task
     {
-        $userIds = AudienceResolver::resolve($data['scope'] ?? 'individual', $data);
+        $userIds = $creator ? $this->resolveAudience($creator, $data) : AudienceResolver::resolve($data['scope'] ?? 'individual', $data);
 
         $task->assignees()->sync($userIds);
         $task->update(['status' => empty($userIds) ? 'not_assigned' : 'assigned']);
@@ -82,6 +82,41 @@ class TaskWorkflowService
         }
 
         return $task->fresh();
+    }
+
+    /**
+     * Restricts the resolved audience to whatever HierarchyScope says the
+     * creator can actually reach — mirrors
+     * ScheduledMeetingService::resolveAudience() so a Team Leader/NA
+     * Head/UC Head/Admin can't assign a task outside their own scope no
+     * matter which scope value they submit. Super Admin is unrestricted
+     * (HierarchyScope::visibleUserIds returns null for them).
+     */
+    private function resolveAudience(User $creator, array $data): array
+    {
+        $visibleIds = HierarchyScope::visibleUserIds($creator);
+        $userIds = AudienceResolver::resolve($data['scope'] ?? 'individual', $data);
+
+        if ($visibleIds === null) {
+            return $userIds;
+        }
+
+        // "All Volunteers" has no specific target to be outside of — for a
+        // scoped creator it means "everyone I have authority over", the
+        // same as my_scope elsewhere, rather than a hard block. Every other
+        // scope (team/department/uc/na/...) names a specific target, so
+        // reaching outside it is a real authorization violation.
+        if (($data['scope'] ?? null) === 'all') {
+            return array_values(array_intersect($userIds, $visibleIds));
+        }
+
+        abort_unless(
+            empty(array_diff($userIds, $visibleIds)),
+            403,
+            'You can only assign this task to people within your own scope.'
+        );
+
+        return $userIds;
     }
 
     public function submitReport(Task $task, User $user, array $data): TaskReport

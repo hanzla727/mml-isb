@@ -1,4 +1,12 @@
 {
+    "Contact": "رابطہ",
+    "Search name or phone": "نام یا فون نمبر تلاش کریں",
+    "Created By": "شامل کردہ",
+    "No contacts found.": "کوئی رابطہ نہیں ملا۔",
+    "Address": "پتہ",
+    "Meeting History": "ملاقات کی تاریخ",
+    "No meetings logged with this contact yet.": "ابھی اس رابطے کے ساتھ کوئی ملاقات درج نہیں ہوئی۔",
+    "Back to Contacts": "رابطوں کی طرف واپس",
     "(+ UCs, super admin & NA managers)": "(+ یو سیز، سپر ایڈمن اور این اے مینیجرز)",
     "(leave blank to keep current)": "(موجودہ برقرار رکھنے کے لیے خالی چھوڑ دیں)",
     "(read)": "(پڑھا گیا)",
