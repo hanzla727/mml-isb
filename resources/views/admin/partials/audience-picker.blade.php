@@ -11,8 +11,8 @@
     <label class="form-label">Assign To</label>
     <select name="scope" class="form-select audience-scope-select" onchange="toggleAudienceScope(this)">
         <option value="individual">Specific User(s)</option>
-        <option value="team">Entire Team</option>
-        <option value="department">Entire Department</option>
+        <option value="teams">Team(s)</option>
+        <option value="departments">Department(s)</option>
         <option value="uc">Entire UC</option>
         <option value="na">Entire NA</option>
         <option value="nas">Multiple NAs</option>
@@ -33,18 +33,18 @@
     </div>
 </div>
 
-<div class="mb-3 audience-scope-target" data-scope="department" style="display:none;">
-    <label class="form-label small">Department</label>
-    <select name="department_id" class="form-select" disabled>
+<div class="mb-3 audience-scope-target" data-scope="departments" style="display:none;">
+    <label class="form-label small">Department(s) <span class="text-muted">— pick one, a few, or all</span></label>
+    <select name="department_ids[]" class="form-select" multiple size="4" disabled>
         @foreach ($departments as $department)
             <option value="{{ $department->id }}">{{ $department->name }}</option>
         @endforeach
     </select>
 </div>
 
-<div class="mb-3 audience-scope-target" data-scope="team" style="display:none;">
-    <label class="form-label small">Team</label>
-    <select name="team_id" class="form-select" disabled>
+<div class="mb-3 audience-scope-target" data-scope="teams" style="display:none;">
+    <label class="form-label small">Team(s) <span class="text-muted">— pick one, a few, or all</span></label>
+    <select name="team_ids[]" class="form-select" multiple size="4" disabled>
         @foreach ($teams as $team)
             <option value="{{ $team->id }}">{{ $team->name }}</option>
         @endforeach

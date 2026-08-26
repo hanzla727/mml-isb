@@ -91,6 +91,8 @@ class DailyReportManager
                         'cnic' => $meetingData['cnic'] ?? null,
                         'address' => $meetingData['address'] ?? null,
                         'created_by' => $creator->id,
+                        'na_id' => $creator->na_id,
+                        'uc_id' => $creator->uc_id,
                     ]
                 );
 

@@ -17,6 +17,8 @@ class ContactResource extends JsonResource
             'address' => $this->address,
             'photo_url' => $this->photo_path ? asset('storage/'.$this->photo_path) : null,
             'notes' => $this->notes,
+            'na' => $this->whenLoaded('na', fn () => $this->na ? ['id' => $this->na->id, 'name' => $this->na->name] : null),
+            'uc' => $this->whenLoaded('uc', fn () => $this->uc ? ['id' => $this->uc->id, 'name' => $this->uc->name] : null),
             'meetings_count' => $this->whenCounted('meetings'),
             'meetings' => MeetingResource::collection($this->whenLoaded('meetings')),
             'created_at' => $this->created_at,

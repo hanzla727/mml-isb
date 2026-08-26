@@ -13,6 +13,7 @@ class ContactController extends Controller
     public function store(StoreContactRequest $request)
     {
         $path = $request->hasFile('photo') ? $request->file('photo')->store('contact-photos', 'public') : null;
+        $creator = $request->user();
 
         $contact = Contact::create([
             'name' => $request->validated('name'),
@@ -21,18 +22,29 @@ class ContactController extends Controller
             'address' => $request->validated('address'),
             'notes' => $request->validated('notes'),
             'photo_path' => $path,
-            'created_by' => $request->user()->id,
+            'created_by' => $creator->id,
+            // A contact belongs to whichever NA/UC the volunteer who logged
+            // it operates in — taken from the creator, not asked for again,
+            // so it can never mismatch what's already on their own profile.
+            'na_id' => $creator->na_id,
+            'uc_id' => $creator->uc_id,
         ]);
 
         return new ContactResource($contact);
     }
 
+    /**
+     * Contacts are private: visible only to whoever created them, plus
+     * Admin/Super Admin — not NA Head, UC Head, or Team Leader, even though
+     * they hold 'view-reports' for everything else in the app.
+     */
     public function index(Request $request)
     {
-        $query = Contact::query()->withCount('meetings');
+        $user = $request->user();
+        $query = Contact::query()->with(['na', 'uc'])->withCount('meetings');
 
-        if (! $request->user()->can('view-reports')) {
-            $query->where('created_by', $request->user()->id);
+        if (! $user->hasAnyRole(['super_admin', 'admin'])) {
+            $query->where('created_by', $user->id);
         }
 
         $query->when($request->filled('search'), function ($q) use ($request) {
@@ -51,10 +63,12 @@ class ContactController extends Controller
 
     public function show(Request $request, Contact $contact)
     {
-        if (! $request->user()->can('view-reports') && $contact->created_by !== $request->user()->id) {
+        $user = $request->user();
+
+        if (! $user->hasAnyRole(['super_admin', 'admin']) && $contact->created_by !== $user->id) {
             abort(403);
         }
 
-        return new ContactResource($contact->load(['meetings.dailyReport.user']));
+        return new ContactResource($contact->load(['na', 'uc', 'meetings.dailyReport.user']));
     }
 }

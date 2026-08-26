@@ -21,12 +21,14 @@ class Contact extends Model
         'photo_path',
         'notes',
         'created_by',
+        'na_id',
+        'uc_id',
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['name', 'phone', 'cnic', 'address'])
+            ->logOnly(['name', 'phone', 'cnic', 'address', 'na_id', 'uc_id'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
     }
@@ -34,6 +36,16 @@ class Contact extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function na(): BelongsTo
+    {
+        return $this->belongsTo(Na::class);
+    }
+
+    public function uc(): BelongsTo
+    {
+        return $this->belongsTo(Uc::class);
     }
 
     public function meetings(): HasMany

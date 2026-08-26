@@ -24,7 +24,9 @@ class AudienceResolver
         return match ($scope) {
             'individual', 'users' => array_values(array_unique(array_map('intval', $data['user_ids'] ?? []))),
             'team' => User::query()->where('team_id', $data['team_id'] ?? null)->where('is_active', true)->pluck('id')->all(),
+            'teams' => User::query()->whereIn('team_id', $data['team_ids'] ?? [])->where('is_active', true)->pluck('id')->all(),
             'department' => User::query()->where('department_id', $data['department_id'] ?? null)->where('is_active', true)->pluck('id')->all(),
+            'departments' => User::query()->whereIn('department_id', $data['department_ids'] ?? [])->where('is_active', true)->pluck('id')->all(),
             'uc' => User::query()->where('uc_id', $data['uc_id'] ?? null)->where('is_active', true)->pluck('id')->all(),
             'na' => User::query()->where('na_id', $data['na_id'] ?? null)->where('is_active', true)->pluck('id')->all(),
             'nas' => User::query()->whereIn('na_id', $data['na_ids'] ?? [])->where('is_active', true)->pluck('id')->all(),

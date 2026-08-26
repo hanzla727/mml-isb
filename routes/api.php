@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\ExpenseClaimController;
 use App\Http\Controllers\Api\LeaveRequestController;
 use App\Http\Controllers\Api\MeetingController;
+use App\Http\Controllers\Api\OrgDirectoryController;
 use App\Http\Controllers\Api\PerformanceController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ProjectController;
@@ -62,6 +63,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/targets', [TargetController::class, 'index']);
 
     Route::get('/volunteers', [VolunteerDirectoryController::class, 'index']);
+    Route::get('/departments', [OrgDirectoryController::class, 'departments']);
+    Route::get('/teams', [OrgDirectoryController::class, 'teams']);
 
     Route::get('/announcements', [AnnouncementController::class, 'index']);
     Route::post('/announcements/{announcement}/read', [AnnouncementController::class, 'markRead']);
