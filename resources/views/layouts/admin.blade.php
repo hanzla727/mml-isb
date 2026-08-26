@@ -44,6 +44,9 @@
             <li class="nav-item">
                 <a href="{{ url('/admin/tasks') }}" class="nav-link {{ request()->is('admin/tasks*') ? 'active' : '' }}"><i class="bi bi-list-check"></i> {{ __('Tasks') }}</a>
             </li>
+            <li class="nav-item">
+                <a href="{{ url('/admin/contacts') }}" class="nav-link {{ request()->is('admin/contacts*') ? 'active' : '' }}"><i class="bi bi-person-lines-fill"></i> {{ __('Contacts') }}</a>
+            </li>
             @can('review-task-reports')
                 <li class="nav-item">
                     <a href="{{ url('/admin/task-reports') }}" class="nav-link {{ request()->is('admin/task-reports*') ? 'active' : '' }}"><i class="bi bi-clipboard-check"></i> {{ __('Report Reviews') }}</a>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Web\Admin\AnalyticsController;
 use App\Http\Controllers\Web\Admin\AnnouncementController as AdminAnnouncementController;
+use App\Http\Controllers\Web\Admin\ContactController;
 use App\Http\Controllers\Web\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Web\Admin\DepartmentController;
 use App\Http\Controllers\Web\Admin\ExpenseClaimController as AdminExpenseClaimController;
@@ -156,6 +157,9 @@ Route::middleware('auth')->group(function () {
             Route::put('/meetings/{scheduledMeeting}/status', [AdminScheduledMeetingController::class, 'updateStatus'])
                 ->name('meetings.status');
         });
+
+        Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
+        Route::get('/contacts/{contact}', [ContactController::class, 'show'])->name('contacts.show');
 
         Route::middleware('permission:manage-tasks')->group(function () {
             Route::resource('tasks', AdminTaskController::class)->only(['index', 'show', 'store', 'update']);
